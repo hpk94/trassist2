@@ -1,0 +1,159 @@
+{
+  "analysis_id": "1b69732a-09fa-42b1-8a72-fce389fe3d58",
+  "timestamp": "2025-09-03T14:39:31.027384",
+  "image_path": "uploads/chart_1b69732a-09fa-42b1-8a72-fce389fe3d58_20250903_143901.png",
+  "results": {
+    "llm_output": {
+      "symbol": "BTCUSDT",
+      "timeframe": "1m",
+      "time_of_screenshot": "2025-08-31 20:01",
+      "trend_direction": "bearish",
+      "support_resistance": {
+        "support": 108797.3,
+        "resistance": 109197.5
+      },
+      "technical_indicators": {
+        "RSI14": {
+          "value": 39.16,
+          "status": "neutral",
+          "signal": "neutral_downtrend"
+        },
+        "MACD12_26_9": {
+          "macd_line": null,
+          "signal_line": null,
+          "histogram": null,
+          "signal": "undefined"
+        },
+        "BB20_2": {
+          "upper": null,
+          "middle": null,
+          "lower": null,
+          "price_position": "outside_band",
+          "bandwidth": "undefined"
+        },
+        "STOCH14_3_3": {
+          "k_percent": null,
+          "d_percent": null,
+          "signal": "undefined"
+        },
+        "VOLUME": {
+          "current": null,
+          "average": null,
+          "ratio": null,
+          "trend": "undefined"
+        },
+        "ATR14": {
+          "value": null,
+          "period": null,
+          "volatility": "undefined"
+        }
+      },
+      "pattern_analysis": [],
+      "validity_assessment": {
+        "alignment_score": 0.55,
+        "notes": "Price is in a downtrend channel close to the 0.786 Fibonacci level. RSI is in a neutral to oversold zone, which might indicate a potential reversal or continuation."
+      },
+      "opening_signal": {
+        "direction": "short",
+        "scope": {
+          "candle_indices": [
+            0,
+            1,
+            2
+          ],
+          "lookback_seconds": 180
+        },
+        "checklist": [
+          {
+            "id": "rsi_downtrend",
+            "type": "indicator_threshold",
+            "indicator": "RSI14",
+            "timeframe": "1m",
+            "comparator": "<=",
+            "value": 40.0,
+            "observed_on_candle": 0,
+            "technical_indicator": true,
+            "category": "technical_indicator"
+          },
+          {
+            "id": "price_below_0_786",
+            "type": "price_level",
+            "level": "fib_0_786",
+            "anchors": {
+              "from": "swing_high",
+              "to": "swing_low"
+            },
+            "comparator": "<=",
+            "value": 108882.9,
+            "observed_on_candle": 0,
+            "technical_indicator": false,
+            "category": "price_level"
+          },
+          {
+            "id": "price_within_channel",
+            "type": "price_channel",
+            "condition": "within",
+            "channel": "downtrend",
+            "technical_indicator": false,
+            "category": "trend_analysis"
+          }
+        ],
+        "invalidation": [
+          {
+            "id": "close_above_0_618_fib",
+            "type": "price_breach",
+            "level": "fib_0_618",
+            "comparator": ">"
+          },
+          {
+            "id": "rsi_oversold_bounce",
+            "type": "indicator_threshold",
+            "indicator": "RSI14",
+            "timeframe": "1m",
+            "comparator": ">=",
+            "value": 50.0
+          },
+          {
+            "id": "two_bull_candles_large",
+            "type": "sequence",
+            "count": 2,
+            "direction": "bullish",
+            "atr_multiple": 1.0
+          }
+        ],
+        "is_met": false
+      },
+      "risk_management": {
+        "stop_loss": {
+          "price": 109103.1,
+          "basis": "above_channel",
+          "distance_ticks": null
+        },
+        "take_profit": [
+          {
+            "price": 108797.3,
+            "basis": "support_retest",
+            "rr": 1.5
+          },
+          {
+            "price": 108700.0,
+            "basis": "extended_move",
+            "rr": 2.0
+          }
+        ]
+      },
+      "summary_actions": [
+        "Watch for RSI14 <= 40 confirmation",
+        "Place stop-loss above 0.618 Fibonacci level",
+        "Enter short if price remains below 0.786 Fibonacci level and continues within channel"
+      ],
+      "improvements": "Improve entry timing by adding MACD and stochastic confirmation."
+    },
+    "signal_valid": false,
+    "signal_status": "invalidated",
+    "triggered_conditions": [
+      "rsi_oversold_bounce"
+    ],
+    "market_values": {
+      "current_price": 111751.18,
+      "current_time": 

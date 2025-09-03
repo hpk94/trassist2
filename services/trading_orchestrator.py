@@ -216,6 +216,13 @@ class TradingOrchestrator:
             else:
                 print("Trade rejected by gate.")
         
+        # Convert pandas Timestamp to string for JSON serialization
+        if market_values and 'current_time' in market_values:
+            if hasattr(market_values['current_time'], 'isoformat'):
+                market_values['current_time'] = market_values['current_time'].isoformat()
+            else:
+                market_values['current_time'] = str(market_values['current_time'])
+        
         return {
             'llm_output': llm_output,
             'signal_valid': signal_valid,

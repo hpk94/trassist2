@@ -1,0 +1,31 @@
+{
+  "analysis_id": "2a81c80f-8a83-4a33-b98f-d53c287f7dbc",
+  "timestamp": "2025-09-03T14:37:30.542991",
+  "image_path": "uploads/chart_2a81c80f-8a83-4a33-b98f-d53c287f7dbc_20250903_143722.png",
+  "results": {
+    "symbol": "BTC/USDT",
+    "timeframe": "1m",
+    "time_of_screenshot": "2025-09-03 12:23",
+    "opening_signal": {
+      "direction": "buy",
+      "confidence": 0.7,
+      "reasoning": "The price is forming an ascending wedge, RSI is above 50."
+    },
+    "technical_indicators": {
+      "RSI": "56.54",
+      "support": "111,355.5",
+      "resistance": "111,688.0",
+      "trend": "bullish"
+    },
+    "risk_management": {
+      "stop_loss": "111,355.0",
+      "take_profit": "111,688.0",
+      "risk_reward_ratio": "1:2"
+    },
+    "market_conditions": {
+      "volatility": "medium",
+      "volume": "medium",
+      "momentum": "strong"
+    }
+  }
+}

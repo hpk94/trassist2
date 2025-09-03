@@ -1,0 +1,34 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current RSI at 57.75 indicates overbought conditions, conflicting with oversold recovery strategy.",
+    "Entry price significantly higher than swing low, resulting in inadequate risk/reward ratio."
+  ],
+  "warnings": [
+    "Current RSI exceeds expected recovery threshold.",
+    "Significant price distance from intended entry scope implies stretched conditions."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111663.24,
+    "stop_loss": 108760.0,
+    "take_profits": [
+      {
+        "price": 108950.2,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Reduce position size due to excessive price deviation."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 1,
+      "total": 1
+    },
+    "context_alignment": "weak"
+  }
+}

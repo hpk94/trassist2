@@ -1,0 +1,32 @@
+{
+  "analysis_id": "dd9bf6d5-e777-4804-a6dd-d2b79066cd6c",
+  "timestamp": "2025-09-03T14:18:56.018721",
+  "image_path": "uploads/chart_dd9bf6d5-e777-4804-a6dd-d2b79066cd6c_20250903_141847.png",
+  "results": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1 minute",
+    "time_of_screenshot": "2025-08-31 20:01",
+    "opening_signal": {
+      "direction": "sell",
+      "confidence": 0.7,
+      "reasoning": "The price is in a downtrend, approaching the lower end of the channel with RSI near the oversold territory, indicating a potential further decline."
+    },
+    "technical_indicators": {
+      "RSI": "39.16",
+      "support": "108,797.3",
+      "resistance": "109,197.5",
+      "trend": "bearish"
+    },
+    "risk_management": {
+      "stop_loss": "109,044.6",
+      "take_profit": "108,797.3",
+      "risk_reward_ratio": "1:2"
+    },
+    "market_conditions": {
+      "volatility": "medium",
+      "volume": "medium",
+      "momentum": "weak"
+    }
+  },
+  "reanalyzed_at": "2025-09-03T14:19:05.336155"
+}

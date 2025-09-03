@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Chart Analysis Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px dashed #dee2e6;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .upload-section.dragover {
+            border-color: #667eea;
+            background: #e8f0ff;
+            transform: scale(1.02);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+            display: none;
+        }
+
+        .status-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f8f9fa;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .status-icon.pending {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-icon.success {
+            background: #28a745;
+        }
+
+        .status-icon.error {
+            background: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .results-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            border-left: 5px solid #28a745;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .result-item strong {
+            color: #495057;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .result-item span {
+            color: #6c757d;
+        }
+
+        .signal-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .signal-buy {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .signal-sell {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .signal-valid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .signal-invalidated {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .signal-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .signal-unknown {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #dc3545 0%, #ffc107 50%, #28a745 100%);
+            transition: width 0.5s ease;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .reanalyze-btn {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .reanalyze-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        }
+
+        .reanalyze-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .recent-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #17a2b8;
+            display: none;
+        }
+
+        .recent-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .recent-analysis-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recent-analysis-item:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .recent-analysis-info {
+            flex: 1;
+        }
+
+        .recent-analysis-meta {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .recent-analysis-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .load-analysis-btn {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .load-analysis-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(23, 162, 184, 0.3);
+        }
+
+        .clear-recent-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-recent-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 Trading Chart Analysis</h1>
+            <p>Upload your trading charts for AI-powered analysis</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section" id="uploadSection">
+                <h2>📤 Upload Trading Chart</h2>
+                <p>Drag and drop your chart image here or click to browse</p>
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+                <button class="upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()">
+                    Choose Image
+                </button>
+                <button class="upload-btn" id="pasteBtn" title="Paste image from clipboard (Cmd/Ctrl+V)">
+                    Paste From Clipboard
+                </button>
+                <div class="file-info" id="fileInfo" style="display: none;"></div>
+            </div>
+
+            <!-- Status Section -->
+            <div class="status-section" id="statusSection">
+                <h2>📊 Analysis Status</h2>
+                <div id="statusItems"></div>
+            </div>
+
+            <!-- Recent Analyses Section -->
+            <div class="recent-section" id="recentSection" style="display: none;">
+                <h2>📋 Recent Analyses</h2>
+                <div id="recentAnalyses"></div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection">
+                <h2>🎯 Analysis Results</h2>
+                <div id="resultsContent"></div>
+                <button class="reanalyze-btn" id="reanalyzeBtn" onclick="reanalyzeChart()">
+                    🔄 Reanalyze Chart
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let currentAnalysisId = null;
+        let currentFile = null;
+        const RECENT_ANALYSES_KEY = 'trading_analyses_recent';
+        const MAX_RECENT_ANALYSES = 10;
+
+        // File input handling
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        // Paste button handling
+        document.getElementById('pasteBtn').addEventListener('click', pasteFromClipboard);
+        // Global keyboard paste (Cmd/Ctrl+V)
+        document.addEventListener('paste', async (event) => {
+            // Prefer clipboardItem if available
+            const items = event.clipboardData && event.clipboardData.items;
+            if (!items || items.length === 0) return;
+            for (const item of items) {
+                if (item.type && item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    if (blob) {
+                        const file = new File([blob], `pasted_${Date.now()}.png`, { type: blob.type || 'image/png' });
+                        handleFile(file);
+                        event.preventDefault();
+                        return;
+                    }
+                }
+            }
+        });
+        
+        // Drag and drop handling
+        const uploadSection = document.getElementById('uploadSection');
+        
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+        
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+        
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please select an image file (PNG, JPG, JPEG)');
+                return;
+            }
+
+            currentFile = file;
+            showFileInfo(file);
+            uploadChart(file);
+        }
+
+        async function pasteFromClipboard() {
+            // Use async Clipboard API when available (requires secure context)
+            try {
+                if (navigator.clipboard && navigator.clipboard.read) {
+                    const items = await navigator.clipboard.read();
+                    for (const item of items) {
+                        for (const type of item.types) {
+                            if (type.startsWith('image/')) {
+                                const blob = await item.getType(type);
+                                const file = new File([blob], `pasted_${Date.now()}.png`, { type });
+                                handleFile(file);
+                                return;
+                            }
+                        }
+                    }
+                    showError('No image found in clipboard. Copy an image first and try again.');
+                } else {
+                    // Fallback hint if API not supported
+                    showError('Clipboard paste not supported in this browser. Try Cmd/Ctrl+V directly.');
+                }
+            } catch (err) {
+                showError(`Clipboard access failed: ${err.message}`);
+            }
+        }
+
+        function showFileInfo(file) {
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.innerHTML = `
+                <strong>Selected File:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                <strong>Type:</strong> ${file.type}
+            `;
+            fileInfo.style.display = 'block';
+        }
+
+        async function uploadChart(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Show status section
+            showStatus();
+            addStatusItem('Uploading chart...', 'pending');
+            addStatusItem('Analyzing with AI...', 'pending');
+
+            try {
+                const response = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentAnalysisId = result.analysis_id;
+                    updateStatusItem(0, 'Chart uploaded successfully', 'success');
+                    updateStatusItem(1, 'AI analysis completed', 'success');
+                    showResults(result.results);
+                    
+                    // Save to recent analyses
+                    saveRecentAnalysis(result.analysis_id, {
+                        symbol: result.results.llm_output?.symbol || result.results.symbol,
+                        timeframe: result.results.llm_output?.timeframe || result.results.timeframe,
+                        signal_direction: result.results.llm_output?.opening_signal?.direction || result.results.opening_signal?.direction,
+                        signal_status: result.results.signal_status
+                    });
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                updateStatusItem(0, 'Upload failed', 'error');
+                updateStatusItem(1, 'Analysis failed', 'error');
+                showError(`Upload failed: ${error.message}`);
+            }
+        }
+
+        async function reanalyzeChart() {
+            if (!currentAnalysisId) {
+                showError('No analysis to reanalyze');
+                return;
+            }
+
+            const reanalyzeBtn = document.getElementById('reanalyzeBtn');
+            reanalyzeBtn.disabled = true;
+            reanalyzeBtn.innerHTML = '<span class="loading-spinner"></span>Reanalyzing...';
+
+            addStatusItem('Reanalyzing chart...', 'pending');
+
+            try {
+                const response = await fetch(`${API_BASE}/analysis/${currentAnalysisId}/reanalyze`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    updateStatusItem(2, 'Reanalysis completed', 'success');
+                    showResults(result.results);
+                    
+                    // Save to recent analyses
+                    saveRecentAnalysis(currentAnalysisId, {
+                        symbol: result.results.llm_output?.symbol || result.results.symbol,
+                        timeframe: result.results.llm_output?.timeframe || result.results.timeframe,
+                        signal_direction: result.results.llm_output?.opening_signal?.direction || result.results.opening_signal?.direction,
+                        signal_status: result.results.signal_status
+                    });
+                } else {
+                    throw new Error(result.error || 'Reanalysis failed');
+                }
+
+            } catch (error) {
+                console.error('Reanalysis error:', error);
+                updateStatusItem(2, 'Reanalysis failed', 'error');
+                showError(`Reanalysis failed: ${error.message}`);
+            } finally {
+                reanalyzeBtn.disabled = false;
+                reanalyzeBtn.innerHTML = '🔄 Reanalyze Chart';
+            }
+        }
+
+        function showStatus() {
+            document.getElementById('statusSection').classList.add('show');
+        }
+
+        function addStatusItem(text, status) {
+            const statusItems = document.getElementById('statusItems');
+            const item = document.createElement('div');
+            item.className = 'status-item';
+            item.innerHTML = `
+                <div class="status-icon ${status}">${status === 'pending' ? '⏳' : status === 'success' ? '✅' : '❌'}</div>
+                <span>${text}</span>
+            `;
+            statusItems.appendChild(item);
+        }
+
+        function updateStatusItem(index, text, status) {
+            const statusItems = document.getElementById('statusItems');
+            const items = statusItems.querySelectorAll('.status-item');
+            if (items[index]) {
+                items[index].innerHTML = `
+                    <div class="status-icon ${status}">${status === 'pending' ? '⏳' : status === 'success' ? '✅' : '❌'}</div>
+                    <span>${text}</span>
+                `;
+            }
+        }
+
+        function showResults(results) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            // Extract data from new format or fallback to old format
+            const llmOutput = results.llm_output || results;
+            const signalStatus = results.signal_status || 'unknown';
+            const marketValues = results.market_values || {};
+            
+            const signalClass = llmOutput.opening_signal.direction === 'buy' ? 'signal-buy' : 'signal-sell';
+            const confidencePercent = Math.round(llmOutput.opening_signal.confidence * 100);
+            
+            // Format market data timestamp
+            let marketDataTime = 'N/A';
+            if (marketValues.current_time) {
+                try {
+                    const dt = new Date(marketValues.current_time);
+                    marketDataTime = dt.toLocaleDateString('en-GB', { 
+                        day: '2-digit', 
+                        month: '2-digit' 
+                    }) + ' ' + dt.toLocaleTimeString('en-GB', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
+                } catch (e) {
+                    marketDataTime = String(marketValues.current_time);
+                }
+            }
+            
+            // Get signal status badge class and text
+            let statusClass = 'signal-unknown';
+            let statusText = signalStatus;
+            if (signalStatus === 'valid') {
+                statusClass = 'signal-valid';
+                statusText = 'Valid';
+            } else if (signalStatus === 'invalidated') {
+                statusClass = 'signal-invalidated';
+                statusText = 'Invalidated';
+            } else if (signalStatus === 'pending') {
+                statusClass = 'signal-pending';
+                statusText = 'Pending';
+            }
+            
+            resultsContent.innerHTML = `
+                <div class="result-grid">
+                    <div class="result-card">
+                        <h3>📊 Trading Signal</h3>
+                        <div class="result-item">
+                            <strong>Direction:</strong>
+                            <span class="signal-badge ${signalClass}">${llmOutput.opening_signal.direction}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Status:</strong>
+                            <span class="signal-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Confidence:</strong>
+                            <span>${confidencePercent}%</span>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
+                            </div>
+                        </div>
+                        <div class="result-item">
+                            <strong>Reasoning:</strong>
+                            <span>${llmOutput.opening_signal.reasoning}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Market Data Time:</strong>
+                            <span>${marketDataTime}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>📈 Chart Information</h3>
+                        <div class="result-item">
+                            <strong>Symbol:</strong>
+                            <span>${llmOutput.symbol}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Timeframe:</strong>
+                            <span>${llmOutput.timeframe}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Screenshot Time:</strong>
+                            <span>${llmOutput.time_of_screenshot}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>🔧 Technical Indicators</h3>
+                        <div class="result-item">
+                            <strong>RSI:</strong>
+                            <span>${llmOutput.technical_indicators.RSI || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Support:</strong>
+                            <span>${llmOutput.technical_indicators.support || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Resistance:</strong>
+                            <span>${llmOutput.technical_indicators.resistance || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Trend:</strong>
+                            <span>${llmOutput.technical_indicators.trend || 'N/A'}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>💰 Risk Management</h3>
+                        <div class="result-item">
+                            <strong>Stop Loss:</strong>
+                            <span>${llmOutput.risk_management.stop_loss || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Take Profit:</strong>
+                            <span>${llmOutput.risk_management.take_profit || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Risk/Reward:</strong>
+                            <span>${llmOutput.risk_management.risk_reward_ratio || 'N/A'}</span>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>🌊 Market Conditions</h3>
+                        <div class="result-item">
+                            <strong>Volatility:</strong>
+                            <span>${llmOutput.market_conditions.volatility || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Volume:</strong>
+                            <span>${llmOutput.market_conditions.volume || 'N/A'}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Momentum:</strong>
+                            <span>${llmOutput.market_conditions.momentum || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsSection.classList.add('show');
+        }
+
+        function showError(message) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            resultsContent.innerHTML = `
+                <div class="error-message">
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+            
+            resultsSection.classList.add('show');
+        }
+
+        // Reset function
+        function resetInterface() {
+            document.getElementById('statusSection').classList.remove('show');
+            document.getElementById('resultsSection').classList.remove('show');
+            document.getElementById('statusItems').innerHTML = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            currentAnalysisId = null;
+            currentFile = null;
+        }
+
+        // Recent analyses management
+        function saveRecentAnalysis(analysisId, analysisData) {
+            let recentAnalyses = JSON.parse(localStorage.getItem(RECENT_ANALYSES_KEY) || '[]');
+            
+            // Remove if already exists
+            recentAnalyses = recentAnalyses.filter(a => a.id !== analysisId);
+            
+            // Add to beginning
+            recentAnalyses.unshift({
+                id: analysisId,
+                timestamp: new Date().toISOString(),
+                symbol: analysisData.symbol || 'Unknown',
+                timeframe: analysisData.timeframe || 'Unknown',
+                signal_direction: analysisData.signal_direction || 'Unknown',
+                signal_status: analysisData.signal_status || 'unknown'
+            });
+            
+            // Keep only the most recent ones
+            recentAnalyses = recentAnalyses.slice(0, MAX_RECENT_ANALYSES);
+            
+            localStorage.setItem(RECENT_ANALYSES_KEY, JSON.stringify(recentAnalyses));
+            loadRecentAnalyses();
+        }
+
+        async function loadRecentAnalyses() {
+            const recentSection = document.getElementById('recentSection');
+            const recentAnalysesDiv = document.getElementById('recentAnalyses');
+            
+            try {
+                // Load all analyses from server
+                const response = await fetch(`${API_BASE}/analyses`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const serverAnalyses = data.analyses || [];
+                    
+                    if (serverAnalyses.length > 0) {
+                        recentAnalysesDiv.innerHTML = serverAnalyses.map(analysis => {
+                            const date = new Date(analysis.timestamp);
+                            const timeStr = date.toLocaleString();
+                            
+                            return `
+                                <div class="recent-analysis-item" onclick="loadAnalysisById('${analysis.analysis_id}')">
+                                    <div class="recent-analysis-info">
+                                        <strong>${analysis.symbol} (${analysis.timeframe})</strong>
+                                        <div class="recent-analysis-meta">
+                                            ${analysis.signal_direction} • ${analysis.signal_status || 'unknown'} • ${timeStr}
+                                            ${analysis.market_data_timestamp ? ` • Market: ${analysis.market_data_timestamp}` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="recent-analysis-actions">
+                                        <button class="load-analysis-btn" onclick="event.stopPropagation(); loadAnalysisById('${analysis.analysis_id}')">
+                                            Load
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('') + `
+                            <button class="clear-recent-btn" onclick="clearRecentAnalyses()">
+                                Clear Local History
+                            </button>
+                        `;
+                        
+                        recentSection.style.display = 'block';
+                    } else {
+                        recentSection.style.display = 'none';
+                    }
+                } else {
+                    throw new Error('Failed to load analyses from server');
+                }
+            } catch (error) {
+                console.error('Error loading analyses:', error);
+                // Fallback to localStorage only
+                const recentAnalyses = JSON.parse(localStorage.getItem(RECENT_ANALYSES_KEY) || '[]');
+                
+                if (recentAnalyses.length === 0) {
+                    recentSection.style.display = 'none';
+                    return;
+                }
+                
+                recentAnalysesDiv.innerHTML = recentAnalyses.map(analysis => {
+                    const date = new Date(analysis.timestamp);
+                    const timeStr = date.toLocaleString();
+                    
+                    return `
+                        <div class="recent-analysis-item" onclick="loadAnalysisById('${analysis.id}')">
+                            <div class="recent-analysis-info">
+                                <strong>${analysis.symbol} (${analysis.timeframe})</strong>
+                                <div class="recent-analysis-meta">
+                                    ${analysis.signal_direction} • ${analysis.signal_status} • ${timeStr}
+                                </div>
+                            </div>
+                            <div class="recent-analysis-actions">
+                                <button class="load-analysis-btn" onclick="event.stopPropagation(); loadAnalysisById('${analysis.id}')">
+                                    Load
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('') + `
+                    <button class="clear-recent-btn" onclick="clearRecentAnalyses()">
+                        Clear Recent Analyses
+                    </button>
+                `;
+                
+                recentSection.style.display = 'block';
+            }
+        }
+
+        function clearRecentAnalyses() {
+            if (confirm('Clear all recent analyses?')) {
+                localStorage.removeItem(RECENT_ANALYSES_KEY);
+                loadRecentAnalyses();
+            }
+        }
+
+        async function loadAnalysisById(analysisId) {
+            try {
+                showStatus();
+                addStatusItem('Loading analysis...', 'pending');
+                
+                const response = await fetch(`${API_BASE}/analysis/${analysisId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentAnalysisId = analysisId;
+                    updateStatusItem(0, 'Analysis loaded successfully', 'success');
+                    showResults(result.results);
+                    
+                    // Save to recent analyses
+                    saveRecentAnalysis(analysisId, {
+                        symbol: result.results.llm_output?.symbol || result.results.symbol,
+                        timeframe: result.results.llm_output?.timeframe || result.results.timeframe,
+                        signal_direction: result.results.llm_output?.opening_signal?.direction || result.results.opening_signal?.direction,
+                        signal_status: result.results.signal_status
+                    });
+                } else {
+                    throw new Error(result.error || 'Failed to load analysis');
+                }
+                
+            } catch (error) {
+                console.error('Load analysis error:', error);
+                updateStatusItem(0, 'Failed to load analysis', 'error');
+                showError(`Failed to load analysis: ${error.message}`);
+            }
+        }
+
+        // Add reset button functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.addEventListener('click', function() {
+                if (currentAnalysisId) {
+                    if (confirm('Start a new analysis? This will clear current results.')) {
+                        resetInterface();
+                    }
+                }
+            });
+            
+            // Load recent analyses on page load
+            loadRecentAnalyses();
+        });
+    </script>
+</body>
+</html>

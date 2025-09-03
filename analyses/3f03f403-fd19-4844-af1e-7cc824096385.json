@@ -1,0 +1,152 @@
+{
+  "analysis_id": "3f03f403-fd19-4844-af1e-7cc824096385",
+  "timestamp": "2025-09-03T14:40:14.661873",
+  "image_path": "uploads/chart_3f03f403-fd19-4844-af1e-7cc824096385_20250903_143953.png",
+  "results": {
+    "llm_output": {
+      "symbol": "BTCUSDT",
+      "timeframe": "1m",
+      "time_of_screenshot": "2025-08-31 20:01",
+      "trend_direction": "bearish",
+      "support_resistance": {
+        "support": 108797.3,
+        "resistance": 109044.6
+      },
+      "technical_indicators": {
+        "RSI14": {
+          "value": 39.16,
+          "status": "neutral",
+          "signal": "oversold_recovery"
+        },
+        "MACD12_26_9": {
+          "macd_line": null,
+          "signal_line": null,
+          "histogram": null,
+          "signal": "not_available"
+        },
+        "BB20_2": {
+          "upper": null,
+          "middle": null,
+          "lower": null,
+          "price_position": "unavailable",
+          "bandwidth": "unavailable"
+        },
+        "STOCH14_3_3": {
+          "k_percent": null,
+          "d_percent": null,
+          "signal": "not_available"
+        },
+        "VOLUME": {
+          "current": null,
+          "average": null,
+          "ratio": null,
+          "trend": "unavailable"
+        },
+        "ATR14": {
+          "value": null,
+          "period": null,
+          "volatility": "unavailable"
+        }
+      },
+      "pattern_analysis": [],
+      "validity_assessment": {
+        "alignment_score": 0.5,
+        "notes": "Price is below 0.786 Fib level. RSI suggests recovery from oversold, but no strong patterns identified."
+      },
+      "opening_signal": {
+        "direction": "long",
+        "scope": {
+          "candle_indices": [
+            0,
+            1,
+            2
+          ],
+          "lookback_seconds": 180
+        },
+        "checklist": [
+          {
+            "id": "rsi_oversold_recover",
+            "type": "indicator_threshold",
+            "indicator": "RSI14",
+            "timeframe": "1m",
+            "comparator": ">=",
+            "value": 30.0,
+            "observed_on_candle": 0,
+            "technical_indicator": true,
+            "category": "technical_indicator"
+          }
+        ],
+        "invalidation": [
+          {
+            "id": "close_below_swing_low",
+            "type": "price_breach",
+            "level": "swing_low",
+            "comparator": "<"
+          }
+        ],
+        "is_met": false
+      },
+      "risk_management": {
+        "stop_loss": {
+          "price": 108760.0,
+          "basis": "below_swing_low",
+          "distance_ticks": 50
+        },
+        "take_profit": [
+          {
+            "price": 108950.2,
+            "basis": "fib_0_618_retracement",
+            "rr": 1.5
+          }
+        ]
+      },
+      "summary_actions": [
+        "Monitor RSI for further recovery",
+        "Consider long if RSI continues to recover and price stabilizes above Fib 0.786"
+      ],
+      "improvements": "Consider integrating MACD and Bollinger Bands for stronger confirmation of reversal signals."
+    },
+    "signal_valid": true,
+    "signal_status": "valid",
+    "triggered_conditions": [],
+    "market_values": {
+      "current_price": 111663.24,
+      "current_time": "2025-09-03T12:40:00",
+      "current_rsi": 57.74879391429184
+    },
+    "gate_result": {
+      "should_open": false,
+      "direction": "long",
+      "confidence": 0.0,
+      "reasons": [
+        "Current RSI at 57.75 indicates overbought conditions, conflicting with oversold recovery strategy.",
+        "Entry price significantly higher than swing low, resulting in inadequate risk/reward ratio."
+      ],
+      "warnings": [
+        "Current RSI exceeds expected recovery threshold.",
+        "Significant price distance from intended entry scope implies stretched conditions."
+      ],
+      "execution": {
+        "entry_type": "market",
+        "entry_price": 111663.24,
+        "stop_loss": 108760.0,
+        "take_profits": [
+          {
+            "price": 108950.2,
+            "portion": 0.5
+          }
+        ],
+        "risk_reward": 1.5,
+        "position_size_note": "Reduce position size due to excessive price deviation."
+      },
+      "checks": {
+        "invalidation_triggered": false,
+        "checklist_score": {
+          "met": 1,
+          "total": 1
+        },
+        "context_alignment": "weak"
+      }
+    }
+  }
+}

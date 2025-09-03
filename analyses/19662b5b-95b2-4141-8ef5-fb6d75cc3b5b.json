@@ -1,0 +1,31 @@
+{
+  "analysis_id": "19662b5b-95b2-4141-8ef5-fb6d75cc3b5b",
+  "timestamp": "2025-09-03T14:23:57.910212",
+  "image_path": "uploads/chart_19662b5b-95b2-4141-8ef5-fb6d75cc3b5b_20250903_142350.png",
+  "results": {
+    "symbol": "BTC/USDT",
+    "timeframe": "1 minute",
+    "time_of_screenshot": "2025-09-03 12:23",
+    "opening_signal": {
+      "direction": "sell",
+      "confidence": 0.6,
+      "reasoning": "The price is near the upper trend line of a rising wedge pattern, which is typically a bearish signal."
+    },
+    "technical_indicators": {
+      "RSI": "56.54",
+      "support": "111,355.5",
+      "resistance": "111,688.0",
+      "trend": "bullish"
+    },
+    "risk_management": {
+      "stop_loss": "111,700.0",
+      "take_profit": "111,355.5",
+      "risk_reward_ratio": "1:1.5"
+    },
+    "market_conditions": {
+      "volatility": "medium",
+      "volume": "medium",
+      "momentum": "weak"
+    }
+  }
+}

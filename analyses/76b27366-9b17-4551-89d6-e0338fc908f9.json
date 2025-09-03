@@ -1,0 +1,31 @@
+{
+  "analysis_id": "76b27366-9b17-4551-89d6-e0338fc908f9",
+  "timestamp": "2025-09-03T14:37:10.673985",
+  "image_path": "uploads/chart_76b27366-9b17-4551-89d6-e0338fc908f9_20250903_143704.png",
+  "results": {
+    "symbol": "BTC/USDT",
+    "timeframe": "1m",
+    "time_of_screenshot": "2025-09-03 12:33",
+    "opening_signal": {
+      "direction": "buy",
+      "confidence": 0.6,
+      "reasoning": "The price is within an ascending channel and a recent bounce off the lower trendline suggests potential upward movement."
+    },
+    "technical_indicators": {
+      "RSI": "51.54",
+      "support": "111,355.5",
+      "resistance": "111,688.0",
+      "trend": "bullish"
+    },
+    "risk_management": {
+      "stop_loss": "111,355.5",
+      "take_profit": "111,688.0",
+      "risk_reward_ratio": "1:1"
+    },
+    "market_conditions": {
+      "volatility": "medium",
+      "volume": "medium",
+      "momentum": "weak"
+    }
+  }
+}

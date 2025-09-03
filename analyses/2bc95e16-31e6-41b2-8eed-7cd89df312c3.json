@@ -1,0 +1,32 @@
+{
+  "analysis_id": "2bc95e16-31e6-41b2-8eed-7cd89df312c3",
+  "timestamp": "2025-09-03T14:16:32.075896",
+  "image_path": "uploads/chart_2bc95e16-31e6-41b2-8eed-7cd89df312c3_20250903_141622.png",
+  "results": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1m",
+    "time_of_screenshot": "2025-08-31 20:01",
+    "opening_signal": {
+      "direction": "sell",
+      "confidence": 0.8,
+      "reasoning": "Price is currently in a descending channel with a clear downtrend. The RSI is near or below the oversold level, suggesting continued bearish momentum."
+    },
+    "technical_indicators": {
+      "RSI": "33.11",
+      "support": "108,797.3",
+      "resistance": "109,197.5",
+      "trend": "bearish"
+    },
+    "risk_management": {
+      "stop_loss": "109,050.0",
+      "take_profit": "108,700.0",
+      "risk_reward_ratio": "1:2"
+    },
+    "market_conditions": {
+      "volatility": "medium",
+      "volume": "medium",
+      "momentum": "strong"
+    }
+  },
+  "reanalyzed_at": "2025-09-03T14:16:52.071634"
+}

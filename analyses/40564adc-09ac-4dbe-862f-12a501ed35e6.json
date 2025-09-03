@@ -1,0 +1,31 @@
+{
+  "analysis_id": "40564adc-09ac-4dbe-862f-12a501ed35e6",
+  "timestamp": "2025-09-03T14:33:54.716320",
+  "image_path": "uploads/chart_40564adc-09ac-4dbe-862f-12a501ed35e6_20250903_143346.png",
+  "results": {
+    "symbol": "BTC/USDT",
+    "timeframe": "1m",
+    "time_of_screenshot": "2025-09-03 12:33",
+    "opening_signal": {
+      "direction": "neutral",
+      "confidence": 0.5,
+      "reasoning": "The price is currently in an ascending channel but hasn't clearly broken out either way. RSI is mid-range, indicating no strong momentum."
+    },
+    "technical_indicators": {
+      "RSI": "57.86",
+      "support": "111,355.5",
+      "resistance": "111,688.0",
+      "trend": "sideways within channel"
+    },
+    "risk_management": {
+      "stop_loss": "Below 111,355.5",
+      "take_profit": "Around 111,688.0",
+      "risk_reward_ratio": "1:1"
+    },
+    "market_conditions": {
+      "volatility": "medium",
+      "volume": "medium",
+      "momentum": "weak"
+    }
+  }
+}
