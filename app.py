@@ -96,12 +96,17 @@ def llm_trade_gate_decision(
             }
         }
 
+print("Step 1: Analyzing trading chart with LLM...")
 llm_output = analyze_trading_chart(test_image)
+print(f"Step 1 Complete: Chart analysis finished for {test_image}")
 
+print("Step 2: Setting up output directory...")
 # Create output directory if it doesn't exist
 output_dir = "llm_outputs"
 os.makedirs(output_dir, exist_ok=True)
+print(f"Step 2 Complete: Output directory ready at {output_dir}")
 
+print("Step 3: Saving LLM output to JSON file...")
 # Save LLM output to JSON file with timestamp
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 output_filename = f"llm_output_{timestamp}.json"
@@ -109,50 +114,59 @@ output_path = os.path.join(output_dir, output_filename)
 
 with open(output_path, 'w') as f:
     json.dump(llm_output, f, indent=2, default=str)
+print(f"Step 3 Complete: LLM output saved to {output_path}")
 
+print("Step 4: Extracting trading parameters from LLM output...")
 symbol = llm_output['symbol']
 timeframe = llm_output['timeframe']
 time_of_screenshot = llm_output['time_of_screenshot']
+print(f"Step 4 Complete: Symbol={symbol}, Timeframe={timeframe}, Screenshot time={time_of_screenshot}")
 
+print("Step 5: Validating timeframe against MEXC supported intervals...")
 # Validate timeframe against MEXC supported intervals
 valid_intervals = ['1m', '5m', '15m', '30m', '60m', '4h', '1d', '1W', '1M']
 if timeframe not in valid_intervals:
     print(f"Warning: {timeframe} is not a valid MEXC interval. Using 1m as default.")
     timeframe = '1m'
+print(f"Step 5 Complete: Using timeframe {timeframe}")
 
 
 
+print("Step 6: Initializing MEXC API clients...")
 # initialize HTTP client for authenticated endpoints
 spot_client = spot.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
 # initialize public HTTP client for market data (no auth required)
 public_spot_client = spot.HTTP()
 # initialize WebSocket client
 ws_spot_client = spot.WebSocket(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
+print("Step 6 Complete: MEXC API clients initialized")
 
 # make http request to api
 
 def fetch_market_data(symbol, timeframe):
     """Fetch raw klines data from MEXC API"""
+    print(f"      Fetching market data for {symbol} on {timeframe} timeframe...")
     try:
         klines = public_spot_client.klines(
             symbol=symbol,
             interval=timeframe,
             limit=100
         )
-
-
+        print(f"      Successfully fetched {len(klines)} klines")
     
     except Exception as e:
-        print(f"Error retrieving klines: {e}")
+        print(f"      Error retrieving klines: {e}")
         klines = []
 
     return klines
 
 def fetch_market_dataframe(symbol, timeframe):
     """Fetch market data and return as processed DataFrame"""
+    print(f"      Processing market data into DataFrame...")
     klines = fetch_market_data(symbol, timeframe)
     
     if not klines:
+        print("      No klines data available, returning empty DataFrame")
         return pd.DataFrame()
     
     df = pd.DataFrame(klines)
@@ -169,12 +183,14 @@ def fetch_market_dataframe(symbol, timeframe):
     df['Close'] = pd.to_numeric(df['Close'])
     df['Volume'] = pd.to_numeric(df['Volume'])
     
+    print(f"      DataFrame created with {len(df)} rows")
     return df
 
 def calculate_rsi14(df):
     """Calculate RSI14 indicator manually using pandas"""
+    print(f"      Calculating RSI14 indicator...")
     if df.empty or len(df) < 15:  # Need 15 candles to calculate 14-period RSI
-        print("Warning: Not enough data points for RSI14 calculation (need at least 15 candles)")
+        print("      Warning: Not enough data points for RSI14 calculation (need at least 15 candles)")
         return df
     
     # Calculate price changes
@@ -218,19 +234,26 @@ def calculate_rsi14(df):
     # Clean up temporary columns
     df.drop(['Price_Change', 'Gain', 'Loss'], axis=1, inplace=True)
     
+    print(f"      RSI14 calculation complete")
     return df
 
+print("Step 7: Fetching market data...")
 # Use the new function for cleaner code
 df = fetch_market_dataframe(symbol, timeframe)
+print(f"Step 7 Complete: Market data fetched, {len(df)} candles retrieved")
 
+print("Step 8: Calculating RSI14 indicator...")
 # Calculate RSI14
 df = calculate_rsi14(df)
+print("Step 8 Complete: RSI14 calculation finished")
 
-
-
+print("Step 9: Extracting latest market indicators...")
 # Get the latest RSI14 value and signal
 if not df.empty and 'RSI14' in df.columns:
     latest_rsi = df['RSI14'].iloc[-1]
+    print(f"Step 9 Complete: Latest RSI14 = {latest_rsi}")
+else:
+    print("Step 9 Complete: No RSI14 data available")
 
 # Common utility functions for condition checking
 def evaluate_comparison(current_value, comparator, target_value):
@@ -424,15 +447,19 @@ def invalidation_checker(df):
 
 def validate_trading_signal(df):
     """Comprehensive trading signal validation combining checklist and invalidation checks"""
-
+    print("    Validating trading signal...")
     
     # Check if all checklist conditions are met
+    print("    Checking indicator checklist...")
     checklist_passed = indicator_checker(df)
+    print(f"    Checklist passed: {checklist_passed}")
     
     # Check if any invalidation conditions are triggered
+    print("    Checking invalidation conditions...")
     invalidation_triggered, triggered_conditions = invalidation_checker(df)
-    
-
+    print(f"    Invalidation triggered: {invalidation_triggered}")
+    if triggered_conditions:
+        print(f"    Triggered conditions: {triggered_conditions}")
     
     # Get current market values for the return
     current_price = df['Close'].iloc[-1]
@@ -446,13 +473,13 @@ def validate_trading_signal(df):
     }
     
     if invalidation_triggered:
-
+        print("    Signal validation result: INVALIDATED")
         return False, "invalidated", triggered_conditions, market_values
     elif checklist_passed:
-
+        print("    Signal validation result: VALID")
         return True, "valid", [], market_values
     else:
-
+        print("    Signal validation result: PENDING")
         return False, "pending", [], market_values
 
 def _timeframe_seconds(interval):
@@ -472,27 +499,36 @@ def _timeframe_seconds(interval):
 def poll_until_decision(symbol, timeframe, max_cycles=None):
     cycles = 0
     wait_seconds = _timeframe_seconds(timeframe)
+    print(f"  Polling started: waiting {wait_seconds} seconds between checks")
     while True:
+        print(f"  Polling cycle {cycles + 1}: fetching fresh market data...")
         current_df = fetch_market_dataframe(symbol, timeframe)
         current_df = calculate_rsi14(current_df)
+        print(f"  Polling cycle {cycles + 1}: validating trading signal...")
         signal_valid, signal_status, triggered_conditions, market_values = validate_trading_signal(current_df)
+        print(f"  Polling cycle {cycles + 1}: signal status = {signal_status}")
 
         if signal_status != "pending":
+            print(f"  Polling complete: final status = {signal_status}")
             return signal_valid, signal_status, triggered_conditions, market_values
         cycles += 1
         if max_cycles is not None and cycles >= max_cycles:
-
+            print(f"  Polling complete: max cycles ({max_cycles}) reached")
             return signal_valid, signal_status, triggered_conditions, market_values
 
+        print(f"  Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
         time.sleep(wait_seconds)
 
+print("Step 10: Starting signal validation polling...")
 # Run polling until signal is validated or invalidated
 signal_valid, signal_status, triggered_conditions, market_values = poll_until_decision(symbol, timeframe)
+print(f"Step 10 Complete: Final Signal Status: {signal_status}")
 
-print(f"Final Signal Status: {signal_status}")
-
+print("Step 11: Checking if signal is valid for trade gate...")
 # If programmatic signal is valid, run LLM trade gate before opening a position
 if signal_valid and signal_status == "valid":
+    print("Step 11 Complete: Signal is valid, proceeding to trade gate")
+    print("Step 12: Running LLM trade gate decision...")
     # Derive a simple checklist score for the gate from the last indicator check run
     checklist_passed = True
     invalidation_triggered_recent = len(triggered_conditions) > 0
@@ -503,16 +539,25 @@ if signal_valid and signal_status == "valid":
         invalidation_triggered=invalidation_triggered_recent,
         triggered_conditions=triggered_conditions,
     )
+    print("Step 12 Complete: LLM trade gate decision finished")
     
+    print("Step 13: Saving gate result...")
     # Save gate result
     gate_filename = f"llm_gate_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     gate_path = os.path.join(output_dir, gate_filename)
     with open(gate_path, 'w') as f:
         json.dump(gate_result, f, indent=2, default=str)
+    print(f"Step 13 Complete: Gate result saved to {gate_path}")
 
+    print("Step 14: Checking if trade should be opened...")
     if gate_result.get("should_open") is True:
+        print("Step 14 Complete: Trade approved for opening")
         # Place order integration would go here
         pass
+    else:
+        print("Step 14 Complete: Trade not approved by gate")
+else:
+    print(f"Step 11 Complete: Signal not valid (status: {signal_status}), skipping trade gate")
 
 def calculate_time_difference(time_of_screenshot, df):
     time_of_screenshot = datetime.strptime(time_of_screenshot, "%Y-%m-%d %H:%M")

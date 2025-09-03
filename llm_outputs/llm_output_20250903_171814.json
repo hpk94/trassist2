@@ -1,0 +1,139 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-02 20:55",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110134.3,
+    "resistance": 111688.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 56.62,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "undefined"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "undefined",
+      "bandwidth": "undefined"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 61.84,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 287650.0,
+      "average": null,
+      "ratio": null,
+      "trend": "undefined"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "undefined"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "Rising wedge pattern indicates potential reversal, but RSI is neutral."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_divergence",
+        "type": "indicator_divergence",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "condition": "divergence",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_trend",
+        "type": "price_level",
+        "level": "rising_wedge_lower",
+        "comparator": "<",
+        "value": 111348.1,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_rising_wedge",
+        "type": "price_breach",
+        "level": "rising_wedge_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_below_critical",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111355.5,
+      "basis": "above_rising_wedge",
+      "distance_ticks": 7
+    },
+    "take_profit": [
+      {
+        "price": 110727.8,
+        "basis": "fib_0_382",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for break below wedge for short entry",
+    "Consider RSI levels for confirmation",
+    "Set stop loss above wedge",
+    "Monitor take-profit at 0.382 Fib retracement"
+  ],
+  "improvements": "Add MACD for additional confirmation on trend direction"
+}

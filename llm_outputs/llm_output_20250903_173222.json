@@ -1,0 +1,121 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-08-31 20:01",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 108797.3,
+    "resistance": 109197.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 39.16,
+      "status": "neutral",
+      "signal": "approaching_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "undefined"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "undefined",
+      "bandwidth": "undefined"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "undefined"
+    },
+    "VOLUME": {
+      "current": 19,
+      "average": null,
+      "ratio": null,
+      "trend": "undefined"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "undefined"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bearish_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "Price trending downwards within channel; RSI approaching oversold zone supports possible bounce at Fibonacci 1.0 level."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_approaching_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_near_fib_1_0",
+        "type": "price_level",
+        "level": "fib_1_0",
+        "comparator": "<=",
+        "value": 108797.3,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_1_0",
+        "type": "price_breach",
+        "level": "fib_1_0",
+        "comparator": "<"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 108780.0,
+      "basis": "below_fib_1_0",
+      "distance_ticks": 20
+    },
+    "take_profit": [
+      {
+        "price": 108950.0,
+        "basis": "fib_0_618",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for RSI14 crossing below 30",
+    "Watch for volume increase near Fibonacci 1.0",
+    "Enter long if RSI reaches oversold near Fibonacci 1.0",
+    "Invalidate if price closes below 108797.3"
+  ],
+  "improvements": "Consider tighter stop-loss just below the Fibonacci level to minimize risk; look for confirmation with increased volume."
+}
