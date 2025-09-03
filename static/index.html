@@ -156,6 +156,56 @@
             100% { opacity: 1; }
         }
 
+        /* Wireframe-style status display */
+        .wireframe-status {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .wireframe-status .status-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .wireframe-status .status-value {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .wireframe-status .pending-counter {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .wireframe-status .condition-item {
+            margin: 5px 0;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #28a745;
+        }
+
+        .wireframe-status .condition-item.pending {
+            border-left-color: #ffc107;
+        }
+
+        .wireframe-status .condition-item.failed {
+            border-left-color: #dc3545;
+        }
+
+        .wireframe-status .condition-text {
+            font-size: 0.9em;
+        }
+
+        .wireframe-status .condition-current {
+            color: #666;
+            font-style: italic;
+        }
+
         .results-section {
             background: #fff;
             border-radius: 10px;
@@ -423,7 +473,28 @@
 
             <!-- Status Section -->
             <div class="status-section" id="statusSection">
-                <h2>📊 Analysis Status</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>📊 Analysis Status</h2>
+                    <div>
+                        <button id="viewToggle" class="upload-btn" style="padding: 8px 16px; font-size: 0.9em; margin: 0;" onclick="toggleView()">
+                            Switch to Wireframe View
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Wireframe-style status display -->
+                <div class="wireframe-status" id="wireframeStatus" style="display: none;">
+                    <div class="status-label">Status:</div>
+                    <div class="status-value" id="wireframeStatusValue">Analyzing</div>
+                    
+                    <div class="pending-counter" id="pendingCounter" style="display: none;">
+                        <span id="pendingCount">0</span>/<span id="totalCount">0</span>
+                    </div>
+                    
+                    <div id="conditionItems"></div>
+                </div>
+                
+                <!-- Original detailed status -->
                 <div id="statusItems"></div>
             </div>
 
@@ -444,10 +515,38 @@
         </div>
     </div>
 
+    <script src="/static/js/apiClient.js"></script>
+    <script>
+        // Lightweight toast system injected before main logic
+        (function(){
+            const style = document.createElement('style');
+            style.textContent = `
+                .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+                .toast{min-width:240px;max-width:360px;padding:12px 14px;border-radius:8px;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.15);opacity:.98}
+                .toast-success{background:#28a745}
+                .toast-error{background:#dc3545}
+                .toast-info{background:#17a2b8}
+            `;
+            document.head.appendChild(style);
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            document.addEventListener('DOMContentLoaded', ()=>document.body.appendChild(container));
+            window.showToast = function(message, type='info', ms=2400){
+                const el = document.createElement('div');
+                el.className = `toast toast-${type}`;
+                el.textContent = message;
+                container.appendChild(el);
+                setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(), 350); }, ms);
+            }
+        })();
+    </script>
     <script>
         const API_BASE = window.location.origin;
+        const api = TrassistApi.ApiClient();
         let currentAnalysisId = null;
         let currentFile = null;
+        let monitoringInterval = null;
+        let isWireframeView = false;
         const RECENT_ANALYSES_KEY = 'trading_analyses_recent';
         const MAX_RECENT_ANALYSES = 10;
 
@@ -504,11 +603,13 @@
         function handleFile(file) {
             if (!file.type.startsWith('image/')) {
                 showError('Please select an image file (PNG, JPG, JPEG)');
+                showToast('Please select an image file (PNG, JPG, JPEG)', 'error');
                 return;
             }
 
             currentFile = file;
             showFileInfo(file);
+            showToast('Starting analysis...', 'info');
             uploadChart(file);
         }
 
@@ -551,28 +652,43 @@
             const formData = new FormData();
             formData.append('file', file);
 
+            // Show loading state on upload button
+            const uploadBtn = document.getElementById('uploadBtn');
+            const originalText = uploadBtn.innerHTML;
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="loading-spinner"></span>Analyzing...';
+
             // Show status section
             showStatus();
             addStatusItem('Uploading chart...', 'pending');
             addStatusItem('Analyzing with AI...', 'pending');
 
             try {
-                const response = await fetch(`${API_BASE}/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
+                const result = await api.upload(file);
                 
                 if (result.success) {
                     currentAnalysisId = result.analysis_id;
                     updateStatusItem(0, 'Chart uploaded successfully', 'success');
                     updateStatusItem(1, 'AI analysis completed', 'success');
                     showResults(result.results);
+                    showToast('Analysis completed successfully!', 'success');
+                    
+                    // Check if we have conditions to monitor and show wireframe view
+                    const llmOutput = result.results?.llm_output || result.results || {};
+                    const checklist = llmOutput?.opening_signal?.checklist || [];
+                    const technicalConditions = checklist.filter(condition => 
+                        condition.technical_indicator === true
+                    );
+                    
+                    if (technicalConditions.length > 0) {
+                        // Show wireframe view by default when conditions are available
+                        showWireframeStatus();
+                        startConditionMonitoring(result.analysis_id, result.results);
+                        // Auto-switch to wireframe view
+                        if (!isWireframeView) {
+                            toggleView();
+                        }
+                    }
                     
                     // Save to recent analyses
                     saveRecentAnalysis(result.analysis_id, {
@@ -590,35 +706,35 @@
                 updateStatusItem(0, 'Upload failed', 'error');
                 updateStatusItem(1, 'Analysis failed', 'error');
                 showError(`Upload failed: ${error.message}`);
+                showToast(`Upload failed: ${error.message}`, 'error');
+            } finally {
+                // Restore upload button
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalText;
             }
         }
 
         async function reanalyzeChart() {
             if (!currentAnalysisId) {
                 showError('No analysis to reanalyze');
+                showToast('No analysis to reanalyze', 'error');
                 return;
             }
 
             const reanalyzeBtn = document.getElementById('reanalyzeBtn');
             reanalyzeBtn.disabled = true;
             reanalyzeBtn.innerHTML = '<span class="loading-spinner"></span>Reanalyzing...';
+            showToast('Reanalyzing chart...', 'info');
 
             addStatusItem('Reanalyzing chart...', 'pending');
 
             try {
-                const response = await fetch(`${API_BASE}/analysis/${currentAnalysisId}/reanalyze`, {
-                    method: 'POST'
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
+                const result = await api.reanalyze(currentAnalysisId);
                 
                 if (result.success) {
                     updateStatusItem(2, 'Reanalysis completed', 'success');
                     showResults(result.results);
+                    showToast('Reanalysis completed!', 'success');
                     
                     // Save to recent analyses
                     saveRecentAnalysis(currentAnalysisId, {
@@ -635,14 +751,151 @@
                 console.error('Reanalysis error:', error);
                 updateStatusItem(2, 'Reanalysis failed', 'error');
                 showError(`Reanalysis failed: ${error.message}`);
+                showToast(`Reanalysis failed: ${error.message}`, 'error');
             } finally {
                 reanalyzeBtn.disabled = false;
                 reanalyzeBtn.innerHTML = '🔄 Reanalyze Chart';
             }
         }
 
+        function startConditionMonitoring(analysisId, results) {
+            // Stop any existing monitoring
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+            }
+            
+            // Extract conditions from LLM output
+            const llmOutput = results?.llm_output || results || {};
+            const checklist = llmOutput?.opening_signal?.checklist || [];
+            
+            // Filter technical indicator conditions
+            const technicalConditions = checklist.filter(condition => 
+                condition.technical_indicator === true
+            );
+            
+            if (technicalConditions.length === 0) {
+                updateWireframeStatus('No conditions to monitor');
+                return;
+            }
+            
+            // Show initial conditions based on stored results
+            const signalStatus = results?.signal_status || 'pending';
+            const marketValues = results?.market_values || {};
+            
+            // Create condition status array
+            const conditions = technicalConditions.map(condition => {
+                let met = false;
+                let currentValue = null;
+                let description = '';
+                
+                if (condition.type === 'indicator_threshold') {
+                    const indicator = condition.indicator;
+                    const comparator = condition.comparator;
+                    const threshold = condition.value;
+                    
+                    // Get current value from market data
+                    if (indicator === 'RSI14' && marketValues.current_rsi !== undefined) {
+                        currentValue = marketValues.current_rsi.toFixed(2);
+                        met = evaluateCondition(marketValues.current_rsi, comparator, threshold);
+                    }
+                    
+                    description = `${indicator} ${comparator} ${threshold}`;
+                }
+                
+                return {
+                    met,
+                    current_value: currentValue,
+                    description
+                };
+            });
+            
+            // Update wireframe status
+            const statusText = signalStatus === 'valid' ? 'Valid' : 
+                             signalStatus === 'invalidated' ? 'Invalidated' : 
+                             'Pending';
+            
+            updateWireframeStatus(statusText, conditions);
+        }
+        
+        function evaluateCondition(currentValue, comparator, threshold) {
+            switch (comparator) {
+                case '>': return currentValue > threshold;
+                case '>=': return currentValue >= threshold;
+                case '<': return currentValue < threshold;
+                case '<=': return currentValue <= threshold;
+                case '==': return currentValue === threshold;
+                case '!=': return currentValue !== threshold;
+                default: return false;
+            }
+        }
+
         function showStatus() {
             document.getElementById('statusSection').classList.add('show');
+        }
+
+        function showWireframeStatus() {
+            document.getElementById('wireframeStatus').style.display = 'block';
+        }
+
+        function toggleView() {
+            const wireframeStatus = document.getElementById('wireframeStatus');
+            const statusItems = document.getElementById('statusItems');
+            const viewToggle = document.getElementById('viewToggle');
+            
+            isWireframeView = !isWireframeView;
+            
+            if (isWireframeView) {
+                wireframeStatus.style.display = 'block';
+                statusItems.style.display = 'none';
+                viewToggle.textContent = 'Switch to Detailed View';
+            } else {
+                wireframeStatus.style.display = 'none';
+                statusItems.style.display = 'block';
+                viewToggle.textContent = 'Switch to Wireframe View';
+            }
+        }
+
+        function updateWireframeStatus(status, conditions = null) {
+            const statusValue = document.getElementById('wireframeStatusValue');
+            const pendingCounter = document.getElementById('pendingCounter');
+            const pendingCount = document.getElementById('pendingCount');
+            const totalCount = document.getElementById('totalCount');
+            const conditionItems = document.getElementById('conditionItems');
+            
+            // Update status
+            statusValue.textContent = status;
+            statusValue.style.color = status === 'Analyzing' ? '#dc3545' : 
+                                    status === 'Valid' ? '#28a745' : 
+                                    status === 'Invalidated' ? '#dc3545' : '#ffc107';
+            
+            // Update conditions if provided
+            if (conditions && conditions.length > 0) {
+                const metCount = conditions.filter(c => c.met).length;
+                const totalConditions = conditions.length;
+                
+                pendingCount.textContent = metCount;
+                totalCount.textContent = totalConditions;
+                pendingCounter.style.display = 'block';
+                
+                // Display individual conditions
+                conditionItems.innerHTML = conditions.map(condition => {
+                    const statusClass = condition.met ? 'success' : 'pending';
+                    const statusText = condition.met ? '✓' : '⏳';
+                    const currentValue = condition.current_value !== undefined ? 
+                        ` (current ${condition.current_value})` : '';
+                    
+                    return `
+                        <div class="condition-item ${statusClass}">
+                            <span class="condition-text">
+                                ${statusText} ${condition.description}${currentValue}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                pendingCounter.style.display = 'none';
+                conditionItems.innerHTML = '';
+            }
         }
 
         function addStatusItem(text, status) {
@@ -672,12 +925,21 @@
             const resultsContent = document.getElementById('resultsContent');
             
             // Extract data from new format or fallback to old format
-            const llmOutput = results.llm_output || results;
-            const signalStatus = results.signal_status || 'unknown';
-            const marketValues = results.market_values || {};
-            
-            const signalClass = llmOutput.opening_signal.direction === 'buy' ? 'signal-buy' : 'signal-sell';
-            const confidencePercent = Math.round(llmOutput.opening_signal.confidence * 100);
+            const llmOutput = results?.llm_output || results || {};
+            const signalStatus = results?.signal_status || 'unknown';
+            const marketValues = results?.market_values || {};
+
+            // Safeguard nested structures with sensible defaults
+            const openingSignal = llmOutput?.opening_signal || {};
+            const technicalIndicators = llmOutput?.technical_indicators || {};
+            const riskManagement = llmOutput?.risk_management || {};
+            const marketConditions = llmOutput?.market_conditions || {};
+
+            // Compute safe values
+            const direction = (openingSignal?.direction || 'unknown').toLowerCase();
+            const signalClass = direction === 'buy' ? 'signal-buy' : (direction === 'sell' ? 'signal-sell' : 'signal-unknown');
+            const confidenceRaw = Number(openingSignal?.confidence);
+            const confidencePercent = Number.isFinite(confidenceRaw) ? Math.round(confidenceRaw * 100) : 0;
             
             // Format market data timestamp
             let marketDataTime = 'N/A';
@@ -717,7 +979,7 @@
                         <h3>📊 Trading Signal</h3>
                         <div class="result-item">
                             <strong>Direction:</strong>
-                            <span class="signal-badge ${signalClass}">${llmOutput.opening_signal.direction}</span>
+                            <span class="signal-badge ${signalClass}">${direction || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Status:</strong>
@@ -732,7 +994,7 @@
                         </div>
                         <div class="result-item">
                             <strong>Reasoning:</strong>
-                            <span>${llmOutput.opening_signal.reasoning}</span>
+                            <span>${openingSignal?.reasoning || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Market Data Time:</strong>
@@ -744,15 +1006,15 @@
                         <h3>📈 Chart Information</h3>
                         <div class="result-item">
                             <strong>Symbol:</strong>
-                            <span>${llmOutput.symbol}</span>
+                            <span>${llmOutput?.symbol || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Timeframe:</strong>
-                            <span>${llmOutput.timeframe}</span>
+                            <span>${llmOutput?.timeframe || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Screenshot Time:</strong>
-                            <span>${llmOutput.time_of_screenshot}</span>
+                            <span>${llmOutput?.time_of_screenshot || 'N/A'}</span>
                         </div>
                     </div>
 
@@ -760,19 +1022,19 @@
                         <h3>🔧 Technical Indicators</h3>
                         <div class="result-item">
                             <strong>RSI:</strong>
-                            <span>${llmOutput.technical_indicators.RSI || 'N/A'}</span>
+                            <span>${technicalIndicators?.RSI || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Support:</strong>
-                            <span>${llmOutput.technical_indicators.support || 'N/A'}</span>
+                            <span>${technicalIndicators?.support || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Resistance:</strong>
-                            <span>${llmOutput.technical_indicators.resistance || 'N/A'}</span>
+                            <span>${technicalIndicators?.resistance || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Trend:</strong>
-                            <span>${llmOutput.technical_indicators.trend || 'N/A'}</span>
+                            <span>${technicalIndicators?.trend || 'N/A'}</span>
                         </div>
                     </div>
 
@@ -780,15 +1042,15 @@
                         <h3>💰 Risk Management</h3>
                         <div class="result-item">
                             <strong>Stop Loss:</strong>
-                            <span>${llmOutput.risk_management.stop_loss || 'N/A'}</span>
+                            <span>${riskManagement?.stop_loss || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Take Profit:</strong>
-                            <span>${llmOutput.risk_management.take_profit || 'N/A'}</span>
+                            <span>${riskManagement?.take_profit || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Risk/Reward:</strong>
-                            <span>${llmOutput.risk_management.risk_reward_ratio || 'N/A'}</span>
+                            <span>${riskManagement?.risk_reward_ratio || 'N/A'}</span>
                         </div>
                     </div>
 
@@ -796,15 +1058,15 @@
                         <h3>🌊 Market Conditions</h3>
                         <div class="result-item">
                             <strong>Volatility:</strong>
-                            <span>${llmOutput.market_conditions.volatility || 'N/A'}</span>
+                            <span>${marketConditions?.volatility || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Volume:</strong>
-                            <span>${llmOutput.market_conditions.volume || 'N/A'}</span>
+                            <span>${marketConditions?.volume || 'N/A'}</span>
                         </div>
                         <div class="result-item">
                             <strong>Momentum:</strong>
-                            <span>${llmOutput.market_conditions.momentum || 'N/A'}</span>
+                            <span>${marketConditions?.momentum || 'N/A'}</span>
                         </div>
                     </div>
                 </div>
@@ -828,8 +1090,15 @@
 
         // Reset function
         function resetInterface() {
+            // Stop monitoring
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+                monitoringInterval = null;
+            }
+            
             document.getElementById('statusSection').classList.remove('show');
             document.getElementById('resultsSection').classList.remove('show');
+            document.getElementById('wireframeStatus').style.display = 'none';
             document.getElementById('statusItems').innerHTML = '';
             document.getElementById('fileInfo').style.display = 'none';
             currentAnalysisId = null;
@@ -866,13 +1135,11 @@
             
             try {
                 // Load all analyses from server
-                const response = await fetch(`${API_BASE}/analyses`);
-                if (response.ok) {
-                    const data = await response.json();
+                const data = await api.listAnalyses();
                     const serverAnalyses = data.analyses || [];
                     
                     if (serverAnalyses.length > 0) {
-                        recentAnalysesDiv.innerHTML = serverAnalyses.map(analysis => {
+                        recentAnalysesDiv.innerHTML = `<div style="margin-bottom: 15px; color: #6c757d; font-size: 0.9em;">📊 ${serverAnalyses.length} analysis${serverAnalyses.length !== 1 ? 'es' : ''} found</div>` + serverAnalyses.map(analysis => {
                             const date = new Date(analysis.timestamp);
                             const timeStr = date.toLocaleString();
                             
@@ -902,9 +1169,7 @@
                     } else {
                         recentSection.style.display = 'none';
                     }
-                } else {
-                    throw new Error('Failed to load analyses from server');
-                }
+                
             } catch (error) {
                 console.error('Error loading analyses:', error);
                 // Fallback to localStorage only
@@ -956,13 +1221,7 @@
                 showStatus();
                 addStatusItem('Loading analysis...', 'pending');
                 
-                const response = await fetch(`${API_BASE}/analysis/${analysisId}`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
+                const result = await api.getAnalysis(analysisId);
                 
                 if (result.success) {
                     currentAnalysisId = analysisId;

@@ -1,0 +1,32 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "No clear directional signal from the LLM snapshot."
+  ],
+  "warnings": [
+    "Market conditions do not suggest a strong trend in either direction."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111304.56,
+    "stop_loss": 0.0,
+    "take_profits": [
+      {
+        "price": 0.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 0.0,
+    "position_size_note": "Not applicable as no trade is approved."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

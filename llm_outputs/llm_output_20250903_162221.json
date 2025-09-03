@@ -1,0 +1,90 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-03 14:21",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 111170.0,
+    "resistance": 111827.7
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 45.35,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": 0,
+      "signal_line": 0,
+      "histogram": 0,
+      "signal": "not available"
+    },
+    "BB20_2": {
+      "upper": 0,
+      "middle": 0,
+      "lower": 0,
+      "price_position": "not shown",
+      "bandwidth": "not available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 0,
+      "d_percent": 0,
+      "signal": "not available"
+    },
+    "VOLUME": {
+      "current": 765530,
+      "average": 0,
+      "ratio": 0,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": 0,
+      "period": 14,
+      "volatility": "not available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none",
+      "candle_index": 0,
+      "confidence": 0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "Lack of strong candlestick patterns and neutral RSI provides mixed signals in a tight range."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 0,
+      "basis": "none",
+      "distance_ticks": 0
+    },
+    "take_profit": [
+      {
+        "price": 0,
+        "basis": "none",
+        "rr": 0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for a breakout above resistance or a drop below support for trade clarity.",
+    "Await more definite signals or patterns before entering a position."
+  ],
+  "improvements": "Consider adding MACD and Bollinger Bands for further analysis. Look for breakout patterns from the consolidation."
+}
