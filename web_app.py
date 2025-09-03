@@ -16,6 +16,7 @@ import sys
 import threading
 import queue
 import time
+from database import create_trade, get_active_trade, cancel_active_trade, update_trade_status, get_trade_history, get_all_trades
 
 # pymexc will be imported when needed to avoid compatibility issues
 
@@ -542,8 +543,29 @@ def run_trading_analysis(image_path: str) -> dict:
         else:
             emit_progress(f"Step 11 Complete: Signal not valid (status: {signal_status}), skipping trade gate", 11, 14)
 
+        # Create trade record in database
+        trade_data = {
+            "symbol": symbol,
+            "timeframe": timeframe,
+            "direction": llm_output.get("opening_signal", {}).get("direction", "unknown"),
+            "llm_output": llm_output,
+            "signal_status": signal_status,
+            "signal_valid": signal_valid,
+            "market_values": market_values,
+            "gate_result": gate_result,
+            "output_files": {
+                "llm_output": output_path,
+                "gate_result": gate_path if gate_result else None
+            },
+            "notes": f"Analysis completed at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+        }
+        
+        trade_id = create_trade(trade_data)
+        emit_progress(f"Trade saved to database with ID: {trade_id}", 14, 14)
+
         return {
             "success": True,
+            "trade_id": trade_id,
             "llm_output": llm_output,
             "signal_status": signal_status,
             "signal_valid": signal_valid,
@@ -586,6 +608,13 @@ def index():
         <h1>Trading Chart Analysis</h1>
         <p>Upload a trading chart image to analyze it using AI and get trading signals.</p>
         
+        <!-- Active Trade Status -->
+        <div id="activeTradeStatus" class="result" style="display: none;">
+            <h3>Active Trade Status</h3>
+            <div id="activeTradeInfo"></div>
+            <button id="cancelTradeBtn" class="cancel-btn" style="background-color: #dc3545; margin-top: 10px;">Cancel Active Trade</button>
+        </div>
+        
         <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
             <input type="file" id="imageFile" name="image" accept="image/*" required>
             <br><br>
@@ -606,6 +635,74 @@ def index():
         <script>
             let eventSource = null;
             let analysisComplete = false;
+            
+            // Load active trade status on page load
+            async function loadActiveTradeStatus() {
+                try {
+                    const response = await fetch('/api/active-trade');
+                    const data = await response.json();
+                    
+                    const activeTradeStatus = document.getElementById('activeTradeStatus');
+                    const activeTradeInfo = document.getElementById('activeTradeInfo');
+                    
+                    if (data.success && data.trade) {
+                        const trade = data.trade;
+                        activeTradeInfo.innerHTML = `
+                            <p><strong>Trade ID:</strong> ${trade.trade_id}</p>
+                            <p><strong>Symbol:</strong> ${trade.symbol}</p>
+                            <p><strong>Timeframe:</strong> ${trade.timeframe}</p>
+                            <p><strong>Direction:</strong> ${trade.direction}</p>
+                            <p><strong>Status:</strong> ${trade.status}</p>
+                            <p><strong>Signal Status:</strong> ${trade.signal_status}</p>
+                            <p><strong>Created:</strong> ${new Date(trade.created_at).toLocaleString()}</p>
+                            <p><strong>Updated:</strong> ${new Date(trade.updated_at).toLocaleString()}</p>
+                        `;
+                        activeTradeStatus.style.display = 'block';
+                    } else {
+                        activeTradeStatus.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error loading active trade status:', error);
+                }
+            }
+            
+            // Cancel active trade
+            async function cancelActiveTrade() {
+                if (!confirm('Are you sure you want to cancel the active trade?')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/cancel-trade', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            notes: 'Canceled by user from UI'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        alert('Active trade canceled successfully!');
+                        loadActiveTradeStatus(); // Refresh the status
+                    } else {
+                        alert('Error canceling trade: ' + data.message);
+                    }
+                } catch (error) {
+                    alert('Error canceling trade: ' + error.message);
+                }
+            }
+            
+            // Load active trade status when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                loadActiveTradeStatus();
+                
+                // Set up cancel button event listener
+                document.getElementById('cancelTradeBtn').addEventListener('click', cancelActiveTrade);
+            });
             
             document.getElementById('uploadForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -706,6 +803,8 @@ def index():
                                         <p>Results have been saved to the llm_outputs directory.</p>
                                     </div>
                                 `;
+                                // Refresh active trade status after new analysis
+                                loadActiveTradeStatus();
                             }
                         }, 1000);
                     } else {
@@ -798,6 +897,116 @@ def upload_file():
                 os.unlink(temp_path)
     else:
         return jsonify({'success': False, 'error': 'Invalid file type. Please upload an image file.'})
+
+@app.route('/api/active-trade', methods=['GET'])
+def get_active_trade_api():
+    """Get the currently active trade"""
+    try:
+        active_trade = get_active_trade()
+        if active_trade:
+            return jsonify({
+                'success': True,
+                'trade': active_trade
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'trade': None,
+                'message': 'No active trade found'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/cancel-trade', methods=['POST'])
+def cancel_trade_api():
+    """Cancel the currently active trade"""
+    try:
+        data = request.get_json() or {}
+        notes = data.get('notes', 'Canceled by user')
+        
+        success = cancel_active_trade(notes)
+        if success:
+            return jsonify({
+                'success': True,
+                'message': 'Active trade canceled successfully'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'No active trade to cancel'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/trade-history', methods=['GET'])
+def get_trade_history_api():
+    """Get trade history"""
+    try:
+        trade_id = request.args.get('trade_id')
+        history = get_trade_history(trade_id)
+        return jsonify({
+            'success': True,
+            'history': history
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/all-trades', methods=['GET'])
+def get_all_trades_api():
+    """Get all trades with pagination"""
+    try:
+        limit = int(request.args.get('limit', 50))
+        trades = get_all_trades(limit)
+        return jsonify({
+            'success': True,
+            'trades': trades
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
+
+@app.route('/api/update-trade-status', methods=['POST'])
+def update_trade_status_api():
+    """Update trade status"""
+    try:
+        data = request.get_json()
+        if not data or 'trade_id' not in data or 'status' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'trade_id and status are required'
+            })
+        
+        trade_id = data['trade_id']
+        status = data['status']
+        notes = data.get('notes', '')
+        
+        success = update_trade_status(trade_id, status, notes)
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Trade {trade_id} status updated to {status}'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': f'Trade {trade_id} not found'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
 
 @app.route('/run-app', methods=['POST'])
 def run_app():
