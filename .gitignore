@@ -65,3 +65,8 @@ config.json
 
 # Output directories (optional - you might want to keep these)
 # llm_outputs/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
