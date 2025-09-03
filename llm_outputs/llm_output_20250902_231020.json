@@ -1,0 +1,144 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-02 20:55",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110500.0,
+    "resistance": 111355.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 56.62,
+      "status": "neutral",
+      "signal": "overbought_retraction"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": null
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": null,
+      "bandwidth": null
+    },
+    "STOCH14_3_3": {
+      "k_percent": 61.84,
+      "d_percent": 56.62,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 287650.0,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "Rising wedge pattern hints at potential reversal despite overall bullish trend."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_approaching_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rising_wedge_confirmation",
+        "type": "candle_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "volume_increasing",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "previous_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "rsi_cross_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "price_close_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_top",
+        "comparator": ">=",
+        "value": 111355.5
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111360.0,
+      "basis": "above_wedge_top",
+      "distance_ticks": 12
+    },
+    "take_profit": [
+      {
+        "price": 111000.0,
+        "basis": "below_support",
+        "rr": 1.5
+      },
+      {
+        "price": 110911.2,
+        "basis": "fib_0_5_retrace",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for approach to overbought levels",
+    "Watch for price action within the rising wedge",
+    "Short entry if all checklist items are satisfied",
+    "Invalidate on RSI crossing above 70 or price breaking above wedge"
+  ],
+  "improvements": "Consider using MACD or Bollinger Bands for additional confirmation of trend reversal.",
+  "is_met": false
+}

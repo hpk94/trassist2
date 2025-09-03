@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.85,
+  "reasons": [
+    "Rising wedge pattern identified, indicating potential reversal.",
+    "RSI is below 70 and currently neutral, suggesting no overbought condition.",
+    "No invalidations have been triggered."
+  ],
+  "warnings": [
+    "Watch for rapid changes in market sentiment."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111022.21,
+    "stop_loss": 111400.0,
+    "take_profits": [
+      {
+        "price": 110911.2,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Position size should be calculated based on risk tolerance, with a focus on 1.5 RR target."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}
