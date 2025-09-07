@@ -1,0 +1,82 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 10:17",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 110995.7,
+    "resistance": 111130.3
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 57.49,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "not available"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not available",
+      "bandwidth": "not available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not available"
+    },
+    "VOLUME": {
+      "current": 17,
+      "average": null,
+      "ratio": "not available",
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none",
+      "candle_index": 0,
+      "confidence": 0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "RSI is neutral and near the 50 level. No clear candlestick pattern or indicator alignment for direction confirmation."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "not applicable",
+      "distance_ticks": null
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Monitor for RSI move toward overbought or oversold levels",
+    "Await clear candlestick or indicator pattern for valid entry"
+  ],
+  "improvements": "Consider additional indicators like MACD or Bollinger Bands for clearer trend confirmation."
+}

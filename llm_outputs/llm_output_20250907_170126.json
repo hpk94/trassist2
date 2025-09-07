@@ -1,0 +1,125 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 15:01",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 111056.8,
+    "resistance": 111243.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 44.61,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "not_available"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": null,
+      "average": null,
+      "ratio": null,
+      "trend": "not_visible"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none",
+      "candle_index": 0,
+      "confidence": 0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "Price is consolidating near the 0.236 Fibonacci level."
+  },
+  "opening_signal": {
+    "direction": "neutral",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "checklist": [
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_not_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_below_fib_0_382",
+        "type": "price_breach",
+        "level": "fib_0_382",
+        "comparator": "<",
+        "value": 111025.8
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111045.0,
+      "basis": "below_support",
+      "distance_ticks": 20
+    },
+    "take_profit": [
+      {
+        "price": 111200.0,
+        "basis": "recent_high",
+        "rr": 1.0
+      },
+      {
+        "price": 111243.5,
+        "basis": "fib_1_extension",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for clearer RSI direction",
+    "Look for volume profile and MACD clarity",
+    "Avoid entry until clear signal forms"
+  ],
+  "improvements": "Consider adding MACD and Bollinger Bands for additional confirmation and trends."
+}

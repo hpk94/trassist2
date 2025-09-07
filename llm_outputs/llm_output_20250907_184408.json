@@ -1,0 +1,161 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 16:43",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 111095.0,
+    "resistance": 111240.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 57.22,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": -3.7466,
+      "signal_line": -12.3765,
+      "histogram": 8.63,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": 111300.0,
+      "middle": 111200.0,
+      "lower": 111100.0,
+      "price_position": "middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 60.0,
+      "d_percent": 40.0,
+      "signal": "bullish_momentum"
+    },
+    "VOLUME": {
+      "current": 597609.29,
+      "average": 500000.0,
+      "ratio": 1.2,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 50.0,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_engulfing",
+      "candle_index": 1,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "Increasing volume, MACD bullish crossover, and bullish engulfing support potential upward movement."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_bullish",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 20.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0.618",
+        "type": "price_level",
+        "level": "fib_0_618",
+        "comparator": ">=",
+        "value": 111150.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0.382",
+        "type": "price_breach",
+        "level": "fib_0_382",
+        "comparator": "<"
+      },
+      {
+        "id": "price_below_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": "<=",
+        "value": 111200.0
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111080.0,
+      "basis": "below_swing_low",
+      "distance_ticks": 70
+    },
+    "take_profit": [
+      {
+        "price": 111300.0,
+        "basis": "upper_resistance",
+        "rr": 1.5
+      },
+      {
+        "price": 111350.0,
+        "basis": "fib_1.618_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm MACD bullish crossover with increasing volume",
+    "Ensure price remains above Fib 0.618 level",
+    "Enter long if all checklist items are true",
+    "Monitor RSI for overbought conditions and adjust stop loss accordingly"
+  ],
+  "improvements": "Consider aligning entries with trendline support for additional confirmation."
+}

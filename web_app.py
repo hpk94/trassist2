@@ -298,13 +298,14 @@ def llm_trade_gate_decision(
 
 def fetch_market_data(symbol, timeframe):
     """Fetch raw klines data from MEXC API"""
+    print(f"Fetching market data for {symbol} {timeframe}")
     try:
         from pymexc import spot
         public_spot_client = spot.HTTP()
         klines = public_spot_client.klines(
             symbol=symbol,
             interval=timeframe,
-            limit=500
+            limit=100
         )
         return klines
     except Exception as e:
@@ -407,6 +408,57 @@ def calculate_macd12_26_9(df):
     
     return df
 
+def calculate_stoch14_3_3(df):
+    """Calculate STOCH14_3_3 indicator manually using pandas"""
+    if df.empty or len(df) < 17:  # Need 17 candles to calculate 14-period Stochastic with 3-period smoothing
+        return df
+    
+    # Calculate the lowest low and highest high over 14 periods
+    df['Lowest_Low_14'] = df['Low'].rolling(window=14, min_periods=14).min()
+    df['Highest_High_14'] = df['High'].rolling(window=14, min_periods=14).max()
+    
+    # Calculate %K (Raw Stochastic)
+    df['Stoch_K_Raw'] = 100 * (df['Close'] - df['Lowest_Low_14']) / (df['Highest_High_14'] - df['Lowest_Low_14'])
+    
+    # Calculate 3-period SMA of %K to get smoothed %K
+    df['STOCH_K'] = df['Stoch_K_Raw'].rolling(window=3, min_periods=3).mean()
+    
+    # Calculate 3-period SMA of smoothed %K to get %D
+    df['STOCH_D'] = df['STOCH_K'].rolling(window=3, min_periods=3).mean()
+    
+    # Clean up temporary columns
+    df.drop(['Lowest_Low_14', 'Highest_High_14', 'Stoch_K_Raw'], axis=1, inplace=True)
+    
+    return df
+
+def calculate_bb20_2(df):
+    """Calculate BB20_2 indicator manually using pandas"""
+    if df.empty or len(df) < 20:  # Need 20 candles to calculate 20-period Bollinger Bands
+        return df
+    
+    # Calculate 20-period Simple Moving Average (middle band)
+    df['BB_Middle'] = df['Close'].rolling(window=20, min_periods=20).mean()
+    
+    # Calculate 20-period standard deviation
+    df['BB_StdDev'] = df['Close'].rolling(window=20, min_periods=20).std()
+    
+    # Calculate upper band (middle + 2 * std_dev)
+    df['BB_Upper'] = df['BB_Middle'] + (2 * df['BB_StdDev'])
+    
+    # Calculate lower band (middle - 2 * std_dev)
+    df['BB_Lower'] = df['BB_Middle'] - (2 * df['BB_StdDev'])
+    
+    # Calculate %B (Bollinger Band position indicator)
+    df['BB_PercentB'] = (df['Close'] - df['BB_Lower']) / (df['BB_Upper'] - df['BB_Lower'])
+    
+    # Calculate bandwidth (volatility measure)
+    df['BB_Bandwidth'] = (df['BB_Upper'] - df['BB_Lower']) / df['BB_Middle']
+    
+    # Clean up temporary columns
+    df.drop(['BB_StdDev'], axis=1, inplace=True)
+    
+    return df
+
 def evaluate_comparison(current_value, comparator, target_value):
     """Evaluate a comparison between current value and target value"""
     if comparator == '<=':
@@ -431,13 +483,23 @@ def check_indicator_threshold(df, condition):
     threshold_value = condition['value']
     
     if indicator_name not in df.columns:
-        # Handle special case for MACD12_26_9 which uses MACD_Line column
+        # Handle special cases for indicators that use different column names
         if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
             current_value = df['MACD_Line'].iloc[-1]
+        elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
+            current_value = df['STOCH_K'].iloc[-1]
+        elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
+            current_value = df['BB_PercentB'].iloc[-1]
+        elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
+            current_value = df['BB_Bandwidth'].iloc[-1]
         else:
             return False
     else:
         current_value = df[indicator_name].iloc[-1]
+    
+    # Check if current_value is None or NaN before comparison
+    if current_value is None or pd.isna(current_value):
+        return False
     
     condition_met = evaluate_comparison(current_value, comparator, threshold_value)
     
@@ -449,15 +511,39 @@ def check_price_level(df, condition, llm_output):
     comparator = condition.get('comparator', '>')
     level_value = condition.get('value')
     
+    # Guard against missing data
+    if df is None or df.empty or 'Close' not in df.columns:
+        return False
+    
     current_price = df['Close'].iloc[-1]
     
+    # Check if current_price is None or NaN before comparison
+    if current_price is None or pd.isna(current_price):
+        return False
+    
     if level_type == 'bollinger_middle':
-        bb_middle = llm_output['technical_indicators']['BB20_2']['middle']
+        # Try to get from dataframe first, fallback to LLM output
+        if 'BB_Middle' in df.columns:
+            bb_middle = df['BB_Middle'].iloc[-1]
+        else:
+            bb_middle = llm_output['technical_indicators']['BB20_2']['middle']
         condition_met = evaluate_comparison(current_price, comparator, bb_middle)
         return condition_met
     elif level_type == 'bollinger_upper':
-        bb_upper = llm_output['technical_indicators']['BB20_2']['upper']
+        # Try to get from dataframe first, fallback to LLM output
+        if 'BB_Upper' in df.columns:
+            bb_upper = df['BB_Upper'].iloc[-1]
+        else:
+            bb_upper = llm_output['technical_indicators']['BB20_2']['upper']
         condition_met = evaluate_comparison(current_price, comparator, bb_upper)
+        return condition_met
+    elif level_type == 'bollinger_lower':
+        # Try to get from dataframe first, fallback to LLM output
+        if 'BB_Lower' in df.columns:
+            bb_lower = df['BB_Lower'].iloc[-1]
+        else:
+            bb_lower = llm_output['technical_indicators']['BB20_2']['lower']
+        condition_met = evaluate_comparison(current_price, comparator, bb_lower)
         return condition_met
     elif level_type == 'direct' or level_value is not None:
         # Handle direct price level comparison
@@ -484,6 +570,13 @@ def check_indicator_crossover(df, condition):
         prev_macd_line = df['MACD_Line'].iloc[-2] if len(df) > 1 else current_macd_line
         prev_macd_signal = df['MACD_Signal'].iloc[-2] if len(df) > 1 else current_macd_signal
         
+        # Check if any values are None or NaN before comparison
+        if (current_macd_line is None or pd.isna(current_macd_line) or
+            current_macd_signal is None or pd.isna(current_macd_signal) or
+            prev_macd_line is None or pd.isna(prev_macd_line) or
+            prev_macd_signal is None or pd.isna(prev_macd_signal)):
+            return False
+        
         if crossover_condition == 'macd_line > signal_line':
             # Check if MACD line crossed above signal line
             return (current_macd_line > current_macd_signal) and (prev_macd_line <= prev_macd_signal)
@@ -497,6 +590,35 @@ def check_indicator_crossover(df, condition):
             # Check if MACD line is below or equal to signal line
             return current_macd_line <= current_macd_signal
     
+    elif indicator_name == 'STOCH14_3_3':
+        if 'STOCH_K' not in df.columns or 'STOCH_D' not in df.columns:
+            return False
+        
+        current_stoch_k = df['STOCH_K'].iloc[-1]
+        current_stoch_d = df['STOCH_D'].iloc[-1]
+        prev_stoch_k = df['STOCH_K'].iloc[-2] if len(df) > 1 else current_stoch_k
+        prev_stoch_d = df['STOCH_D'].iloc[-2] if len(df) > 1 else current_stoch_d
+        
+        # Check if any values are None or NaN before comparison
+        if (current_stoch_k is None or pd.isna(current_stoch_k) or
+            current_stoch_d is None or pd.isna(current_stoch_d) or
+            prev_stoch_k is None or pd.isna(prev_stoch_k) or
+            prev_stoch_d is None or pd.isna(prev_stoch_d)):
+            return False
+        
+        if crossover_condition == 'stoch_k > stoch_d':
+            # Check if %K crossed above %D
+            return (current_stoch_k > current_stoch_d) and (prev_stoch_k <= prev_stoch_d)
+        elif crossover_condition == 'stoch_k < stoch_d':
+            # Check if %K crossed below %D
+            return (current_stoch_k < current_stoch_d) and (prev_stoch_k >= prev_stoch_d)
+        elif crossover_condition == 'stoch_k >= stoch_d':
+            # Check if %K is above or equal to %D
+            return current_stoch_k >= current_stoch_d
+        elif crossover_condition == 'stoch_k <= stoch_d':
+            # Check if %K is below or equal to %D
+            return current_stoch_k <= current_stoch_d
+    
     # For other indicators, return False for now
     return False
 
@@ -508,7 +630,16 @@ def check_pattern_breach(df, condition, llm_output):
     """Check pattern breach conditions (e.g., channel, triangle breaches)"""
     level = condition.get('level')
     comparator = condition.get('comparator', '>')
+    
+    # Guard against missing data
+    if df is None or df.empty or 'Close' not in df.columns:
+        return False
+    
     current_price = df['Close'].iloc[-1]
+    
+    # Check if current_price is None or NaN before comparison
+    if current_price is None or pd.isna(current_price):
+        return False
     
     if level == 'channel_upper':
         # Check if price breaches above the upper channel boundary
@@ -576,6 +707,15 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
             elif indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
                 # Handle MACD12_26_9 as threshold - use MACD_Line value
                 current_value = df['MACD_Line'].iloc[-1]
+            elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
+                # Handle STOCH14_3_3 as threshold - use STOCH_K value
+                current_value = df['STOCH_K'].iloc[-1]
+            elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
+                # Handle BB20_2_PercentB as threshold - use BB_PercentB value
+                current_value = df['BB_PercentB'].iloc[-1]
+            elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
+                # Handle BB20_2_Bandwidth as threshold - use BB_Bandwidth value
+                current_value = df['BB_Bandwidth'].iloc[-1]
             target_value = i.get('value')
             comparator = i.get('comparator', '==')
             condition_description = f"{indicator_name} {comparator} {target_value}"
@@ -583,6 +723,8 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
             condition_met = check_indicator_crossover(df, i)
             if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns and 'MACD_Signal' in df.columns:
                 current_value = f"Line: {df['MACD_Line'].iloc[-1]:.4f}, Signal: {df['MACD_Signal'].iloc[-1]:.4f}"
+            elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns and 'STOCH_D' in df.columns:
+                current_value = f"K: {df['STOCH_K'].iloc[-1]:.4f}, D: {df['STOCH_D'].iloc[-1]:.4f}"
             condition_description = i.get('condition', f"{indicator_name} crossover")
         else:
             condition_met = False
@@ -725,13 +867,21 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
     # Check if any invalidation conditions are triggered
     invalidation_triggered, triggered_conditions = invalidation_checker(df, llm_output)
     
-    # Get current market values for the return
-    current_price = df['Close'].iloc[-1]
-    current_time = df['Open_time'].iloc[-1]
-    current_rsi = df['RSI14'].iloc[-1] if 'RSI14' in df.columns else None
-    current_macd_line = df['MACD_Line'].iloc[-1] if 'MACD_Line' in df.columns else None
-    current_macd_signal = df['MACD_Signal'].iloc[-1] if 'MACD_Signal' in df.columns else None
-    current_macd_histogram = df['MACD_Histogram'].iloc[-1] if 'MACD_Histogram' in df.columns else None
+    # Get current market values for the return (safely)
+    if df is None or df.empty:
+        current_price = None
+        current_time = None
+        current_rsi = None
+        current_macd_line = None
+        current_macd_signal = None
+        current_macd_histogram = None
+    else:
+        current_price = df['Close'].iloc[-1] if 'Close' in df.columns else None
+        current_time = df['Open_time'].iloc[-1] if 'Open_time' in df.columns else None
+        current_rsi = df['RSI14'].iloc[-1] if 'RSI14' in df.columns else None
+        current_macd_line = df['MACD_Line'].iloc[-1] if 'MACD_Line' in df.columns else None
+        current_macd_signal = df['MACD_Signal'].iloc[-1] if 'MACD_Signal' in df.columns else None
+        current_macd_histogram = df['MACD_Histogram'].iloc[-1] if 'MACD_Histogram' in df.columns else None
     
     market_values = {
         'current_price': current_price,
@@ -787,6 +937,8 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
         current_df = fetch_market_dataframe(symbol, timeframe)
         current_df = calculate_rsi14(current_df)
         current_df = calculate_macd12_26_9(current_df)
+        current_df = calculate_stoch14_3_3(current_df)
+        current_df = calculate_bb20_2(current_df)
         
         if emit_progress_fn:
             emit_progress_fn(f"Polling cycle {cycles + 1}: validating trading signal...")
@@ -863,6 +1015,16 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
                     df = calculate_macd12_26_9(df)
                 except Exception:
                     # MACD function may not always be available; continue with RSI only
+                    pass
+                try:
+                    df = calculate_stoch14_3_3(df)
+                except Exception:
+                    # STOCH function may not always be available; continue with other indicators
+                    pass
+                try:
+                    df = calculate_bb20_2(df)
+                except Exception:
+                    # BB function may not always be available; continue with other indicators
                     pass
                 emit_progress(f"Step 1 Complete: Market data prepared ({len(df)} candles)", 1, 14)
         except Exception as e:
@@ -942,10 +1104,12 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
         df = fetch_market_dataframe(symbol, timeframe)
         emit_progress(f"Step 7 Complete: Market data fetched, {len(df)} candles retrieved", 7, 14)
 
-        # Step 8: Calculate RSI14 and MACD12_26_9
+        # Step 8: Calculate RSI14, MACD12_26_9, STOCH14_3_3, and BB20_2
         emit_progress("Step 8: Calculating technical indicators...", 8, 14)
         df = calculate_rsi14(df)
         df = calculate_macd12_26_9(df)
+        df = calculate_stoch14_3_3(df)
+        df = calculate_bb20_2(df)
         emit_progress("Step 8 Complete: Technical indicators calculation finished", 8, 14)
         
         # Step 8.5: Initial indicator check to show progress
@@ -1583,7 +1747,7 @@ def index():
 
                             // Handle indicator checker progress updates
                             if (data.message.includes('Indicator checker progress:')) {
-                                const match = data.message.match(/(\d+)\/(\d+)/);
+                                const match = data.message.match(/(\\d+)\\/(\\d+)/);
                                 if (match) {
                                     const met = parseInt(match[1]);
                                     const total = parseInt(match[2]);
@@ -1976,7 +2140,7 @@ def index():
 
                     // Handle indicator checker progress updates
                     if (data.message.includes('Indicator checker progress:')) {
-                        const match = data.message.match(/(\d+)\/(\d+)/);
+                        const match = data.message.match(/(\\d+)\\/(\\d+)/);
                         if (match) {
                             const met = parseInt(match[1]);
                             const total = parseInt(match[2]);
@@ -2293,6 +2457,8 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
         emit_progress("Step 6: Calculating technical indicators...", 6, 12)
         df = calculate_rsi14(df)
         df = calculate_macd12_26_9(df)
+        df = calculate_stoch14_3_3(df)
+        df = calculate_bb20_2(df)
         emit_progress("Step 6 Complete: Technical indicators calculation finished", 6, 12)
         
         # Step 7: Initial indicator check

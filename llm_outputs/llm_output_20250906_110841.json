@@ -1,0 +1,168 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-06 09:08",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 110718.4,
+    "resistance": 110929.8
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 41.56,
+      "status": "neutral",
+      "signal": "falling"
+    },
+    "MACD12_26_9": {
+      "macd_line": -2.1,
+      "signal_line": -1.5,
+      "histogram": -0.6,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": 111200.0,
+      "middle": 110900.0,
+      "lower": 110600.0,
+      "price_position": "below_middle",
+      "bandwidth": "wide"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 20.1,
+      "d_percent": 25.4,
+      "signal": "approaching_oversold"
+    },
+    "VOLUME": {
+      "current": 150,
+      "average": 100,
+      "ratio": 1.5,
+      "trend": "spiking"
+    },
+    "ATR14": {
+      "value": 80.0,
+      "period": 14,
+      "volatility": "high"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "shooting_star",
+      "candle_index": 1,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "RSI decline with MACD bearish crossover and high volume suggests potential continuation of downside."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_falling_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": "<=",
+        "value": 110900.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "shooting_star",
+        "type": "candle_pattern",
+        "pattern": "shooting_star",
+        "candle_index": 1,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_previous_high",
+        "type": "price_breach",
+        "level": "previous_high",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_rebound_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0
+      },
+      {
+        "id": "price_above_bb_upper",
+        "type": "price_level",
+        "level": "bollinger_upper",
+        "comparator": ">=",
+        "value": 111200.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110930.0,
+      "basis": "above_shooting_star",
+      "distance_ticks": 120
+    },
+    "take_profit": [
+      {
+        "price": 110718.4,
+        "basis": "fib_0_236_retrace",
+        "rr": 1.5
+      },
+      {
+        "price": 110600.0,
+        "basis": "bb_lower_band",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI decline and MACD crossover. ",
+    "Consider short if RSI remains below 50 and MACD confirms. ",
+    "Price remaining below BB middle antagonizes short sentiment."
+  ],
+  "improvements": "Consider tighter stop-loss and watch for a confirmation pattern around support levels."
+}

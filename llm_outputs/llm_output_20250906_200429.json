@@ -1,0 +1,143 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-06 18:03",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 109936.1,
+    "resistance": 110559.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 55,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "unknown"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": null,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "Descending triangle suggests potential continuation of bearish trend but RSI is neutral."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_fib_382",
+        "type": "price_level",
+        "level": "fib_0_382",
+        "comparator": "<=",
+        "value": 110174.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "descending_triangle",
+        "type": "candle_pattern",
+        "pattern": "descending_triangle",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_triangle_top",
+        "type": "price_level",
+        "level": "triangle_top",
+        "comparator": ">",
+        "value": 110559.9
+      },
+      {
+        "id": "rsi_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110600.0,
+      "basis": "above_triangle_top",
+      "distance_ticks": 480
+    },
+    "take_profit": [
+      {
+        "price": 109800.0,
+        "basis": "recent_low",
+        "rr": 1.2
+      },
+      {
+        "price": 109700.0,
+        "basis": "fib_1_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for confirmation price closes below 110083.3",
+    "Ensure RSI remains below 70",
+    "Enter short if all checklist items are true",
+    "Invalidate on price breaking above 110559.9"
+  ],
+  "improvements": "Wait for clearer RSI signal and double-check indicator alignment. Consider MACD confirmation on next review."
+}

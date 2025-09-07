@@ -1,0 +1,200 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 16:37",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 111092.5,
+    "resistance": 111191.2
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 40.52,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -22.7477,
+      "signal_line": -22.4277,
+      "histogram": -0.32,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": null
+    },
+    "VOLUME": {
+      "current": 49610,
+      "average": null,
+      "ratio": null,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none",
+      "candle_index": null,
+      "confidence": 0.0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.45,
+    "notes": "MACD bearish crossover with RSI near oversold zone; weak bullish signals present"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_oversold_recover",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": "<=",
+        "value": null,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_below_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "fib_retrace_resistance",
+        "type": "price_level",
+        "level": "fib_0_382",
+        "anchors": {
+          "from": "swing_high",
+          "to": "swing_low"
+        },
+        "comparator": "<=",
+        "value": 111150.1,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_swing_high",
+        "type": "price_breach",
+        "level": "swing_high",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "price_above_bb_upper",
+        "type": "price_level",
+        "level": "bollinger_upper",
+        "comparator": ">=",
+        "value": null
+      },
+      {
+        "id": "two_bull_candles_large",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bullish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111191.2,
+      "basis": "above_resistance",
+      "distance_ticks": 50
+    },
+    "take_profit": [
+      {
+        "price": 111056.8,
+        "basis": "recent_low",
+        "rr": 1.2
+      },
+      {
+        "price": 110999.1,
+        "basis": "fib_0_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for MACD bearish crossover confirmation and RSI recovery",
+    "Ensure price remains below Bollinger Bands middle",
+    "Enter short if all checklist items are true",
+    "Validate on close above swing high or RSI cross above 70"
+  ],
+  "improvements": "Increase bearish trend confirmation by monitoring MACD histogram, utilize Fibonacci extension for extended targets"
+}

@@ -1,0 +1,81 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 14:58",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 111056.8,
+    "resistance": 111243.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 46.07,
+      "status": "neutral",
+      "signal": "no clear divergence"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "data not provided"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "data not visible",
+      "bandwidth": "data not visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "data not provided"
+    },
+    "VOLUME": {
+      "current": 52400,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "data not visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": null,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.55,
+    "notes": "Current price consolidating within a triangle pattern; RSI indicates lack of momentum"
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [],
+      "lookback_seconds": 180
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "",
+      "distance_ticks": null
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Monitor symmetrical triangle for breakout",
+    "RSI near neutral; look for potential divergence or crossover",
+    "Ensure breakout confirmation before entering a trade"
+  ],
+  "improvements": "Incorporate MACD and Bollinger Bands for better confirmation; use volume spikes to validate breakouts"
+}

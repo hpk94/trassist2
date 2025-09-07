@@ -1,0 +1,138 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-02 20:55",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110911.2,
+    "resistance": 111355.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 61.84,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "data not provided"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "data not provided",
+      "bandwidth": "data not provided"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "data not provided"
+    },
+    "VOLUME": {
+      "current": 287650,
+      "average": null,
+      "ratio": null,
+      "trend": "static"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "data not provided"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Rising wedge indicates potential bearish reversal at resistance, but high RSI suggests continued bullish pressure."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_wedge_breakout",
+        "type": "pattern_break",
+        "pattern": "rising_wedge",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_resistance",
+        "type": "price_level",
+        "level": "111355.5",
+        "comparator": "<=",
+        "value": 111355.5,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "rsi_below_55",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 55.0
+      },
+      {
+        "id": "price_above_resistance",
+        "type": "price_level",
+        "level": "111355.5",
+        "comparator": ">",
+        "value": 111355.5
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111360.0,
+      "basis": "above_resistance",
+      "distance_ticks": 10
+    },
+    "take_profit": [
+      {
+        "price": 110911.2,
+        "basis": "fib_0_5",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for overbought signals for short entry.",
+    "Enter short if price breaks below rising wedge.",
+    "Confirm price stays below resistance 111355.5 before entering.",
+    "Set stop-loss above 111360.0."
+  ],
+  "improvements": "Increase confirmation with multiple timeframes and consider MACD verification when visible."
+}

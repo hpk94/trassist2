@@ -1,0 +1,144 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 09:32",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110778.0,
+    "resistance": 111348.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 43.33,
+      "status": "neutral",
+      "signal": "approaching_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "not_applicable"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_applicable",
+      "bandwidth": "not_applicable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_applicable"
+    },
+    "VOLUME": {
+      "current": 22990,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_applicable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Triangle pattern indicating a potential breakout; RSI moving towards oversold, signaling caution"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "price_near_0_618_fib",
+        "type": "price_level",
+        "level": "fib_0_618",
+        "comparator": ">=",
+        "value": 110778.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "rsi_not_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_0_786_fib",
+        "type": "price_breach",
+        "level": "fib_0_786",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_below_30",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110623.1,
+      "basis": "below_fib_0_786",
+      "distance_ticks": 0
+    },
+    "take_profit": [
+      {
+        "price": 111130.3,
+        "basis": "fib_0_236",
+        "rr": 1.5
+      },
+      {
+        "price": 111348.0,
+        "basis": "pattern_target",
+        "rr": 2.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for breakout above triangle and RSI conditions",
+    "Check fib level for support before entry",
+    "Enter long with confirmation, invalidate if RSI breaches oversold or price breaches fib 0.786"
+  ],
+  "improvements": "Consider volume increase for breakout confirmation, add MACD or stochastic for trend strength confirmation"
+}
