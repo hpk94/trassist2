@@ -62,8 +62,8 @@ def emit_progress(message, step=None, total_steps=None):
     progress_queue.put(progress_data)
     print(message)  # Also print to console
 
-def analyze_trading_chart(image_path: str) -> dict:
-    """Analyze trading chart using OpenAI Vision API"""
+def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
+    """Analyze trading chart using OpenAI Vision API with optional market data"""
     emit_progress("Chart: Reading image file...")
     
     try:
@@ -84,12 +84,22 @@ def analyze_trading_chart(image_path: str) -> dict:
     emit_progress("Chart: Initializing OpenAI client...")
     client = OpenAI()
     
+    # Prepare the prompt based on whether we have market data
+    if df is not None and not df.empty:
+        emit_progress("Chart: Preparing enhanced prompt with market data...")
+        # Create a summary of the market data for the LLM
+        market_data_summary = create_market_data_summary(df, symbol, timeframe)
+        enhanced_prompt = OPENAI_VISION_PROMPT + f"\n\n## MARKET DATA CONTEXT\n{symbol} {timeframe} - Latest market data:\n{market_data_summary}\n\nUse this market data to enhance your analysis and provide more accurate technical indicator values."
+    else:
+        emit_progress("Chart: Using standard prompt without market data...")
+        enhanced_prompt = OPENAI_VISION_PROMPT
+    
     emit_progress("Chart: Sending request to OpenAI Vision API...")
     try:
         response = client.chat.completions.create(
             model="gpt-4o-2024-08-06",
             messages=[
-                {"role": "system", "content": OPENAI_VISION_PROMPT},
+                {"role": "system", "content": enhanced_prompt},
                 {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
             ],
             response_format={"type": "json_object"},
@@ -116,7 +126,7 @@ def analyze_trading_chart(image_path: str) -> dict:
             retry_response = client.chat.completions.create(
                 model="gpt-4o-2024-08-06",
                 messages=[
-                    {"role": "system", "content": OPENAI_VISION_PROMPT + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
+                    {"role": "system", "content": enhanced_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
                     {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
                 ],
                 timeout=60
@@ -152,6 +162,47 @@ def analyze_trading_chart(image_path: str) -> dict:
         else:
             emit_progress(f"Chart: No content available in response")
         raise
+
+def create_market_data_summary(df: pd.DataFrame, symbol: str, timeframe: str) -> str:
+    """Create a summary of market data for the LLM"""
+    if df.empty:
+        return "No market data available"
+    
+    # Get the latest values
+    latest = df.iloc[-1]
+    latest_time = latest['Open_time'] if 'Open_time' in df.columns else "Unknown"
+    
+    summary = f"""
+Symbol: {symbol}
+Timeframe: {timeframe}
+Latest Candle Time: {latest_time}
+Latest Price Data:
+- Open: {latest.get('Open', 'N/A')}
+- High: {latest.get('High', 'N/A')}
+- Low: {latest.get('Low', 'N/A')}
+- Close: {latest.get('Close', 'N/A')}
+- Volume: {latest.get('Volume', 'N/A')}
+"""
+    
+    # Add technical indicators if available
+    if 'RSI14' in df.columns and not pd.isna(latest['RSI14']):
+        summary += f"- RSI14: {latest['RSI14']:.2f}\n"
+    
+    if 'MACD_Line' in df.columns and not pd.isna(latest['MACD_Line']):
+        summary += f"- MACD Line: {latest['MACD_Line']:.4f}\n"
+        summary += f"- MACD Signal: {latest['MACD_Signal']:.4f}\n"
+        summary += f"- MACD Histogram: {latest['MACD_Histogram']:.4f}\n"
+    
+    # Add recent price action context (last 5 candles)
+    if len(df) >= 5:
+        recent_5 = df.tail(5)
+        summary += f"\nRecent 5 Candles Context:\n"
+        for i, (_, candle) in enumerate(recent_5.iterrows()):
+            candle_time = candle.get('Open_time', 'Unknown')
+            close_price = candle.get('Close', 'N/A')
+            summary += f"- Candle {i+1}: {candle_time} - Close: {close_price}\n"
+    
+    return summary
 
 def llm_trade_gate_decision(
     base_llm_output: Dict[str, Any],

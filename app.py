@@ -152,10 +152,14 @@ def fetch_market_data(symbol, timeframe):
             interval=timeframe,
             limit=100
         )
-        print(f"      Successfully fetched {len(klines)} klines")
+        if klines:
+            print(f"      Successfully fetched {len(klines)} klines")
+        else:
+            print(f"      Warning: No klines data returned for {symbol} on {timeframe}")
     
     except Exception as e:
-        print(f"      Error retrieving klines: {e}")
+        print(f"      Error retrieving klines for {symbol} on {timeframe}: {e}")
+        print(f"      This might be due to invalid symbol, timeframe, or API issues")
         klines = []
 
     return klines
@@ -279,14 +283,19 @@ def check_indicator_threshold(df, condition):
     comparator = condition['comparator']
     threshold_value = condition['value']
     
-    if indicator_name not in df.columns:
-
+    # Check if DataFrame is empty or missing required columns
+    if df.empty or indicator_name not in df.columns:
+        print(f"      Warning: DataFrame empty or missing indicator '{indicator_name}'")
         return False
     
+    # Check if the indicator value is null/NaN
     current_value = df[indicator_name].iloc[-1]
-    condition_met = evaluate_comparison(current_value, comparator, threshold_value)
+    if pd.isna(current_value):
+        print(f"      Warning: Indicator '{indicator_name}' value is null/NaN")
+        return False
     
-
+    condition_met = evaluate_comparison(current_value, comparator, threshold_value)
+    print(f"      Indicator '{indicator_name}': {current_value} {comparator} {threshold_value} = {condition_met}")
     return condition_met
 
 def check_price_level(df, condition):
@@ -295,7 +304,17 @@ def check_price_level(df, condition):
     comparator = condition.get('comparator', '>')
     level_value = condition.get('value')
     
+    # Check if DataFrame is empty or missing required columns
+    if df.empty or 'Close' not in df.columns:
+        print(f"      Warning: DataFrame empty or missing 'Close' column")
+        return False
+    
     current_price = df['Close'].iloc[-1]
+    
+    # Check if price value is null/NaN
+    if pd.isna(current_price):
+        print(f"      Warning: Current price is null/NaN")
+        return False
     
     if level_type == 'bollinger_middle':
         bb_middle = llm_output['technical_indicators']['BB20_2']['middle']
@@ -462,9 +481,15 @@ def validate_trading_signal(df):
         print(f"    Triggered conditions: {triggered_conditions}")
     
     # Get current market values for the return
-    current_price = df['Close'].iloc[-1]
-    current_time = df['Open_time'].iloc[-1]
-    current_rsi = df['RSI14'].iloc[-1] if 'RSI14' in df.columns else None
+    if df.empty:
+        print("    Warning: DataFrame is empty, cannot get market values")
+        current_price = 0
+        current_time = None
+        current_rsi = None
+    else:
+        current_price = df['Close'].iloc[-1] if 'Close' in df.columns else 0
+        current_time = df['Open_time'].iloc[-1] if 'Open_time' in df.columns else None
+        current_rsi = df['RSI14'].iloc[-1] if 'RSI14' in df.columns else None
     
     market_values = {
         'current_price': current_price,
