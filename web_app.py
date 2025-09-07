@@ -812,13 +812,71 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
             emit_progress_fn(f"Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
         time.sleep(wait_seconds)
 
-def run_trading_analysis(image_path: str) -> dict:
-    """Run the complete trading analysis pipeline"""
+def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: str | None = None) -> dict:
+    """Run the complete trading analysis pipeline.
+
+    If symbol/timeframe are provided, fetch klines and compute indicators FIRST,
+    then pass both screenshot and DataFrame to the LLM for enriched analysis.
+    Falls back to image-only analysis if data fetching fails.
+    """
     try:
-        # Step 1: Analyze trading chart with LLM
-        emit_progress("Step 1: Analyzing trading chart with LLM...", 1, 14)
-        llm_output = analyze_trading_chart(image_path)
-        emit_progress("Step 1 Complete: Chart analysis finished", 1, 14)
+        # Step 1: Prepare market data BEFORE calling the LLM
+        emit_progress("Step 1: Preparing market data (if provided)...", 1, 14)
+        df = pd.DataFrame()
+        effective_symbol = symbol or "BTCUSDT"
+        effective_timeframe = timeframe or "1m"
+
+        try:
+            # Validate timeframe
+            valid_intervals = ['1m', '5m', '15m', '30m', '60m', '4h', '1d', '1W', '1M']
+            if effective_timeframe not in valid_intervals:
+                emit_progress(f"Warning: {effective_timeframe} not valid. Using 1m.", 1, 14)
+                effective_timeframe = '1m'
+
+            # Initialize MEXC clients lazily here to fetch data
+            from pymexc import spot
+            public_spot_client_local = spot.HTTP()
+
+            # Local light wrapper mirroring existing function signature
+            def _fetch_market_dataframe(sym: str, tf: str) -> pd.DataFrame:
+                kl = public_spot_client_local.klines(symbol=sym, interval=tf, limit=100)
+                if not kl:
+                    return pd.DataFrame()
+                frame = pd.DataFrame(kl)
+                frame.columns = ['Open_time', 'Open', 'High', 'Low', 'Close', 'Volume', 'Close_time', 'Quote_asset_volume']
+                frame['Open_time'] = pd.to_datetime(frame['Open_time'], unit='ms')
+                frame['Close_time'] = pd.to_datetime(frame['Close_time'], unit='ms')
+                frame['Open'] = pd.to_numeric(frame['Open'])
+                frame['High'] = pd.to_numeric(frame['High'])
+                frame['Low'] = pd.to_numeric(frame['Low'])
+                frame['Close'] = pd.to_numeric(frame['Close'])
+                frame['Volume'] = pd.to_numeric(frame['Volume'])
+                return frame
+
+            df = _fetch_market_dataframe(effective_symbol, effective_timeframe)
+            if df.empty:
+                emit_progress("Step 1: No klines returned; proceeding without market data", 1, 14)
+            else:
+                # Calculate indicators we already support later in the pipeline
+                df = calculate_rsi14(df)
+                try:
+                    df = calculate_macd12_26_9(df)
+                except Exception:
+                    # MACD function may not always be available; continue with RSI only
+                    pass
+                emit_progress(f"Step 1 Complete: Market data prepared ({len(df)} candles)", 1, 14)
+        except Exception as e:
+            emit_progress(f"Step 1 Warning: Market data prep failed: {e}. Proceeding image-only.", 1, 14)
+
+        # Step 2: Analyze trading chart with LLM (now with df if available)
+        emit_progress("Step 2: Analyzing trading chart with LLM...", 2, 14)
+        llm_output = analyze_trading_chart(
+            image_path,
+            symbol=effective_symbol,
+            timeframe=effective_timeframe,
+            df=df if not df.empty else None,
+        )
+        emit_progress("Step 2 Complete: Chart analysis finished", 2, 14)
 
         # Step 2: Create output directory
         emit_progress("Step 2: Setting up output directory...", 2, 14)
