@@ -17,6 +17,9 @@ import threading
 import queue
 import time
 
+# Import notification service
+from services.notification_service import notify_valid_trade, notify_invalidated_trade
+
 # pymexc will be imported when needed to avoid compatibility issues
 
 # Load environment variables
@@ -61,6 +64,94 @@ def emit_progress(message, step=None, total_steps=None):
     }
     progress_queue.put(progress_data)
     print(message)  # Also print to console
+
+def _convert_symbol_to_mexc_futures(symbol: str) -> str:
+    """Convert symbols like BTCUSDT or BTC/USDT to MEXC futures format (e.g., BTC_USDT)."""
+    if not symbol:
+        return symbol
+    cleaned = symbol.strip().upper()
+    if "/" in cleaned:
+        base, quote = cleaned.split("/", 1)
+        return f"{base}_{quote}"
+    return cleaned.replace("/", "_")
+
+def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
+    """Place a futures order on MEXC based on the gate result.
+
+    Environment overrides:
+    - MEXC_DEFAULT_VOL: float volume in contracts/base units (default 0.001)
+    - MEXC_OPEN_TYPE: 1 isolated, 2 cross (default 2)
+    - MEXC_LEVERAGE: int leverage for isolated (optional)
+    """
+    try:
+        from pymexc import futures
+    except Exception as e:
+        return {"ok": False, "error": f"Failed to import pymexc.futures: {e}"}
+
+    mexc_symbol = _convert_symbol_to_mexc_futures(symbol)
+    direction = (gate_result.get("direction") or "").lower()
+    execution = gate_result.get("execution", {})
+    entry_type = (execution.get("entry_type") or "market").lower()
+    entry_price = execution.get("entry_price")
+    stop_loss = execution.get("stop_loss")
+    take_profits = execution.get("take_profits") or []
+
+    # Defaults and envs
+    try:
+        default_vol = float(os.getenv("MEXC_DEFAULT_VOL", "0.001"))
+    except Exception:
+        default_vol = 0.001
+    try:
+        open_type = int(os.getenv("MEXC_OPEN_TYPE", "2"))  # 1 isolated, 2 cross
+    except Exception:
+        open_type = 2
+    leverage_env = os.getenv("MEXC_LEVERAGE")
+    leverage = int(leverage_env) if leverage_env and leverage_env.isdigit() else None
+
+    # Map direction to MEXC side
+    # 1 open long, 2 close short, 3 open short, 4 close long
+    if direction == "long":
+        side = 1
+    elif direction == "short":
+        side = 3
+    else:
+        return {"ok": False, "error": f"Unknown trade direction: {direction}"}
+
+    # Order type: 5 = market, 1 = limit
+    if entry_type == "market":
+        order_type = 5
+        price = 0
+    else:
+        order_type = 1
+        price = float(entry_price or 0)
+
+    # Use first TP as take-profit if provided
+    tp_price = None
+    if take_profits:
+        first_tp = take_profits[0]
+        tp_price = first_tp.get("price") if isinstance(first_tp, dict) else None
+
+    try:
+        futures_client = futures.HTTP(api_key=os.getenv("MEXC_API_KEY"), api_secret=os.getenv("MEXC_API_SECRET"))
+    except Exception as e:
+        return {"ok": False, "error": f"Failed to init futures client: {e}"}
+
+    try:
+        response = futures_client.order(
+            symbol=mexc_symbol,
+            price=price,
+            vol=default_vol,
+            side=side,
+            type=order_type,
+            open_type=open_type,
+            leverage=leverage,
+            stop_loss_price=stop_loss,
+            take_profit_price=tp_price,
+            reduce_only=False,
+        )
+        return {"ok": True, "response": response}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
     """Analyze trading chart using OpenAI Vision API with optional market data"""
@@ -119,6 +210,16 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
         if not response.choices or not response.choices[0].message.content:
             emit_progress("Chart: Error - No content in API response")
             emit_progress(f"Chart: Response structure: {response}")
+            
+            # Check if this is a refusal response
+            if (response.choices and 
+                response.choices[0].message and 
+                hasattr(response.choices[0].message, 'refusal') and 
+                response.choices[0].message.refusal):
+                emit_progress(f"Chart: LLM refused request: {response.choices[0].message.refusal}")
+                emit_progress("Chart: Creating fallback response structure...")
+                return create_fallback_llm_response(symbol, timeframe)
+            
             emit_progress("Chart: Attempting retry with different parameters...")
             
             # Retry without response_format to see if that's the issue
@@ -133,7 +234,16 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
             )
             
             if not retry_response.choices or not retry_response.choices[0].message.content:
-                raise ValueError("OpenAI API returned empty content on retry")
+                # Check if retry also resulted in refusal
+                if (retry_response.choices and 
+                    retry_response.choices[0].message and 
+                    hasattr(retry_response.choices[0].message, 'refusal') and 
+                    retry_response.choices[0].message.refusal):
+                    emit_progress(f"Chart: Retry also refused: {retry_response.choices[0].message.refusal}")
+                    emit_progress("Chart: Creating fallback response structure...")
+                    return create_fallback_llm_response(symbol, timeframe)
+                else:
+                    raise ValueError("OpenAI API returned empty content on retry")
             
             content = retry_response.choices[0].message.content
             emit_progress(f"Chart: Retry successful, content length: {len(content)} characters")
@@ -162,6 +272,94 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
         else:
             emit_progress(f"Chart: No content available in response")
         raise
+
+def create_fallback_llm_response(symbol: str = None, timeframe: str = None) -> dict:
+    """Create a fallback LLM response structure when the AI refuses to analyze the chart"""
+    emit_progress("Chart: Creating fallback response due to LLM refusal...")
+    
+    # Use current timestamp for screenshot time
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M")
+    
+    fallback_response = {
+        "symbol": symbol or "UNKNOWN",
+        "timeframe": timeframe or "1m",
+        "time_of_screenshot": current_time,
+        "trend_direction": "unknown",
+        "support_resistance": {
+            "support": None,
+            "resistance": None
+        },
+        "technical_indicators": {
+            "RSI14": {
+                "value": None,
+                "status": "unknown",
+                "signal": "none"
+            },
+            "MACD12_26_9": {
+                "macd_line": None,
+                "signal_line": None,
+                "histogram": None,
+                "signal": "none"
+            },
+            "BB20_2": {
+                "upper": None,
+                "middle": None,
+                "lower": None,
+                "price_position": "unknown",
+                "bandwidth": "unknown"
+            },
+            "STOCH14_3_3": {
+                "k_percent": None,
+                "d_percent": None,
+                "signal": "none"
+            },
+            "VOLUME": {
+                "current": None,
+                "average": None,
+                "ratio": None,
+                "trend": "unknown"
+            },
+            "ATR14": {
+                "value": None,
+                "period": 14,
+                "volatility": "unknown"
+            }
+        },
+        "pattern_analysis": [],
+        "validity_assessment": {
+            "alignment_score": 0.0,
+            "notes": "Analysis unavailable due to LLM refusal. Manual review required."
+        },
+        "opening_signal": {
+            "direction": "none",
+            "scope": {
+                "candle_indices": [],
+                "lookback_seconds": 0
+            },
+            "checklist": [],
+            "invalidation": [],
+            "is_met": False
+        },
+        "risk_management": {
+            "stop_loss": {
+                "price": None,
+                "basis": "manual_review_required",
+                "distance_ticks": None
+            },
+            "take_profit": []
+        },
+        "summary_actions": [
+            "Manual chart analysis required due to AI refusal",
+            "Review chart patterns and technical indicators manually",
+            "Consider alternative analysis methods"
+        ],
+        "improvements": "LLM analysis unavailable - requires manual review or alternative AI model",
+        "fallback_reason": "LLM refused to analyze the chart image",
+        "requires_manual_review": True
+    }
+    
+    emit_progress("Chart: Fallback response structure created successfully")
+    return fallback_response
 
 def create_market_data_summary(df: pd.DataFrame, symbol: str, timeframe: str) -> str:
     """Create a summary of market data for the LLM"""
@@ -192,6 +390,9 @@ Latest Price Data:
         summary += f"- MACD Line: {latest['MACD_Line']:.4f}\n"
         summary += f"- MACD Signal: {latest['MACD_Signal']:.4f}\n"
         summary += f"- MACD Histogram: {latest['MACD_Histogram']:.4f}\n"
+
+    if 'ATR14' in df.columns and not pd.isna(latest['ATR14']):
+        summary += f"- ATR14: {latest['ATR14']:.4f}\n"
     
     # Add recent price action context (last 5 candles)
     if len(df) >= 5:
@@ -335,129 +536,13 @@ def fetch_market_dataframe(symbol, timeframe):
     
     return df
 
-def calculate_rsi14(df):
-    """Calculate RSI14 indicator manually using pandas"""
-    if df.empty or len(df) < 15:  # Need 15 candles to calculate 14-period RSI
-        return df
-    
-    # Calculate price changes
-    df['Price_Change'] = df['Close'].diff()
-    
-    # Separate gains and losses
-    df['Gain'] = df['Price_Change'].where(df['Price_Change'] > 0, 0)
-    df['Loss'] = -df['Price_Change'].where(df['Price_Change'] < 0, 0)
-    
-    # Calculate initial average gain and loss (first 14 periods)
-    initial_avg_gain = df['Gain'].iloc[1:15].mean()
-    initial_avg_loss = df['Loss'].iloc[1:15].mean()
-    
-    # Initialize RSI array
-    rsi_values = [None] * len(df)
-    
-    # Calculate RSI for the first valid period
-    if initial_avg_loss != 0:
-        rs = initial_avg_gain / initial_avg_loss
-        rsi_values[14] = 100 - (100 / (1 + rs))
-    else:
-        rsi_values[14] = 100
-    
-    # Calculate RSI for remaining periods using Wilder's smoothing
-    for i in range(15, len(df)):
-        avg_gain = (initial_avg_gain * 13 + df['Gain'].iloc[i]) / 14
-        avg_loss = (initial_avg_loss * 13 + df['Loss'].iloc[i]) / 14
-        
-        if avg_loss != 0:
-            rs = avg_gain / avg_loss
-            rsi_values[i] = 100 - (100 / (1 + rs))
-        else:
-            rsi_values[i] = 100
-        
-        # Update averages for next iteration
-        initial_avg_gain = avg_gain
-        initial_avg_loss = avg_loss
-    
-    df['RSI14'] = rsi_values
-    
-    # Clean up temporary columns
-    df.drop(['Price_Change', 'Gain', 'Loss'], axis=1, inplace=True)
-    
-    return df
-
-def calculate_macd12_26_9(df):
-    """Calculate MACD12_26_9 indicator manually using pandas"""
-    if df.empty or len(df) < 27:  # Need 27 candles to calculate MACD (26 for EMA + 1 for signal)
-        return df
-    
-    # Calculate 12-period EMA
-    df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
-    
-    # Calculate 26-period EMA
-    df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
-    
-    # Calculate MACD line (12 EMA - 26 EMA)
-    df['MACD_Line'] = df['EMA12'] - df['EMA26']
-    
-    # Calculate 9-period EMA of MACD line (Signal line)
-    df['MACD_Signal'] = df['MACD_Line'].ewm(span=9, adjust=False).mean()
-    
-    # Calculate MACD Histogram (MACD line - Signal line)
-    df['MACD_Histogram'] = df['MACD_Line'] - df['MACD_Signal']
-    
-    # Clean up temporary columns
-    df.drop(['EMA12', 'EMA26'], axis=1, inplace=True)
-    
-    return df
-
-def calculate_stoch14_3_3(df):
-    """Calculate STOCH14_3_3 indicator manually using pandas"""
-    if df.empty or len(df) < 17:  # Need 17 candles to calculate 14-period Stochastic with 3-period smoothing
-        return df
-    
-    # Calculate the lowest low and highest high over 14 periods
-    df['Lowest_Low_14'] = df['Low'].rolling(window=14, min_periods=14).min()
-    df['Highest_High_14'] = df['High'].rolling(window=14, min_periods=14).max()
-    
-    # Calculate %K (Raw Stochastic)
-    df['Stoch_K_Raw'] = 100 * (df['Close'] - df['Lowest_Low_14']) / (df['Highest_High_14'] - df['Lowest_Low_14'])
-    
-    # Calculate 3-period SMA of %K to get smoothed %K
-    df['STOCH_K'] = df['Stoch_K_Raw'].rolling(window=3, min_periods=3).mean()
-    
-    # Calculate 3-period SMA of smoothed %K to get %D
-    df['STOCH_D'] = df['STOCH_K'].rolling(window=3, min_periods=3).mean()
-    
-    # Clean up temporary columns
-    df.drop(['Lowest_Low_14', 'Highest_High_14', 'Stoch_K_Raw'], axis=1, inplace=True)
-    
-    return df
-
-def calculate_bb20_2(df):
-    """Calculate BB20_2 indicator manually using pandas"""
-    if df.empty or len(df) < 20:  # Need 20 candles to calculate 20-period Bollinger Bands
-        return df
-    
-    # Calculate 20-period Simple Moving Average (middle band)
-    df['BB_Middle'] = df['Close'].rolling(window=20, min_periods=20).mean()
-    
-    # Calculate 20-period standard deviation
-    df['BB_StdDev'] = df['Close'].rolling(window=20, min_periods=20).std()
-    
-    # Calculate upper band (middle + 2 * std_dev)
-    df['BB_Upper'] = df['BB_Middle'] + (2 * df['BB_StdDev'])
-    
-    # Calculate lower band (middle - 2 * std_dev)
-    df['BB_Lower'] = df['BB_Middle'] - (2 * df['BB_StdDev'])
-    
-    # Calculate %B (Bollinger Band position indicator)
-    df['BB_PercentB'] = (df['Close'] - df['BB_Lower']) / (df['BB_Upper'] - df['BB_Lower'])
-    
-    # Calculate bandwidth (volatility measure)
-    df['BB_Bandwidth'] = (df['BB_Upper'] - df['BB_Lower']) / df['BB_Middle']
-    
-    # Clean up temporary columns
-    df.drop(['BB_StdDev'], axis=1, inplace=True)
-    
-    return df
+from services.indicator_service import (
+    calculate_rsi14,
+    calculate_macd12_26_9,
+    calculate_stoch14_3_3,
+    calculate_bb20_2,
+    calculate_atr14,
+)
 
 def evaluate_comparison(current_value, comparator, target_value):
     """Evaluate a comparison between current value and target value"""
@@ -904,6 +989,22 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
                     "message": f"Signal invalidated due to {len(triggered_conditions)} condition(s): {', '.join(triggered_conditions)}"
                 }
             }))
+        
+        # Send iPhone notification for invalidated trade
+        try:
+            trade_data = {
+                "symbol": llm_output.get("symbol", "Unknown"),
+                "current_price": market_values.get("current_price", 0),
+                "triggered_conditions": triggered_conditions,
+                "current_rsi": market_values.get("current_rsi", 0)
+            }
+            notification_results = notify_invalidated_trade(trade_data)
+            if emit_progress_fn:
+                emit_progress_fn(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}")
+        except Exception as e:
+            if emit_progress_fn:
+                emit_progress_fn(f"⚠️ Invalidation notification failed: {str(e)}")
+        
         return False, "invalidated", triggered_conditions, market_values
     elif checklist_passed:
         return True, "valid", [], market_values
@@ -964,7 +1065,7 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
             emit_progress_fn(f"Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
         time.sleep(wait_seconds)
 
-def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: str | None = None) -> dict:
+def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timeframe: Optional[str] = None) -> dict:
     """Run the complete trading analysis pipeline.
 
     If symbol/timeframe are provided, fetch klines and compute indicators FIRST,
@@ -1027,6 +1128,7 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
                     # BB function may not always be available; continue with other indicators
                     pass
                 emit_progress(f"Step 1 Complete: Market data prepared ({len(df)} candles)", 1, 14)
+            
         except Exception as e:
             emit_progress(f"Step 1 Warning: Market data prep failed: {e}. Proceeding image-only.", 1, 14)
 
@@ -1061,6 +1163,13 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
         symbol = llm_output['symbol']
         timeframe = llm_output['timeframe']
         time_of_screenshot = llm_output['time_of_screenshot']
+        
+        # Check if this is a fallback response due to LLM refusal
+        is_fallback = llm_output.get('requires_manual_review', False)
+        if is_fallback:
+            emit_progress(f"Step 4 Warning: Using fallback response due to LLM refusal: {llm_output.get('fallback_reason', 'Unknown reason')}", 4, 14)
+            emit_progress("Step 4 Warning: Analysis will continue but with limited functionality", 4, 14)
+        
         emit_progress(f"Step 4 Complete: Symbol={symbol}, Timeframe={timeframe}, Screenshot time={time_of_screenshot}", 4, 14)
 
         # Emit proposed trade direction (from LLM opening signal) for UI
@@ -1104,12 +1213,13 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
         df = fetch_market_dataframe(symbol, timeframe)
         emit_progress(f"Step 7 Complete: Market data fetched, {len(df)} candles retrieved", 7, 14)
 
-        # Step 8: Calculate RSI14, MACD12_26_9, STOCH14_3_3, and BB20_2
+        # Step 8: Calculate RSI14, MACD12_26_9, STOCH14_3_3, BB20_2, and ATR14
         emit_progress("Step 8: Calculating technical indicators...", 8, 14)
         df = calculate_rsi14(df)
         df = calculate_macd12_26_9(df)
         df = calculate_stoch14_3_3(df)
         df = calculate_bb20_2(df)
+        df = calculate_atr14(df)
         emit_progress("Step 8 Complete: Technical indicators calculation finished", 8, 14)
         
         # Step 8.5: Initial indicator check to show progress
@@ -1135,14 +1245,40 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
 
         # Step 10: Start signal validation polling
         emit_progress("Step 10: Starting signal validation polling...", 10, 14)
-        signal_valid, signal_status, triggered_conditions, market_values = poll_until_decision(symbol, timeframe, llm_output, emit_progress_fn=emit_progress)
-        emit_progress(f"Step 10 Complete: Final Signal Status: {signal_status}", 10, 14)
+        
+        # Check if this is a fallback response - skip signal validation if so
+        if is_fallback:
+            emit_progress("Step 10 Warning: Skipping signal validation due to LLM refusal fallback", 10, 14)
+            signal_valid = False
+            signal_status = "fallback_no_analysis"
+            triggered_conditions = ["llm_refusal"]
+            market_values = {
+                'current_price': 0,
+                'current_time': None,
+                'current_rsi': None
+            }
+            emit_progress("Step 10 Complete: Signal validation skipped (fallback mode)", 10, 14)
+        else:
+            signal_valid, signal_status, triggered_conditions, market_values = poll_until_decision(symbol, timeframe, llm_output, emit_progress_fn=emit_progress)
+            emit_progress(f"Step 10 Complete: Final Signal Status: {signal_status}", 10, 14)
 
         # Step 11: Check if signal is valid for trade gate
         emit_progress("Step 11: Checking if signal is valid for trade gate...", 11, 14)
         gate_result = None
         
-        if signal_valid and signal_status == "valid":
+        if is_fallback:
+            emit_progress("Step 11 Warning: Skipping trade gate due to LLM refusal fallback", 11, 14)
+            gate_result = {
+                "should_open": False,
+                "direction": "none",
+                "confidence": 0.0,
+                "reasons": ["LLM refused to analyze chart - manual review required"],
+                "warnings": ["No AI analysis available", "Trading decision requires manual review"],
+                "execution": {"status": "blocked", "reason": "llm_refusal"},
+                "checks": {"llm_analysis": False, "manual_review_required": True}
+            }
+            emit_progress("Step 11 Complete: Trade gate skipped (fallback mode)", 11, 14)
+        elif signal_valid and signal_status == "valid":
             emit_progress("Step 11 Complete: Signal is valid, proceeding to trade gate", 11, 14)
             emit_progress("Step 12: Running LLM trade gate decision...", 12, 14)
             
@@ -1199,6 +1335,45 @@ def run_trading_analysis(image_path: str, symbol: str | None = None, timeframe: 
                 emit_progress(f"Step 14 Complete: Trade approved for opening - Direction: {direction}, Confidence: {confidence:.2f}", 14, 14)
                 emit_progress(f"🚀 TRADE APPROVED: {direction.upper()} at ${entry_price:.2f}, SL: ${stop_loss:.2f}, R/R: {risk_reward:.2f}", 14, 14)
                 
+                # Place order on MEXC Futures (guarded by env flag MEXC_ENABLE_ORDERS)
+                try:
+                    if os.getenv("MEXC_ENABLE_ORDERS", "false").lower() in ("1", "true", "yes"): 
+                        emit_progress("Step 15: Placing MEXC futures order...", 15, 15)
+                        order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
+                        if order_outcome.get("ok"):
+                            # Save order response
+                            try:
+                                order_filename = f"mexc_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                                order_path = os.path.join(output_dir, order_filename)
+                                with open(order_path, 'w') as f:
+                                    json.dump(order_outcome.get("response"), f, indent=2, default=str)
+                                emit_progress(f"Saved order response to {order_path}")
+                            except Exception as e:
+                                emit_progress(f"⚠️ Failed to save order response: {str(e)}")
+                        else:
+                            emit_progress(f"Step 15 Failed: Order placement error - {order_outcome.get('error')}")
+                    else:
+                        emit_progress("Step 15: Live order placement disabled (MEXC_ENABLE_ORDERS is false)")
+                except Exception as e:
+                    emit_progress(f"⚠️ Order placement exception: {str(e)}")
+
+                # Send iPhone notification for valid trade
+                try:
+                    trade_data = {
+                        "symbol": llm_output.get("symbol", "Unknown"),
+                        "direction": direction,
+                        "current_price": entry_price,
+                        "confidence": confidence,
+                        "current_rsi": market_values.get("current_rsi", 0),
+                        "stop_loss": stop_loss,
+                        "risk_reward": risk_reward,
+                        "take_profits": take_profits
+                    }
+                    notification_results = notify_valid_trade(trade_data)
+                    emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}", 14, 14)
+                except Exception as e:
+                    emit_progress(f"⚠️ Notification failed: {str(e)}", 14, 14)
+                
                 if take_profits:
                     tp_info = ", ".join([f"TP{i+1}: ${tp.get('price', 0):.2f}" for i, tp in enumerate(take_profits)])
                     emit_progress(f"Take Profits: {tp_info}", 14, 14)
@@ -1239,7 +1414,7 @@ def index():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Trading Chart Analysis</title>
+        <title>Trrrrr</title>
         <style>
             body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
             .upload-form { border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; }
@@ -1955,8 +2130,37 @@ def index():
                             const badge = approved ? '<span style="color:#155724;background:#d4edda;border:1px solid #c3e6cb;padding:2px 6px;border-radius:3px;">APPROVED</span>' : '<span style="color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;padding:2px 6px;border-radius:3px;">REJECTED</span>';
                             // Create comprehensive gate display
                             let gateDisplay = `
-                                <div class="result ${approved ? 'success' : 'error'}">
-                                    <h3>Gate Decision ${badge}</h3>
+                                <div class="result ${approved ? 'success' : 'error'}" style="border: 2px solid ${approved ? '#28a745' : '#dc3545'}; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid ${approved ? '#c3e6cb' : '#f5c6cb'};">
+                                        <h3 style="margin: 0; font-size: 24px;">${approved ? '🚀 TRADE APPROVED' : '❌ TRADE REJECTED'}</h3>
+                                        <div style="text-align: right;">
+                                            ${badge}
+                                            <div style="font-size: 14px; color: #666; margin-top: 5px;">Confidence: ${(p.confidence ?? 0).toFixed(2)}/1.0</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Quick Summary -->
+                                    <div style="background: ${approved ? 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)' : 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)'}; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid ${approved ? '#c3e6cb' : '#f5c6cb'};">
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center;">
+                                            <div>
+                                                <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Direction</div>
+                                                <div style="font-size: 18px; font-weight: bold; color: ${p.direction === 'long' ? '#28a745' : '#dc3545'};">${(p.direction || 'unknown').toUpperCase()}</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Entry Price</div>
+                                                <div style="font-size: 18px; font-weight: bold; color: ${approved ? '#155724' : '#721c24'};">$${(p.execution?.entry_price || 0).toFixed(2)}</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Stop Loss</div>
+                                                <div style="font-size: 18px; font-weight: bold; color: ${approved ? '#155724' : '#721c24'};">$${(p.execution?.stop_loss || 0).toFixed(2)}</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Risk/Reward</div>
+                                                <div style="font-size: 18px; font-weight: bold; color: ${approved ? '#155724' : '#721c24'};">${(p.execution?.risk_reward || 0).toFixed(2)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">
                                         <div>
                                             <h4 style="margin: 0 0 10px 0; color: ${approved ? '#155724' : '#721c24'};">Trade Parameters</h4>
@@ -2219,14 +2423,39 @@ def index():
                         const checkCompletion = setInterval(() => {
                             if (analysisComplete) {
                                 clearInterval(checkCompletion);
-                                resultDiv.innerHTML = `
-                                    <div class="result success">
-                                        <h3>Analysis Complete!</h3>
-                                        <p><strong>Job ID:</strong> ${data.job_id}</p>
-                                        <p>Check the progress messages above for detailed results including gate decision logs.</p>
-                                        <p>Results have been saved to the llm_outputs directory.</p>
-                                    </div>
-                                `;
+                                // Check if we have meaningful results to preserve
+                                const hasGateResults = resultDiv.innerHTML.includes('Gate Decision') || resultDiv.innerHTML.includes('APPROVED') || resultDiv.innerHTML.includes('REJECTED');
+                                const hasInvalidationResults = resultDiv.innerHTML.includes('Signal Invalidated');
+                                const hasDetailedResults = hasGateResults || hasInvalidationResults;
+                                
+                                if (!hasDetailedResults) {
+                                    // Only show generic completion message if no specific results were displayed
+                                    resultDiv.innerHTML = `
+                                        <div class="result success">
+                                            <h3>Analysis Complete!</h3>
+                                            <p><strong>Job ID:</strong> ${data.job_id}</p>
+                                            <p>Check the progress messages above for detailed results including gate decision logs.</p>
+                                            <p>Results have been saved to the llm_outputs directory.</p>
+                                        </div>
+                                    `;
+                                } else {
+                                    // Add completion footer to existing results without overwriting them
+                                    const existingContent = resultDiv.innerHTML;
+                                    resultDiv.innerHTML = existingContent + `
+                                        <div class="result success" style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border: 1px solid #c3e6cb; color: #155724; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                                <div>
+                                                    <h4 style="margin: 0 0 5px 0; font-size: 18px;">✅ Analysis Complete!</h4>
+                                                    <p style="margin: 0; font-size: 14px; opacity: 0.9;"><strong>Job ID:</strong> ${data.job_id}</p>
+                                                </div>
+                                                <div style="text-align: right; font-size: 12px; opacity: 0.8;">
+                                                    <div>Results saved to llm_outputs directory</div>
+                                                    <div>Check progress messages for full details</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
                             }
                         }, 1000);
                     } else {
@@ -2453,12 +2682,13 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
         df = fetch_market_dataframe(symbol, timeframe)
         emit_progress(f"Step 5 Complete: Market data fetched, {len(df)} candles retrieved", 5, 12)
 
-        # Step 6: Calculate technical indicators
+        # Step 6: Calculate technical indicators (RSI, MACD, Stoch, BB, ATR)
         emit_progress("Step 6: Calculating technical indicators...", 6, 12)
         df = calculate_rsi14(df)
         df = calculate_macd12_26_9(df)
         df = calculate_stoch14_3_3(df)
         df = calculate_bb20_2(df)
+        df = calculate_atr14(df)
         emit_progress("Step 6 Complete: Technical indicators calculation finished", 6, 12)
         
         # Step 7: Initial indicator check
@@ -2546,6 +2776,47 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                 
                 emit_progress(f"Step 12 Complete: Trade approved for opening - Direction: {direction}, Confidence: {confidence:.2f}", 12, 12)
                 emit_progress(f"🚀 TRADE APPROVED: {direction.upper()} at ${entry_price:.2f}, SL: ${stop_loss:.2f}, R/R: {risk_reward:.2f}", 12, 12)
+                
+                # Place order on MEXC Futures (guarded by env flag MEXC_ENABLE_ORDERS)
+                try:
+                    if os.getenv("MEXC_ENABLE_ORDERS", "false").lower() in ("1", "true", "yes"): 
+                        emit_progress("Step 13: Placing MEXC futures order...", 13, 13)
+                        order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
+                        if order_outcome.get("ok"):
+                            # Save order response
+                            try:
+                                output_dir = "llm_outputs"
+                                os.makedirs(output_dir, exist_ok=True)
+                                order_filename = f"mexc_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                                order_path = os.path.join(output_dir, order_filename)
+                                with open(order_path, 'w') as f:
+                                    json.dump(order_outcome.get("response"), f, indent=2, default=str)
+                                emit_progress(f"Saved order response to {order_path}")
+                            except Exception as e:
+                                emit_progress(f"⚠️ Failed to save order response: {str(e)}")
+                        else:
+                            emit_progress(f"Step 13 Failed: Order placement error - {order_outcome.get('error')}")
+                    else:
+                        emit_progress("Step 13: Live order placement disabled (MEXC_ENABLE_ORDERS is false)")
+                except Exception as e:
+                    emit_progress(f"⚠️ Order placement exception: {str(e)}")
+
+                # Send iPhone notification for valid trade
+                try:
+                    trade_data = {
+                        "symbol": llm_output.get("symbol", "Unknown"),
+                        "direction": direction,
+                        "current_price": entry_price,
+                        "confidence": confidence,
+                        "current_rsi": market_values.get("current_rsi", 0),
+                        "stop_loss": stop_loss,
+                        "risk_reward": risk_reward,
+                        "take_profits": take_profits
+                    }
+                    notification_results = notify_valid_trade(trade_data)
+                    emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}", 12, 12)
+                except Exception as e:
+                    emit_progress(f"⚠️ Notification failed: {str(e)}", 12, 12)
                 
                 if take_profits:
                     tp_info = ", ".join([f"TP{i+1}: ${tp.get('price', 0):.2f}" for i, tp in enumerate(take_profits)])

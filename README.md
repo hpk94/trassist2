@@ -27,7 +27,7 @@ cd trassist2
 
 2. Create a virtual environment:
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
@@ -57,7 +57,7 @@ MEXC_API_SECRET=your_mexc_api_secret_here
 2. Update the `test_image` variable in `app.py` with your image filename
 3. Run the analysis:
 ```bash
-python app.py
+python3 app.py
 ```
 
 The system will:

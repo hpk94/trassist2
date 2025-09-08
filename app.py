@@ -11,6 +11,9 @@ import time
 
 from pymexc import spot, futures
 
+# Import notification service
+from services.notification_service import notify_valid_trade, notify_invalidated_trade
+
 # Load environment variables
 load_dotenv()
 
@@ -31,7 +34,12 @@ def analyze_trading_chart(image_path: str) -> dict:
         response_format={"type": "json_object"}
     )
     
-    return json.loads(response.choices[0].message.content)
+    content = response.choices[0].message.content
+    
+    if content is None:
+        raise ValueError("OpenAI API returned None content")
+    
+    return json.loads(content)
 
 def llm_trade_gate_decision(
     base_llm_output: Dict[str, Any],
@@ -139,6 +147,8 @@ spot_client = spot.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.get
 public_spot_client = spot.HTTP()
 # initialize WebSocket client
 ws_spot_client = spot.WebSocket(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
+# initialize Futures HTTP client for trading (perpetual contracts)
+futures_client = futures.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
 print("Step 6 Complete: MEXC API clients initialized")
 
 # make http request to api
@@ -190,56 +200,93 @@ def fetch_market_dataframe(symbol, timeframe):
     print(f"      DataFrame created with {len(df)} rows")
     return df
 
-def calculate_rsi14(df):
-    """Calculate RSI14 indicator manually using pandas"""
-    print(f"      Calculating RSI14 indicator...")
-    if df.empty or len(df) < 15:  # Need 15 candles to calculate 14-period RSI
-        print("      Warning: Not enough data points for RSI14 calculation (need at least 15 candles)")
-        return df
-    
-    # Calculate price changes
-    df['Price_Change'] = df['Close'].diff()
-    
-    # Separate gains and losses
-    df['Gain'] = df['Price_Change'].where(df['Price_Change'] > 0, 0)
-    df['Loss'] = -df['Price_Change'].where(df['Price_Change'] < 0, 0)
-    
-    # Calculate initial average gain and loss (first 14 periods)
-    initial_avg_gain = df['Gain'].iloc[1:15].mean()
-    initial_avg_loss = df['Loss'].iloc[1:15].mean()
-    
-    # Initialize RSI array
-    rsi_values = [None] * len(df)
-    
-    # Calculate RSI for the first valid period
-    if initial_avg_loss != 0:
-        rs = initial_avg_gain / initial_avg_loss
-        rsi_values[14] = 100 - (100 / (1 + rs))
+from services.indicator_service import (
+    calculate_rsi14,
+    calculate_macd12_26_9,
+    calculate_stoch14_3_3,
+    calculate_bb20_2,
+    calculate_atr14,
+)
+
+def _convert_symbol_to_mexc_futures(symbol: str) -> str:
+    """Convert symbols like BTCUSDT or BTCUSDT.P to MEXC futures format (e.g., BTC_USDT)."""
+    if not symbol:
+        return symbol
+    cleaned = symbol.replace(".P", "")
+    if cleaned.endswith("USDT") and "_" not in cleaned:
+        base = cleaned[:-4]
+        return f"{base}_USDT"
+    # If already in correct format or different quote
+    return cleaned.replace("/", "_")
+
+def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
+    """Place a futures order on MEXC based on the gate result.
+
+    Environment overrides:
+    - MEXC_DEFAULT_VOL: float volume in contracts/base units (default 0.001)
+    - MEXC_OPEN_TYPE: 1 isolated, 2 cross (default 2)
+    - MEXC_LEVERAGE: int leverage for isolated (optional)
+    """
+    mexc_symbol = _convert_symbol_to_mexc_futures(symbol)
+    direction = (gate_result.get("direction") or "").lower()
+    execution = gate_result.get("execution", {})
+    entry_type = (execution.get("entry_type") or "market").lower()
+    entry_price = execution.get("entry_price")
+    stop_loss = execution.get("stop_loss")
+    take_profits = execution.get("take_profits") or []
+
+    # Defaults and envs
+    try:
+        default_vol = float(os.getenv("MEXC_DEFAULT_VOL", "0.001"))
+    except Exception:
+        default_vol = 0.001
+    try:
+        open_type = int(os.getenv("MEXC_OPEN_TYPE", "2"))  # 1 isolated, 2 cross
+    except Exception:
+        open_type = 2
+    leverage_env = os.getenv("MEXC_LEVERAGE")
+    leverage = int(leverage_env) if leverage_env and leverage_env.isdigit() else None
+
+    # Map direction to MEXC side
+    # 1 open long, 2 close short, 3 open short, 4 close long
+    if direction == "long":
+        side = 1
+    elif direction == "short":
+        side = 3
     else:
-        rsi_values[14] = 100
-    
-    # Calculate RSI for remaining periods using Wilder's smoothing
-    for i in range(15, len(df)):
-        avg_gain = (initial_avg_gain * 13 + df['Gain'].iloc[i]) / 14
-        avg_loss = (initial_avg_loss * 13 + df['Loss'].iloc[i]) / 14
-        
-        if avg_loss != 0:
-            rs = avg_gain / avg_loss
-            rsi_values[i] = 100 - (100 / (1 + rs))
-        else:
-            rsi_values[i] = 100
-        
-        # Update averages for next iteration
-        initial_avg_gain = avg_gain
-        initial_avg_loss = avg_loss
-    
-    df['RSI14'] = rsi_values
-    
-    # Clean up temporary columns
-    df.drop(['Price_Change', 'Gain', 'Loss'], axis=1, inplace=True)
-    
-    print(f"      RSI14 calculation complete")
-    return df
+        raise ValueError(f"Unknown trade direction: {direction}")
+
+    # Order type: 5 = market, 1 = limit
+    if entry_type == "market":
+        order_type = 5
+        price = 0
+    else:
+        order_type = 1
+        # fall back to current market if entry_price missing
+        price = float(entry_price or 0)
+
+    # Use first TP as take-profit if provided
+    tp_price = None
+    if isinstance(take_profits, list) and take_profits:
+        first_tp = take_profits[0]
+        tp_price = first_tp.get("price") if isinstance(first_tp, dict) else None
+
+    try:
+        response = futures_client.order(
+            symbol=mexc_symbol,
+            price=price,
+            vol=default_vol,
+            side=side,
+            type=order_type,
+            open_type=open_type,
+            leverage=leverage,
+            stop_loss_price=stop_loss,
+            take_profit_price=tp_price,
+            reduce_only=False,
+        )
+        return {"ok": True, "response": response}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 print("Step 7: Fetching market data...")
 # Use the new function for cleaner code
@@ -499,6 +546,20 @@ def validate_trading_signal(df):
     
     if invalidation_triggered:
         print("    Signal validation result: INVALIDATED")
+        
+        # Send iPhone notification for invalidated trade
+        try:
+            trade_data = {
+                "symbol": llm_output.get("symbol", "Unknown"),
+                "current_price": market_values.get("current_price", 0),
+                "triggered_conditions": triggered_conditions,
+                "current_rsi": market_values.get("current_rsi", 0)
+            }
+            notification_results = notify_invalidated_trade(trade_data)
+            print(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}")
+        except Exception as e:
+            print(f"⚠️ Invalidation notification failed: {str(e)}")
+        
         return False, "invalidated", triggered_conditions, market_values
     elif checklist_passed:
         print("    Signal validation result: VALID")
@@ -577,8 +638,40 @@ if signal_valid and signal_status == "valid":
     print("Step 14: Checking if trade should be opened...")
     if gate_result.get("should_open") is True:
         print("Step 14 Complete: Trade approved for opening")
-        # Place order integration would go here
-        pass
+        
+        # Send iPhone notification for valid trade
+        try:
+            trade_data = {
+                "symbol": llm_output.get("symbol", "Unknown"),
+                "direction": gate_result.get("direction", "unknown"),
+                "current_price": gate_result.get("execution", {}).get("entry_price", 0),
+                "confidence": gate_result.get("confidence", 0),
+                "current_rsi": market_values.get("current_rsi", 0),
+                "stop_loss": gate_result.get("execution", {}).get("stop_loss", 0),
+                "risk_reward": gate_result.get("execution", {}).get("risk_reward", 0),
+                "take_profits": gate_result.get("execution", {}).get("take_profits", [])
+            }
+            notification_results = notify_valid_trade(trade_data)
+            print(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}")
+        except Exception as e:
+            print(f"⚠️ Notification failed: {str(e)}")
+        
+        # Place order on MEXC Futures
+        print("Step 15: Placing MEXC futures order...")
+        order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
+        if order_outcome.get("ok"):
+            print("Step 15 Complete: Order placed successfully")
+            # Save order response
+            try:
+                order_filename = f"mexc_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                order_path = os.path.join(output_dir, order_filename)
+                with open(order_path, 'w') as f:
+                    json.dump(order_outcome.get("response"), f, indent=2, default=str)
+                print(f"Saved order response to {order_path}")
+            except Exception as e:
+                print(f"⚠️ Failed to save order response: {str(e)}")
+        else:
+            print(f"Step 15 Failed: Order placement error - {order_outcome.get('error')}")
     else:
         print("Step 14 Complete: Trade not approved by gate")
 else:

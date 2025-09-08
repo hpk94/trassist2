@@ -1,6 +1,6 @@
 openai==1.106.1
 python-dotenv==1.0.0
 requests==2.31.0
-pymexc
+pymexc==1.0.1
 pandas
 flask==3.0.0
