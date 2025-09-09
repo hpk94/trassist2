@@ -188,7 +188,7 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
     emit_progress("Chart: Sending request to OpenAI Vision API...")
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-2024-08-06",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": enhanced_prompt},
                 {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
@@ -225,7 +225,7 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
             # Retry without response_format to see if that's the issue
             emit_progress("Chart: Retrying without response_format constraint...")
             retry_response = client.chat.completions.create(
-                model="gpt-4o-2024-08-06",
+                model="chatgpt-4o-latest",
                 messages=[
                     {"role": "system", "content": enhanced_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
                     {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
@@ -444,7 +444,7 @@ def llm_trade_gate_decision(
     emit_progress("Gate: Sending request to LLM for trade gate decision...")
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-2024-08-06",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": TRADE_GATE_PROMPT},
                 {"role": "user", "content": json.dumps(gate_context)},
@@ -2817,7 +2817,7 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                     emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}", 12, 12)
                 except Exception as e:
                     emit_progress(f"⚠️ Notification failed: {str(e)}", 12, 12)
-                
+python                 
                 if take_profits:
                     tp_info = ", ".join([f"TP{i+1}: ${tp.get('price', 0):.2f}" for i, tp in enumerate(take_profits)])
                     emit_progress(f"Take Profits: {tp_info}", 12, 12)

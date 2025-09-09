@@ -26,7 +26,7 @@ def analyze_trading_chart(image_path: str) -> dict:
     client = OpenAI()
     
     response = client.chat.completions.create(
-        model="gpt-4o-2024-08-06",
+        model="chatgpt-4o-latest",
         messages=[
             {"role": "system", "content": OPENAI_VISION_PROMPT},
             {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
@@ -71,7 +71,7 @@ def llm_trade_gate_decision(
     }
 
     response = client.chat.completions.create(
-        model="gpt-4o-2024-08-06",
+        model="chatgpt-4o-latest",
         messages=[
             {"role": "system", "content": TRADE_GATE_PROMPT},
             {"role": "user", "content": json.dumps(gate_context)},

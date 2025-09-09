@@ -22,7 +22,7 @@ def analyze_trading_chart(image_path: str) -> dict:
     client = OpenAI()
     
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="chatgpt-4o-latest",
         messages=[
             {"role": "system", "content": OPENAI_VISION_PROMPT},
             {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
