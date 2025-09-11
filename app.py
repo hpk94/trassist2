@@ -293,10 +293,18 @@ print("Step 7: Fetching market data...")
 df = fetch_market_dataframe(symbol, timeframe)
 print(f"Step 7 Complete: Market data fetched, {len(df)} candles retrieved")
 
-print("Step 8: Calculating RSI14 indicator...")
+print("Step 8: Calculating technical indicators...")
 # Calculate RSI14
 df = calculate_rsi14(df)
-print("Step 8 Complete: RSI14 calculation finished")
+# Calculate MACD12_26_9
+df = calculate_macd12_26_9(df)
+# Calculate STOCH14_3_3
+df = calculate_stoch14_3_3(df)
+# Calculate BB20_2
+df = calculate_bb20_2(df)
+# Calculate ATR14
+df = calculate_atr14(df)
+print("Step 8 Complete: Technical indicators calculation finished")
 
 print("Step 9: Extracting latest market indicators...")
 # Get the latest RSI14 value and signal
@@ -404,6 +412,78 @@ def check_sequence_condition(df, condition):
 
     return False
 
+def check_macd_condition(df, condition):
+    """Check MACD-specific conditions"""
+    if df.empty or len(df) < 2:
+        return False
+    
+    condition_text = condition.get('condition', '').lower()
+    
+    # Check if required MACD columns exist
+    if 'MACD_Line' not in df.columns or 'MACD_Signal' not in df.columns or 'MACD_Histogram' not in df.columns:
+        return False
+    
+    # Get the last few values for trend analysis
+    macd_line = df['MACD_Line'].iloc[-1]
+    macd_signal = df['MACD_Signal'].iloc[-1]
+    macd_histogram = df['MACD_Histogram'].iloc[-1]
+    
+    # Check for null values
+    if pd.isna(macd_line) or pd.isna(macd_signal) or pd.isna(macd_histogram):
+        return False
+    
+    if 'histogram increasing' in condition_text:
+        # Check if histogram is increasing over last 2 candles
+        if len(df) >= 2:
+            prev_histogram = df['MACD_Histogram'].iloc[-2]
+            if not pd.isna(prev_histogram):
+                return macd_histogram > prev_histogram
+        return False
+    
+    elif 'histogram decreasing' in condition_text:
+        # Check if histogram is decreasing over last 2 candles
+        if len(df) >= 2:
+            prev_histogram = df['MACD_Histogram'].iloc[-2]
+            if not pd.isna(prev_histogram):
+                return macd_histogram < prev_histogram
+        return False
+    
+    elif 'macd_line < signal_line' in condition_text:
+        return macd_line < macd_signal
+    
+    elif 'macd_line > signal_line' in condition_text:
+        return macd_line > macd_signal
+    
+    # Default case - check if histogram is positive
+    return macd_histogram > 0
+
+def check_stoch_condition(df, condition):
+    """Check Stochastic-specific conditions"""
+    if df.empty:
+        return False
+    
+    condition_text = condition.get('condition', '').lower()
+    
+    # Check if required STOCH columns exist
+    if 'STOCH_K' not in df.columns or 'STOCH_D' not in df.columns:
+        return False
+    
+    k_percent = df['STOCH_K'].iloc[-1]
+    d_percent = df['STOCH_D'].iloc[-1]
+    
+    # Check for null values
+    if pd.isna(k_percent) or pd.isna(d_percent):
+        return False
+    
+    if 'k_percent < d_percent' in condition_text:
+        return k_percent < d_percent
+    
+    elif 'k_percent > d_percent' in condition_text:
+        return k_percent > d_percent
+    
+    # Default case - check if K is above D
+    return k_percent > d_percent
+
 def list_of_indicator_checker():
     technical_indicator_list=[]
     for i in llm_output['opening_signal']['checklist']:
@@ -422,25 +502,27 @@ def indicator_checker(df):
         indicator_type = i['type']
         condition_met = False
         
-
-        
+        # Handle different indicator types
         if indicator_type == 'indicator_threshold':
             condition_met = check_indicator_threshold(df, i)
         elif indicator_type == 'indicator_crossover':
             condition_met = check_indicator_crossover(df, i)
+        elif indicator_type == 'indicator_condition':
+            # Handle indicator_condition type (like MACD conditions)
+            if indicator_name == 'MACD12_26_9':
+                condition_met = check_macd_condition(df, i)
+            elif indicator_name == 'STOCH14_3_3':
+                condition_met = check_stoch_condition(df, i)
+            else:
+                condition_met = False
         else:
-
             condition_met = False
-        
-
         
         # Count conditions that are met
         if condition_met:
             conditions_met_count += 1
         else:
             all_conditions_met = False
-        
-
     
     return all_conditions_met
 
@@ -590,6 +672,10 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
         print(f"  Polling cycle {cycles + 1}: fetching fresh market data...")
         current_df = fetch_market_dataframe(symbol, timeframe)
         current_df = calculate_rsi14(current_df)
+        current_df = calculate_macd12_26_9(current_df)
+        current_df = calculate_stoch14_3_3(current_df)
+        current_df = calculate_bb20_2(current_df)
+        current_df = calculate_atr14(current_df)
         print(f"  Polling cycle {cycles + 1}: validating trading signal...")
         signal_valid, signal_status, triggered_conditions, market_values = validate_trading_signal(current_df)
         print(f"  Polling cycle {cycles + 1}: signal status = {signal_status}")

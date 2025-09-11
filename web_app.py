@@ -2816,8 +2816,7 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                     notification_results = notify_valid_trade(trade_data)
                     emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}", 12, 12)
                 except Exception as e:
-                    emit_progress(f"⚠️ Notification failed: {str(e)}", 12, 12)
-python                 
+                    emit_progress(f"⚠️ Notification failed: {str(e)}", 12, 12)                
                 if take_profits:
                     tp_info = ", ".join([f"TP{i+1}: ${tp.get('price', 0):.2f}" for i, tp in enumerate(take_profits)])
                     emit_progress(f"Take Profits: {tp_info}", 12, 12)

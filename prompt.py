@@ -54,7 +54,6 @@ You will receive:
    - Verify claimed patterns against technical definitions and explicitly mention specific patterns identified.
    - Identify any missed patterns that are relevant.
    - Use the market data to confirm pattern timing and accuracy.
-   - **CRITICAL**: Wait for patterns that are going to break out. Do not recommend entries on patterns that are still forming or consolidating.
 
 4. **Technical Indicator Analysis**
    - **RSI14**: Use provided calculated values when available, otherwise extract from chart. Identify overbought (>70), oversold (<30), or neutral zones
@@ -80,7 +79,6 @@ You will receive:
 
 8. **Entry Signal Specification**
    - Produce a deterministic checklist for a potential opening trade signal.
-   - **CRITICAL**: Only generate signals for patterns that are going to break out. Include breakout confirmation as a required checklist item.
    - Each checklist item must be a single measurable condition with a comparator and threshold (e.g., "RSI14 on 1m <= 30", "Close[0] >= 0.236 Fib from swing-low to swing-high"). Avoid compound statements.
    - For candlestick criteria, specify the exact candle index window (e.g., last closed candle = index 0, previous = 1) and pattern name.
    - Specify the exact Fibonacci anchors used for calculation.
@@ -88,7 +86,6 @@ You will receive:
 
 9. **Retest Preference & Calculated Risk**
    - Prefer entries that include a measurable retest of a key level (e.g., prior breakout level, VWAP/MA, Bollinger middle band, or Fib level) within the last 1-3 closed candles.
-   - **CRITICAL**: Always wait for patterns that are going to break out before considering entry. Do not recommend entries on patterns that are still forming or consolidating.
    - If a valid momentum continuation setup exists without a clean retest, it is acceptable to take a calculated risk provided invalidations are clear and risk/reward remains favorable.
    - When recommending entry without a retest, explicitly state why (e.g., strong momentum with volume thrust) and tighten stops accordingly.
 
