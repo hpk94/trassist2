@@ -66,6 +66,27 @@ The system will:
 - Validate trading signals against technical indicators
 - Display the final signal status (valid/invalidated/pending)
 
+### Use via Telegram (image upload + live status)
+
+You can upload chart images directly in Telegram and get live status updates.
+
+1. Create a bot with BotFather and obtain the token.
+2. Add to `.env`:
+
+```
+TELEGRAM_BOT_TOKEN=123456:abc...
+# Optional: restrict to a single chat
+TELEGRAM_ALLOWED_CHAT_ID=123456789
+```
+
+3. Run the bot:
+
+```
+python run_telegram_bot.py
+```
+
+Send a chart image to the bot. It will stream progress and reply with a summary.
+
 ## 🏗️ Architecture
 
 - **`app.py`**: Main application with trading analysis logic
