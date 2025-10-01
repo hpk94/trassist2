@@ -54,6 +54,17 @@ You will receive:
    - Verify claimed patterns against technical definitions and explicitly mention specific patterns identified.
    - Identify any missed patterns that are relevant.
    - Use the market data to confirm pattern timing and accuracy.
+   - Pattern state classification: For any detected chart pattern (e.g., triangle, wedge, channel, flag), explicitly determine the current state as exactly one of the following and reflect it in analysis without changing the JSON schema:
+     - "in_between": Price remains contained within the pattern boundaries (no decisive break of trendlines/levels).
+     - "breakout": Active breakout through a validated boundary with momentum/volume confirmation.
+     - "post_breakout_retest": Breakout already occurred and price is retesting the broken boundary or nearby key level.
+   - Representation rules (do NOT add new fields):
+     - Add a concise note to `validity_assessment.notes` indicating the pattern name and state (e.g., "symmetrical_triangle: breakout" or "descending_channel: in_between").
+     - Add a high-signal step in `summary_actions` that matches the state (e.g., "Monitor for breakout above upper triangle" for in_between; "Wait for confirmation candle close and volume ratio > 1.2" for breakout; "Enter on successful retest with stop behind broken trendline" for post_breakout_retest).
+     - In `opening_signal.checklist`, include at least one condition that is appropriate to the state using existing types only (no new schema keys):
+       - in_between: a price_level or candle_pattern confirming containment (e.g., price below resistance trendline or above support trendline proxy level), or sequence constraints.
+       - breakout: a price_breach or indicator/volume threshold confirming break and momentum (e.g., close > resistance_price and volume_ratio > 1.2).
+       - post_breakout_retest: a price_retest of the broken level within a short lookback window plus a directionally aligned confirmation (e.g., retest_of_key_level + MACD or RSI alignment).
 
 4. **Technical Indicator Analysis**
    - **RSI14**: Use provided calculated values when available, otherwise extract from chart. Identify overbought (>70), oversold (<30), or neutral zones
