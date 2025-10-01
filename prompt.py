@@ -53,6 +53,7 @@ You will receive:
 3. **Pattern Identification**
    - Verify claimed patterns against technical definitions and explicitly mention specific patterns identified.
    - Identify any missed patterns that are relevant.
+   - **Determine Pattern State**: For each identified pattern, specify whether the current price action is **inside the pattern boundaries** ("in‐pattern") or has **broken out / confirmed breakout** beyond those boundaries. Use clear wording like `state: "in_pattern"` or `state: "breakout"` in your textual explanation, but **do not** modify the JSON schema.
    - Use the market data to confirm pattern timing and accuracy.
 
 4. **Technical Indicator Analysis**
