@@ -34,6 +34,23 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
 # Global progress queue for real-time updates
 progress_queue = queue.Queue()
 
+# Thread-local progress listeners to allow external sinks (e.g., Telegram)
+_progress_listeners_local = threading.local()
+
+def add_progress_listener(callback):
+    """Register a per-thread progress listener callable(progress_data: dict)."""
+    if not hasattr(_progress_listeners_local, 'listeners'):
+        _progress_listeners_local.listeners = []
+    _progress_listeners_local.listeners.append(callback)
+
+def remove_progress_listener(callback):
+    """Unregister a previously added per-thread progress listener."""
+    if hasattr(_progress_listeners_local, 'listeners'):
+        try:
+            _progress_listeners_local.listeners.remove(callback)
+        except ValueError:
+            pass
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -64,6 +81,17 @@ def emit_progress(message, step=None, total_steps=None):
     }
     progress_queue.put(progress_data)
     print(message)  # Also print to console
+    # Fan-out to any registered per-thread listeners (e.g., Telegram bot)
+    try:
+        listeners = getattr(_progress_listeners_local, 'listeners', [])
+        for listener in list(listeners):
+            try:
+                listener(progress_data)
+            except Exception:
+                # Do not let listener failures break the pipeline
+                pass
+    except Exception:
+        pass
 
 def _convert_symbol_to_mexc_futures(symbol: str) -> str:
     """Convert symbols like BTCUSDT or BTC/USDT to MEXC futures format (e.g., BTC_USDT)."""
