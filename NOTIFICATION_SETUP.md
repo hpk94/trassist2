@@ -93,3 +93,34 @@ Check your trading platform!
 - Check your .env file is in the project root
 - Ensure all required environment variables are set
 - Check the console output for error messages
+
+## Telegram Bot (image upload + live status)
+
+You can use Telegram to upload chart screenshots and receive live analysis progress directly in chat.
+
+1) Create a bot with BotFather and get the token.
+
+2) Add the following to `.env`:
+
+```
+TELEGRAM_BOT_TOKEN=123456:ABC-YourTokenHere
+# Optional: comma-separated chat IDs or @usernames allowed to use the bot
+TELEGRAM_WHITELIST=123456789,@yourusername
+```
+
+3) Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+4) Run the bot:
+
+```
+python -m services.telegram_bot
+```
+
+Usage:
+- Send a photo of a trading chart to the bot. The analysis starts automatically.
+- You'll receive live progress updates in the chat.
+- Use `/status` to see the last 20 progress messages.
