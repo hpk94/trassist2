@@ -2636,6 +2636,173 @@ def upload_file():
     else:
         return jsonify({'success': False, 'error': 'Invalid file type. Please upload an image file.'})
 
+@app.route('/api/upload-image', methods=['POST'])
+def upload_image_api():
+    """
+    Enhanced API endpoint for image upload with optional analysis
+    
+    Parameters:
+    - image: File (required) - The trading chart image
+    - auto_analyze: Boolean (optional) - Whether to automatically start analysis (default: false)
+    - save_permanently: Boolean (optional) - Whether to save the image permanently (default: false)
+    - filename: String (optional) - Custom filename for saved image
+    
+    Returns:
+    - success: Boolean
+    - message: String
+    - image_path: String (if saved permanently)
+    - job_id: String (if auto_analyze is true)
+    - metadata: Object with image details
+    """
+    try:
+        # Validate image file
+        if 'image' not in request.files:
+            return jsonify({
+                'success': False,
+                'error': 'No image file provided in request'
+            }), 400
+        
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({
+                'success': False,
+                'error': 'Empty filename'
+            }), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({
+                'success': False,
+                'error': f'Invalid file type. Allowed types: {", ".join(ALLOWED_EXTENSIONS)}'
+            }), 400
+        
+        # Get optional parameters
+        auto_analyze = request.form.get('auto_analyze', 'false').lower() == 'true'
+        save_permanently = request.form.get('save_permanently', 'false').lower() == 'true'
+        custom_filename = request.form.get('filename', '')
+        
+        # Generate filename
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        original_ext = file.filename.rsplit('.', 1)[1].lower()
+        
+        if custom_filename:
+            # Sanitize custom filename
+            safe_custom_name = secure_filename(custom_filename)
+            if not safe_custom_name.endswith(f'.{original_ext}'):
+                safe_custom_name = f"{safe_custom_name}.{original_ext}"
+            filename = safe_custom_name
+        else:
+            filename = f"trading_chart_{timestamp}.{original_ext}"
+        
+        # Determine save path
+        if save_permanently:
+            # Save to project directory
+            uploads_dir = os.path.join(os.getcwd(), 'uploads')
+            os.makedirs(uploads_dir, exist_ok=True)
+            save_path = os.path.join(uploads_dir, filename)
+            file.save(save_path)
+            image_path = save_path
+            temp_file = False
+        else:
+            # Save as temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{original_ext}') as tmp_file:
+                file.save(tmp_file.name)
+                image_path = tmp_file.name
+                temp_file = True
+        
+        # Get image metadata
+        file_size = os.path.getsize(image_path)
+        
+        response_data = {
+            'success': True,
+            'message': 'Image uploaded successfully',
+            'metadata': {
+                'filename': filename,
+                'size_bytes': file_size,
+                'size_kb': round(file_size / 1024, 2),
+                'timestamp': timestamp,
+                'file_type': original_ext,
+                'saved_permanently': save_permanently
+            }
+        }
+        
+        # Add image path if saved permanently
+        if save_permanently:
+            response_data['image_path'] = image_path
+        
+        # Start analysis if requested
+        if auto_analyze:
+            # Clear the progress queue before starting
+            while not progress_queue.empty():
+                progress_queue.get()
+            
+            job_id = f'analysis_{timestamp}'
+            
+            # Run analysis in background
+            def run_analysis_and_cleanup():
+                try:
+                    run_trading_analysis(image_path)
+                finally:
+                    # Only delete temp files
+                    if temp_file and os.path.exists(image_path):
+                        os.unlink(image_path)
+            
+            analysis_thread = threading.Thread(target=run_analysis_and_cleanup)
+            analysis_thread.start()
+            
+            response_data['job_id'] = job_id
+            response_data['message'] = 'Image uploaded and analysis started'
+        
+        return jsonify(response_data), 200
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Server error: {str(e)}'
+        }), 500
+
+@app.route('/api/list-uploads')
+def list_uploads():
+    """List all uploaded images in the uploads directory"""
+    try:
+        uploads_dir = os.path.join(os.getcwd(), 'uploads')
+        if not os.path.exists(uploads_dir):
+            return jsonify({
+                'success': True,
+                'images': [],
+                'count': 0
+            })
+        
+        images = []
+        for filename in os.listdir(uploads_dir):
+            # Check if it's an image file
+            if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+                file_path = os.path.join(uploads_dir, filename)
+                file_stat = os.stat(file_path)
+                
+                images.append({
+                    'filename': filename,
+                    'filepath': file_path,
+                    'size_bytes': file_stat.st_size,
+                    'size_kb': round(file_stat.st_size / 1024, 2),
+                    'size_mb': round(file_stat.st_size / (1024 * 1024), 2),
+                    'uploaded_at': datetime.fromtimestamp(file_stat.st_ctime).strftime('%Y-%m-%d %H:%M:%S'),
+                    'modified_at': datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+                })
+        
+        # Sort by upload time (newest first)
+        images.sort(key=lambda x: x['uploaded_at'], reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'images': images,
+            'count': len(images)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @app.route('/list-json-files')
 def list_json_files():
     """List all available JSON files for resuming analysis"""

@@ -65,3 +65,6 @@ config.json
 
 # Output directories (optional - you might want to keep these)
 # llm_outputs/
+
+# Uploaded images
+uploads/
