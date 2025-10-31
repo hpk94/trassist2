@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 # Base URL for the API
-BASE_URL = "http://localhost:5000"
+BASE_URL = "http://localhost:5001"  # Using 5001 to avoid macOS AirPlay conflict on port 5000
 
 def test_simple_upload(image_path):
     """Test simple image upload without any options"""
