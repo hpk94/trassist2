@@ -3,7 +3,7 @@ import json
 import base64
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
-from openai import OpenAI
+import litellm
 from prompt import OPENAI_VISION_PROMPT, TRADE_GATE_PROMPT
 import pandas as pd
 from datetime import datetime
@@ -17,16 +17,21 @@ from services.notification_service import notify_valid_trade, notify_invalidated
 # Load environment variables
 load_dotenv()
 
+# Configure LiteLLM models (can be changed via environment variable)
+# Examples: "gpt-4o", "claude-3-5-sonnet-20241022", "gemini/gemini-1.5-pro", "deepseek/deepseek-chat"
+# Vision model for chart analysis (must support vision)
+LITELLM_VISION_MODEL = os.getenv("LITELLM_VISION_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
+# Text model for trade gate decisions (can be any model, including non-vision models like DeepSeek)
+LITELLM_TEXT_MODEL = os.getenv("LITELLM_TEXT_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
+
 test_image = "BTCUSDT.P_2025-09-02_22-55-40_545b4.png"
 
 def analyze_trading_chart(image_path: str) -> dict:
     with open(image_path, "rb") as image_file:
         image_data = base64.b64encode(image_file.read()).decode("utf-8")
     
-    client = OpenAI()
-    
-    response = client.chat.completions.create(
-        model="chatgpt-4o-latest",
+    response = litellm.completion(
+        model=LITELLM_VISION_MODEL,  # Use vision model for image analysis
         messages=[
             {"role": "system", "content": OPENAI_VISION_PROMPT},
             {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
@@ -37,7 +42,7 @@ def analyze_trading_chart(image_path: str) -> dict:
     content = response.choices[0].message.content
     
     if content is None:
-        raise ValueError("OpenAI API returned None content")
+        raise ValueError("LLM API returned None content")
     
     return json.loads(content)
 
@@ -48,8 +53,6 @@ def llm_trade_gate_decision(
     invalidation_triggered: bool,
     triggered_conditions: list
 ) -> Dict[str, Any]:
-    client = OpenAI()
-
     # Prepare concise context for the gate
     gate_context = {
         "llm_snapshot": {
@@ -70,8 +73,8 @@ def llm_trade_gate_decision(
         },
     }
 
-    response = client.chat.completions.create(
-        model="chatgpt-4o-latest",
+    response = litellm.completion(
+        model=LITELLM_TEXT_MODEL,  # Use text model for trade gate (can be DeepSeek)
         messages=[
             {"role": "system", "content": TRADE_GATE_PROMPT},
             {"role": "user", "content": json.dumps(gate_context)},
@@ -160,7 +163,7 @@ def fetch_market_data(symbol, timeframe):
         klines = public_spot_client.klines(
             symbol=symbol,
             interval=timeframe,
-            limit=100
+            limit=400
         )
         if klines:
             print(f"      Successfully fetched {len(klines)} klines")
@@ -317,18 +320,25 @@ else:
 # Common utility functions for condition checking
 def evaluate_comparison(current_value, comparator, target_value):
     """Evaluate a comparison between current value and target value"""
+    # Ensure both values are numeric for comparison
+    try:
+        current_num = float(current_value) if current_value is not None else 0.0
+        target_num = float(target_value) if target_value is not None else 0.0
+    except (ValueError, TypeError):
+        return False
+    
     if comparator == '<=':
-        return current_value <= target_value
+        return current_num <= target_num
     elif comparator == '>=':
-        return current_value >= target_value
+        return current_num >= target_num
     elif comparator == '<':
-        return current_value < target_value
+        return current_num < target_num
     elif comparator == '>':
-        return current_value > target_value
+        return current_num > target_num
     elif comparator == '==':
-        return current_value == target_value
+        return current_num == target_num
     elif comparator == '!=':
-        return current_value != target_value
+        return current_num != target_num
     else:
         return False
 
@@ -485,46 +495,65 @@ def check_stoch_condition(df, condition):
     return k_percent > d_percent
 
 def list_of_indicator_checker():
-    technical_indicator_list=[]
-    for i in llm_output['opening_signal']['checklist']:
-        if i['technical_indicator'] == True:
+    """Return list of indicator items, supporting new and legacy schemas.
+
+    - New: concatenates `opening_signal.core_checklist` and `opening_signal.secondary_checklist`.
+    - Legacy: filters `opening_signal.checklist` by `technical_indicator == True`.
+    """
+    opening = llm_output.get('opening_signal', {}) if isinstance(llm_output, dict) else {}
+    if not isinstance(opening, dict):
+        opening = {}
+    if 'core_checklist' in opening or 'secondary_checklist' in opening:
+        core = opening.get('core_checklist', []) or []
+        secondary = opening.get('secondary_checklist', []) or []
+        return list(core) + list(secondary)
+    technical_indicator_list = []
+    for i in opening.get('checklist', []) or []:
+        if i.get('technical_indicator') is True:
             technical_indicator_list.append(i)
     return technical_indicator_list
 
 def indicator_checker(df):
-    technical_indicator_list = list_of_indicator_checker()
-    all_conditions_met = True
-    conditions_met_count = 0
-    total_conditions = len(technical_indicator_list)
+    """Return aggregate results following new pass rule components.
 
-    for i in technical_indicator_list:
-        indicator_name = i['indicator'] 
-        indicator_type = i['type']
-        condition_met = False
-        
-        # Handle different indicator types
+    Returns: (all_core_met, num_core_met, total_core)
+    """
+    opening = llm_output.get('opening_signal', {}) if isinstance(llm_output, dict) else {}
+    core_items = opening.get('core_checklist') if isinstance(opening, dict) else None
+    legacy_items = None
+    if core_items is None:
+        # Legacy: treat filtered items as core
+        legacy_items = list_of_indicator_checker()
+
+    def eval_one(i):
+        indicator_name = i.get('indicator')
+        indicator_type = i.get('type') or 'indicator_threshold'
         if indicator_type == 'indicator_threshold':
-            condition_met = check_indicator_threshold(df, i)
-        elif indicator_type == 'indicator_crossover':
-            condition_met = check_indicator_crossover(df, i)
-        elif indicator_type == 'indicator_condition':
-            # Handle indicator_condition type (like MACD conditions)
+            return check_indicator_threshold(df, i)
+        if indicator_type == 'indicator_crossover':
+            return check_indicator_crossover(df, i)
+        if indicator_type == 'indicator_condition':
             if indicator_name == 'MACD12_26_9':
-                condition_met = check_macd_condition(df, i)
-            elif indicator_name == 'STOCH14_3_3':
-                condition_met = check_stoch_condition(df, i)
-            else:
-                condition_met = False
-        else:
-            condition_met = False
-        
-        # Count conditions that are met
-        if condition_met:
-            conditions_met_count += 1
-        else:
-            all_conditions_met = False
-    
-    return all_conditions_met
+                return check_macd_condition(df, i)
+            if indicator_name == 'STOCH14_3_3':
+                return check_stoch_condition(df, i)
+        return False
+
+    num_core_met = 0
+    total_core = 0
+    if core_items is not None:
+        total_core = len(core_items)
+        for it in core_items:
+            if eval_one(it):
+                num_core_met += 1
+    elif legacy_items is not None:
+        total_core = len(legacy_items)
+        for it in legacy_items:
+            if eval_one(it):
+                num_core_met += 1
+
+    all_core_met = (total_core > 0 and num_core_met == total_core)
+    return all_core_met, num_core_met, total_core
 
 
 
@@ -594,13 +623,15 @@ def invalidation_checker(df):
 
 
 def validate_trading_signal(df):
-    """Comprehensive trading signal validation combining checklist and invalidation checks"""
+    """Comprehensive trading signal validation combining checklist and invalidation checks
+
+    New rule: valid if all core met OR (>=2 core met AND strong pattern).
+    Strong pattern: any pattern with confidence >= 0.75.
+    """
     print("    Validating trading signal...")
-    
-    # Check if all checklist conditions are met
-    print("    Checking indicator checklist...")
-    checklist_passed = indicator_checker(df)
-    print(f"    Checklist passed: {checklist_passed}")
+    print("    Checking indicator checklist (core/secondary)...")
+    all_core_met, num_core_met, total_core = indicator_checker(df)
+    print(f"    Core met: {num_core_met}/{total_core} (all_core_met={all_core_met})")
     
     # Check if any invalidation conditions are triggered
     print("    Checking invalidation conditions...")
@@ -643,10 +674,13 @@ def validate_trading_signal(df):
             print(f"⚠️ Invalidation notification failed: {str(e)}")
         
         return False, "invalidated", triggered_conditions, market_values
-    elif checklist_passed:
-        print("    Signal validation result: VALID")
-        return True, "valid", [], market_values
     else:
+        # Evaluate new pass rule
+        patterns = llm_output.get('pattern_analysis', []) if isinstance(llm_output, dict) else []
+        strong_pattern = any((p.get('confidence') or 0) >= 0.75 for p in (patterns or []))
+        if all_core_met or (num_core_met >= 2 and strong_pattern):
+            print("    Signal validation result: VALID")
+            return True, "valid", [], market_values
         print("    Signal validation result: PENDING")
         return False, "pending", [], market_values
 

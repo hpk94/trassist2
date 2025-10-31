@@ -4,7 +4,7 @@ import base64
 import tempfile
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
-from openai import OpenAI
+import litellm
 from prompt import OPENAI_VISION_PROMPT, TRADE_GATE_PROMPT
 import pandas as pd
 from datetime import datetime
@@ -24,6 +24,12 @@ from services.notification_service import notify_valid_trade, notify_invalidated
 
 # Load environment variables
 load_dotenv()
+
+# Configure LiteLLM models (can be changed via environment variable)
+# Vision model for chart analysis (must support vision)
+LITELLM_VISION_MODEL = os.getenv("LITELLM_VISION_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
+# Text model for trade gate decisions (can be any model, including non-vision models like DeepSeek)
+LITELLM_TEXT_MODEL = os.getenv("LITELLM_TEXT_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -154,7 +160,7 @@ def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, 
         return {"ok": False, "error": str(e)}
 
 def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
-    """Analyze trading chart using OpenAI Vision API with optional market data"""
+    """Analyze trading chart using LLM Vision API with optional market data"""
     emit_progress("Chart: Reading image file...")
     
     try:
@@ -172,9 +178,6 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
         emit_progress(f"Chart: Error reading image file: {str(e)}")
         raise
     
-    emit_progress("Chart: Initializing OpenAI client...")
-    client = OpenAI()
-    
     # Prepare the prompt based on whether we have market data
     if df is not None and not df.empty:
         emit_progress("Chart: Preparing enhanced prompt with market data...")
@@ -185,10 +188,10 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
         emit_progress("Chart: Using standard prompt without market data...")
         enhanced_prompt = OPENAI_VISION_PROMPT
     
-    emit_progress("Chart: Sending request to OpenAI Vision API...")
+    emit_progress(f"Chart: Sending request to LLM Vision API (model: {LITELLM_VISION_MODEL})...")
     try:
-        response = client.chat.completions.create(
-            model="chatgpt-4o-latest",
+        response = litellm.completion(
+            model=LITELLM_VISION_MODEL,
             messages=[
                 {"role": "system", "content": enhanced_prompt},
                 {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
@@ -196,12 +199,12 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
             response_format={"type": "json_object"},
             timeout=60  # Add 60 second timeout
         )
-        emit_progress("Chart: Received response from OpenAI Vision API")
+        emit_progress("Chart: Received response from LLM Vision API")
         emit_progress(f"Chart: Response has {len(response.choices)} choices")
         if response.choices:
             emit_progress(f"Chart: First choice finish_reason: {response.choices[0].finish_reason}")
     except Exception as e:
-        emit_progress(f"Chart: Error calling OpenAI API: {str(e)}")
+        emit_progress(f"Chart: Error calling LLM API: {str(e)}")
         raise
     
     emit_progress("Chart: Parsing JSON response...")
@@ -224,8 +227,8 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
             
             # Retry without response_format to see if that's the issue
             emit_progress("Chart: Retrying without response_format constraint...")
-            retry_response = client.chat.completions.create(
-                model="chatgpt-4o-latest",
+            retry_response = litellm.completion(
+                model=LITELLM_VISION_MODEL,
                 messages=[
                     {"role": "system", "content": enhanced_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
                     {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
@@ -415,8 +418,6 @@ def llm_trade_gate_decision(
     """Make trade gate decision using LLM"""
     emit_progress("Gate: Initializing LLM trade gate decision...")
     
-    client = OpenAI()
-
     # Prepare concise context for the gate
     emit_progress("Gate: Preparing context for gate decision...")
     gate_context = {
@@ -441,10 +442,10 @@ def llm_trade_gate_decision(
     emit_progress(f"Gate: Context prepared - Symbol: {gate_context['llm_snapshot']['symbol']}, Price: ${gate_context['market_values']['current_price']:.2f}, RSI: {gate_context['market_values']['current_rsi']:.2f}")
     emit_progress(f"Gate: Checklist passed: {checklist_passed}, Invalidation triggered: {invalidation_triggered}")
 
-    emit_progress("Gate: Sending request to LLM for trade gate decision...")
+    emit_progress(f"Gate: Sending request to LLM for trade gate decision (model: {LITELLM_TEXT_MODEL})...")
     try:
-        response = client.chat.completions.create(
-            model="chatgpt-4o-latest",
+        response = litellm.completion(
+            model=LITELLM_TEXT_MODEL,
             messages=[
                 {"role": "system", "content": TRADE_GATE_PROMPT},
                 {"role": "user", "content": json.dumps(gate_context)},
@@ -506,7 +507,7 @@ def fetch_market_data(symbol, timeframe):
         klines = public_spot_client.klines(
             symbol=symbol,
             interval=timeframe,
-            limit=100
+            limit=400
         )
         return klines
     except Exception as e:
@@ -546,27 +547,69 @@ from services.indicator_service import (
 
 def evaluate_comparison(current_value, comparator, target_value):
     """Evaluate a comparison between current value and target value"""
+    # Ensure both values are numeric for comparison
+    try:
+        current_num = float(current_value) if current_value is not None else 0.0
+        target_num = float(target_value) if target_value is not None else 0.0
+    except (ValueError, TypeError):
+        return False
+    
     if comparator == '<=':
-        return current_value <= target_value
+        return current_num <= target_num
     elif comparator == '>=':
-        return current_value >= target_value
+        return current_num >= target_num
     elif comparator == '<':
-        return current_value < target_value
+        return current_num < target_num
     elif comparator == '>':
-        return current_value > target_value
+        return current_num > target_num
     elif comparator == '==':
-        return current_value == target_value
+        return current_num == target_num
     elif comparator == '!=':
-        return current_value != target_value
+        return current_num != target_num
     else:
         return False
 
 def check_indicator_threshold(df, condition):
     """Check indicator threshold conditions"""
-    indicator_name = condition['indicator']
-    comparator = condition['comparator']
-    threshold_value = condition['value']
+    indicator_name = condition.get('indicator')
+    comparator = condition.get('comparator')
+    threshold_value = condition.get('value')
+    if indicator_name is None or comparator is None:
+        return False
     
+    if indicator_name == 'STOCH14_3_3' and isinstance(threshold_value, str):
+        # Handle Stochastic comparisons like K vs D: e.g., "STOCH14_3_3 > d_percent"
+        if 'STOCH_K' not in df.columns or 'STOCH_D' not in df.columns:
+            return False
+        k_val = df['STOCH_K'].iloc[-1]
+        d_val = df['STOCH_D'].iloc[-1]
+        compare_val = d_val if threshold_value.lower() == 'd_percent' else k_val
+        return evaluate_comparison(k_val, comparator, compare_val)
+
+    # Special-case derived indicators not stored as columns
+    if indicator_name == 'PRICE':
+        if df is None or df.empty or 'Close' not in df.columns:
+            return False
+        current_value = df['Close'].iloc[-1]
+        return evaluate_comparison(current_value, comparator, threshold_value)
+
+    if indicator_name == 'VOLUME':
+        # Support ratio checks against average volume over lookback (default 20)
+        if df is None or df.empty or 'Volume' not in df.columns:
+            return False
+        lookback = condition.get('lookback_candles', 20)
+        baseline = (condition.get('baseline') or '').lower()
+        current_vol = df['Volume'].iloc[-1]
+        if baseline in ('average', 'average_volume', 'avg'):
+            window = df['Volume'].iloc[-lookback:] if lookback and lookback > 0 else df['Volume']
+            avg_vol = window.mean()
+            if avg_vol is None or pd.isna(avg_vol) or avg_vol == 0:
+                return False
+            ratio = float(current_vol) / float(avg_vol)
+            return evaluate_comparison(ratio, comparator, threshold_value)
+        # Fallback: compare absolute volume
+        return evaluate_comparison(current_vol, comparator, threshold_value)
+
     if indicator_name not in df.columns:
         # Handle special cases for indicators that use different column names
         if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
@@ -762,44 +805,68 @@ def check_pattern_breach(df, condition, llm_output):
     return False
 
 def list_of_indicator_checker(llm_output):
-    """Get list of technical indicators from LLM output"""
+    """Get list of technical indicators from LLM output.
+
+    Supports both legacy schema with `opening_signal.checklist` and
+    new schema with `opening_signal.core_checklist` and `opening_signal.secondary_checklist`.
+    Returns concatenated core+secondary for new schema, or only items marked
+    `technical_indicator` for legacy schema.
+    """
+    opening = llm_output.get('opening_signal', {}) or {}
+
+    if 'core_checklist' in opening or 'secondary_checklist' in opening:
+        core = opening.get('core_checklist', []) or []
+        secondary = opening.get('secondary_checklist', []) or []
+        def _supported(item):
+            t = (item or {}).get('type')
+            return t in ('indicator_threshold', 'indicator_crossover', 'indicator_condition', 'price_level')
+        return [i for i in list(core) + list(secondary) if _supported(i)]
+
     technical_indicator_list = []
-    for i in llm_output['opening_signal']['checklist']:
-        if i['technical_indicator'] == True:
+    for i in opening.get('checklist', []) or []:
+        if i.get('technical_indicator') is True:
             technical_indicator_list.append(i)
     return technical_indicator_list
 
 def indicator_checker(df, llm_output, emit_progress_fn=None):
-    """Check if all technical indicator conditions are met"""
-    technical_indicator_list = list_of_indicator_checker(llm_output)
-    all_conditions_met = True
-    conditions_met_count = 0
-    total_conditions = len(technical_indicator_list)
-    indicator_details = []
+    """Evaluate indicator checklist and return tuple:
+    (all_core_met, num_core_met, total_core, any_secondary_met, details)
 
-    for i in technical_indicator_list:
-        indicator_name = i['indicator'] 
-        indicator_type = i['type']
+    New schema: uses `core_checklist` and `secondary_checklist`.
+    Legacy: treats items from `checklist` with `technical_indicator=True` as core.
+    """
+    opening = llm_output.get('opening_signal', {}) or {}
+
+    core_items = opening.get('core_checklist')
+    secondary_items = opening.get('secondary_checklist')
+    legacy_items = None
+    if core_items is None and secondary_items is None:
+        legacy_items = list_of_indicator_checker(llm_output)
+
+    indicator_details = []
+    num_core_met = 0
+    total_core = 0
+    any_secondary_met = False
+
+    def eval_one(i):
+        indicator_name = i.get('indicator')
+        indicator_type = i.get('type') or 'indicator_threshold'
         condition_met = False
         current_value = None
         target_value = None
         condition_description = ""
-        
+
         if indicator_type == 'indicator_threshold':
             condition_met = check_indicator_threshold(df, i)
             if indicator_name in df.columns:
                 current_value = df[indicator_name].iloc[-1]
             elif indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
-                # Handle MACD12_26_9 as threshold - use MACD_Line value
                 current_value = df['MACD_Line'].iloc[-1]
             elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
-                # Handle STOCH14_3_3 as threshold - use STOCH_K value
                 current_value = df['STOCH_K'].iloc[-1]
             elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
-                # Handle BB20_2_PercentB as threshold - use BB_PercentB value
                 current_value = df['BB_PercentB'].iloc[-1]
             elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
-                # Handle BB20_2_Bandwidth as threshold - use BB_Bandwidth value
                 current_value = df['BB_Bandwidth'].iloc[-1]
             target_value = i.get('value')
             comparator = i.get('comparator', '==')
@@ -814,82 +881,91 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
         else:
             condition_met = False
             condition_description = f"{indicator_name} (unsupported type: {indicator_type})"
-        
-        # Store indicator details
-        # Convert values to JSON-serializable types
+
+        # Serialize values
         serializable_current_value = None
         if current_value is not None:
-            if isinstance(current_value, str):
-                serializable_current_value = current_value
-            else:
-                try:
-                    # Handle pandas Timestamp and other non-serializable types
-                    if hasattr(current_value, 'isoformat'):  # pandas Timestamp
-                        serializable_current_value = current_value.isoformat()
-                    elif hasattr(current_value, 'item'):  # numpy scalar
-                        serializable_current_value = current_value.item()
-                    else:
-                        serializable_current_value = float(current_value)
-                except (ValueError, TypeError):
-                    serializable_current_value = str(current_value)
-        
+            try:
+                if hasattr(current_value, 'isoformat'):
+                    serializable_current_value = current_value.isoformat()
+                elif hasattr(current_value, 'item'):
+                    serializable_current_value = current_value.item()
+                else:
+                    serializable_current_value = float(current_value)
+            except (ValueError, TypeError):
+                serializable_current_value = str(current_value)
+
         serializable_target_value = None
         if target_value is not None:
-            if isinstance(target_value, str):
-                serializable_target_value = target_value
-            else:
-                try:
-                    # Handle pandas Timestamp and other non-serializable types
-                    if hasattr(target_value, 'isoformat'):  # pandas Timestamp
-                        serializable_target_value = target_value.isoformat()
-                    elif hasattr(target_value, 'item'):  # numpy scalar
-                        serializable_target_value = target_value.item()
-                    else:
-                        serializable_target_value = float(target_value)
-                except (ValueError, TypeError):
-                    serializable_target_value = str(target_value)
-        
+            try:
+                if hasattr(target_value, 'isoformat'):
+                    serializable_target_value = target_value.isoformat()
+                elif hasattr(target_value, 'item'):
+                    serializable_target_value = target_value.item()
+                else:
+                    serializable_target_value = float(target_value)
+            except (ValueError, TypeError):
+                serializable_target_value = str(target_value)
+
         indicator_details.append({
             'name': indicator_name,
             'type': indicator_type,
             'condition': condition_description,
-            'met': bool(condition_met),  # Convert numpy bool_ to Python bool
+            'met': bool(condition_met),
             'current_value': serializable_current_value,
             'target_value': serializable_target_value
         })
-        
-        # Count conditions that are met
-        if condition_met:
-            conditions_met_count += 1
-        else:
-            all_conditions_met = False
-        
-        # Emit progress if function provided
-        if emit_progress_fn:
-            emit_progress_fn(f"Indicator checker progress: {conditions_met_count}/{total_conditions}")
-    
-    # Emit detailed indicator status if function provided
+
+        return condition_met
+
+    if core_items is not None:
+        total_core = len(core_items)
+        for i in core_items:
+            if eval_one(i):
+                num_core_met += 1
+
+    if secondary_items is not None:
+        for i in secondary_items:
+            if eval_one(i):
+                any_secondary_met = True
+
+    if legacy_items is not None:
+        total_core = len(legacy_items)
+        for i in legacy_items:
+            if eval_one(i):
+                num_core_met += 1
+
+    all_core_met = (total_core > 0 and num_core_met == total_core)
+
     if emit_progress_fn and indicator_details:
         emit_progress_fn(json.dumps({
             "type": "indicator_details",
-            "payload": {
-                "total_indicators": total_conditions,
-                "met_indicators": conditions_met_count,
-                "indicators": make_json_serializable(indicator_details)
-            }
+            "payload": make_json_serializable({
+                "total_indicators": len(indicator_details),
+                "core_total": total_core,
+                "core_met": num_core_met,
+                "secondary_any_met": any_secondary_met,
+                "indicators": indicator_details
+            })
         }))
-    
-    return all_conditions_met
+
+    return all_core_met, num_core_met, total_core, any_secondary_met, indicator_details
 
 def invalidation_checker(df, llm_output):
     """Check invalidation conditions from the LLM output"""
-    invalidation_conditions = llm_output['opening_signal']['invalidation']
+    opening = llm_output.get('opening_signal', {}) or {}
+    invalidation_conditions = opening.get('invalidation', []) or []
     invalidation_triggered = False
     triggered_conditions = []
     
     for condition in invalidation_conditions:
-        condition_id = condition['id']
-        condition_type = condition['type']
+        if not isinstance(condition, dict):
+            continue
+        condition_id = condition.get('id') or 'unknown'
+        condition_type = condition.get('type')
+        if not condition_type:
+            # Skip invalid entries without a type
+            continue
         condition_met = False
         
         if condition_type == 'price_breach':
@@ -945,10 +1021,13 @@ def invalidation_checker(df, llm_output):
     return invalidation_triggered, triggered_conditions
 
 def validate_trading_signal(df, llm_output, emit_progress_fn=None):
-    """Comprehensive trading signal validation combining checklist and invalidation checks"""
-    # Check if all checklist conditions are met
-    checklist_passed = indicator_checker(df, llm_output, emit_progress_fn)
-    
+    """Comprehensive trading signal validation combining checklist and invalidation checks
+
+    New pass rule: valid if all core met OR (>=2 core met AND strong pattern).
+    Strong pattern: any pattern with confidence >= 0.75.
+    """
+    all_core_met, num_core_met, total_core, _, _ = indicator_checker(df, llm_output, emit_progress_fn)
+
     # Check if any invalidation conditions are triggered
     invalidation_triggered, triggered_conditions = invalidation_checker(df, llm_output)
     
@@ -1006,9 +1085,12 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
                 emit_progress_fn(f"⚠️ Invalidation notification failed: {str(e)}")
         
         return False, "invalidated", triggered_conditions, market_values
-    elif checklist_passed:
-        return True, "valid", [], market_values
     else:
+        # Pattern strength check
+        patterns = llm_output.get('pattern_analysis', []) or []
+        strong_pattern = any((p.get('confidence') or 0) >= 0.75 for p in patterns)
+        if all_core_met or (num_core_met >= 2 and strong_pattern):
+            return True, "valid", [], market_values
         return False, "pending", [], market_values
 
 def _timeframe_seconds(interval):
@@ -1092,7 +1174,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
 
             # Local light wrapper mirroring existing function signature
             def _fetch_market_dataframe(sym: str, tf: str) -> pd.DataFrame:
-                kl = public_spot_client_local.klines(symbol=sym, interval=tf, limit=100)
+                kl = public_spot_client_local.klines(symbol=sym, interval=tf, limit=400)
                 if not kl:
                     return pd.DataFrame()
                 frame = pd.DataFrame(kl)
