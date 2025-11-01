@@ -1,0 +1,124 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 11:56",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 110610.5,
+    "resistance": 111109.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 50.58,
+      "status": "neutral",
+      "signal": "no_signal"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "data_unavailable"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unavailable",
+      "bandwidth": "unavailable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "data_unavailable"
+    },
+    "VOLUME": {
+      "current": null,
+      "average": null,
+      "ratio": null,
+      "trend": "data_unavailable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "data_unavailable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "Absence of significant technical indicators limits setup validity. Pattern alignment is moderate."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "price_below_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": "<=",
+        "value": 111002.8,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "descending_channel",
+        "type": "candle_pattern",
+        "pattern": "descending_channel",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": "resistance",
+        "comparator": ">"
+      },
+      {
+        "id": "two_bull_candles_large",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bullish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111110.0,
+      "basis": "above_channel",
+      "distance_ticks": 100
+    },
+    "take_profit": [
+      {
+        "price": 110610.5,
+        "basis": "recent_support",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor breakout from descending channel pattern",
+    "Enter short if checklist items remain true",
+    "Invalidate on price close above resistance"
+  ],
+  "improvements": "Enhance setup with RSI14 and MACD confirmatory signals, tighten stop loss in high volatility"
+}

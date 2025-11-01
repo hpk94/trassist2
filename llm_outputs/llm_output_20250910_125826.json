@@ -1,0 +1,153 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 10:58",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 112060.0,
+    "resistance": 112742.2
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 37.41,
+      "status": "neutral",
+      "signal": "weak_bounce_potential"
+    },
+    "MACD12_26_9": {
+      "macd_line": -18.6102,
+      "signal_line": -6.2341,
+      "histogram": -12.3761,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_available",
+      "bandwidth": "not_available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": 0.19735944,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "RSI is near oversold and price is near the lower bound of descending channel and 0.236 Fib; however, MACD is strongly bearish and volume is weak."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_near_0236_fib",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": ">=",
+        "value": 112221.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "channel_support_touch",
+        "type": "structure_touch",
+        "level": "descending_channel_lower_bound",
+        "comparator": "near_or_touch",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_below_channel",
+        "type": "price_breach",
+        "level": "descending_channel_lower_bound",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_histogram_drops_further",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9.histogram",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": -15.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112180.0,
+      "basis": "below_channel_support",
+      "distance_ticks": 55
+    },
+    "take_profit": [
+      {
+        "price": 112401.1,
+        "basis": "Fib_0.5",
+        "rr": 3.9
+      },
+      {
+        "price": 112481.6,
+        "basis": "0.618 Fib",
+        "rr": 5.47
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for bounce above 40 and MACD histogram lessening to confirm bounce",
+    "Only enter long after candle close clearly shows support bounce at channel + 0.236 Fib",
+    "Place stops below channel and confluence Fib (e.g., below 112180)",
+    "Target TP1 = Fib 0.5 at 112401, TP2 = Fib 0.618 at 112481"
+  ],
+  "improvements": "Wait for a confirming reversal candle (e.g., bullish hammer or engulfing) at support with stronger volume; also confirm MACD histogram reversal before entry"
+}

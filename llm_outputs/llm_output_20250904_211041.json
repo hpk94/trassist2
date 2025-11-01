@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 19:10",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 109590.8,
+    "resistance": 110150.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 49.82,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": 3.3,
+      "signal_line": 4.1,
+      "histogram": -0.8,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "within",
+      "bandwidth": "narrow"
+    },
+    "STOCH14_3_3": null,
+    "VOLUME": {
+      "current": 3,
+      "average": null,
+      "ratio": "low",
+      "trend": "flat"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_chart": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "MACD bearish crossover with low volume doesn't strongly support any direction"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_fib_0_236",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": "<",
+        "value": 110018.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "descending_triangle",
+        "type": "chart_pattern",
+        "pattern": "descending_triangle",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "chart_pattern"
+      },
+      {
+        "id": "volume_below_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_above_fib_0_236",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": ">="
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110020.0,
+      "basis": "above_fib_and_pattern",
+      "distance_ticks": 63
+    },
+    "take_profit": [
+      {
+        "price": 109500.0,
+        "basis": "pattern_target",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor MACD for bullish crossover to avoid opening a position",
+    "Consider entering short if checklist conditions align",
+    "Set stop loss above current resistance and pattern invalidation level"
+  ],
+  "improvements": "Ensure confluences like higher volume and confirm with additional indicators like Bollinger Bands"
+}

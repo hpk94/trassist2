@@ -1,0 +1,28 @@
+{
+  "should_open": false,
+  "direction": "none",
+  "confidence": 0.0,
+  "reasons": [
+    "No opening signal is triggered per LLM analysis.",
+    "Risk management parameters are not specified."
+  ],
+  "warnings": [
+    "There's an absence of defined invalidation and risk management levels which makes trade structuring impossible."
+  ],
+  "execution": {
+    "entry_type": "none",
+    "entry_price": 0.0,
+    "stop_loss": 0.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "No position can be calculated without valid opening signal and defined risk levels."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

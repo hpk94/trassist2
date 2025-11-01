@@ -1,0 +1,34 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current RSI of 36.4 indicates potential oversold conditions conflicting with the long entry signal",
+    "Price has not reached or breached the 0.618 Fibonacci level as per the entry signal requirement"
+  ],
+  "warnings": [
+    "Entry signal checklist condition 'price_at_618_fib' not met",
+    "Risk of entering in potentially oversold market"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111136.15,
+    "stop_loss": 110911.7,
+    "take_profits": [
+      {
+        "price": 111842.6,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.0,
+    "position_size_note": "Consider smaller size due to market uncertainty"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 1
+    },
+    "context_alignment": "weak"
+  }
+}

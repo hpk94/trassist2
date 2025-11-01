@@ -1,0 +1,179 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 08:03",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111316.8,
+    "resistance": 112242.1
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 57.47,
+      "status": "neutral",
+      "signal": "declining_from_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 85.9777,
+      "signal_line": 101.3383,
+      "histogram": -15.3605,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "above_upper_band",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 58.43,
+      "d_percent": 72.78,
+      "signal": "bearish_cross_from_overbought"
+    },
+    "VOLUME": {
+      "current": 6.24176287,
+      "average": 5.5,
+      "ratio": 1.13,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": 28.5,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_channel_break_retest",
+      "candle_index": 0,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "Bearish divergence on Stochastic and MACD histogram crossover to negative, while price tests rising channel top. Setup lacks strong confluence for long entry."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "stoch_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_was_overbought",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 80.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "declining_volume_breakout",
+        "type": "volume_trend",
+        "lookback_candles": 5,
+        "trend": "decreasing",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_rejects_upper_channel",
+        "type": "price_action",
+        "level": "channel_upper",
+        "comparator": "<=",
+        "value": 112580,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "price_below_fib_0_level",
+        "type": "price_level",
+        "level": "fib_0",
+        "comparator": "<=",
+        "value": 112242.1,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_channel",
+        "type": "price_breach",
+        "level": "channel_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "bullish_macd_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "stoch_k_above_80",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 80.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112585.0,
+      "basis": "above_channel_rejection_high",
+      "distance_ticks": 189
+    },
+    "take_profit": [
+      {
+        "price": 111888.6,
+        "basis": "0.382_fib_retrace",
+        "rr": 1.4
+      },
+      {
+        "price": 111670.3,
+        "basis": "0.618_fib_retrace",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm bearish stochastic and MACD crossover",
+    "Price rejected upper channel and broke back below 0 fib",
+    "Enter short with stop above recent high (channel upper)",
+    "Use fib levels for layered take profits"
+  ],
+  "improvements": "Add BB20_2 middle band to confirm midline squeeze or reversion signal; use ATR14 for dynamic stop adjustment during trend volatility swings"
+}

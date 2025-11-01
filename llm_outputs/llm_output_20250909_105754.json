@@ -1,0 +1,177 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-09 08:57",
+  "trend_direction": "neutral_to_bearish",
+  "support_resistance": {
+    "support": 112801.4,
+    "resistance": 113038.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 46.05,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": -24.1988,
+      "signal_line": -24.756,
+      "histogram": 0.5572,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 1.48008876,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_channel",
+      "candle_index": 0,
+      "confidence": 0.8
+    },
+    {
+      "pattern": "potential_double_bottom",
+      "candle_index": 3,
+      "confidence": 0.65
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.68,
+    "notes": "MACD bullish crossover developing inside falling channel near 0.618 Fib level. RSI in neutral zone. Lacks volume confirmation."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_45",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 45.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "near_0618_fib_support",
+        "type": "price_level",
+        "level": "fib_0.618",
+        "anchors": {
+          "from": "112699.9",
+          "to": "113130.0"
+        },
+        "comparator": "~=",
+        "value": 112965.7,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "inside_falling_channel",
+        "type": "structure_presence",
+        "pattern": "falling_channel",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "double_bottom_potential",
+        "type": "candle_pattern",
+        "pattern": "double_bottom",
+        "candle_index": 3,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_below_fib_0236",
+        "type": "price_breach",
+        "level": "fib_0.236",
+        "comparator": "<=",
+        "value": 112801.4
+      },
+      {
+        "id": "macd_bearish_crossover_after_signal",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112790.0,
+      "basis": "below_fib_0.236_and_channel_support",
+      "distance_ticks": 142
+    },
+    "take_profit": [
+      {
+        "price": 113038.0,
+        "basis": "fib_0.786_resistance",
+        "rr": 1.0
+      },
+      {
+        "price": 113130.0,
+        "basis": "fib_1.0_and_channel_top",
+        "rr": 1.6
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for higher low structure forming inside falling channel",
+    "Wait for RSI to close above 50 and MACD histogram to confirm trend shift >1.2",
+    "Only consider long if price stays above 0.618 Fib and MACD momentum builds",
+    "Confirm breakout from channel before aggressive entry"
+  ],
+  "improvements": "Add volume confirmation above average for breakout confidence, use Bollinger Bands or VWAP for dynamic support."
+}

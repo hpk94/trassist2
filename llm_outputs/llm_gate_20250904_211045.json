@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI is below 50.",
+    "MACD line is below the signal line indicating bearish momentum.",
+    "Price is below the Fibonacci retracement level of 0.236.",
+    "A descending triangle pattern is identified.",
+    "Volume is below average suggesting weak support for higher prices."
+  ],
+  "warnings": [],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 109995.81,
+    "stop_loss": 110020.0,
+    "take_profits": [
+      {
+        "price": 109500.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Position size should be calculated based on a risk of 1% of trading account balance due to expected stop-loss distance."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

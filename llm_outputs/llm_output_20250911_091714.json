@@ -1,0 +1,176 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-11 07:16",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 113900.0,
+    "resistance": 114400.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 34.59,
+      "status": "oversold",
+      "signal": "near_oversold_turnaround"
+    },
+    "MACD12_26_9": {
+      "macd_line": -69.254,
+      "signal_line": -68.7625,
+      "histogram": -0.4916,
+      "signal": "bearish_continuation"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below_middle_band",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35.29,
+      "d_percent": 31.62,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 2.33440695,
+      "average": 1.8,
+      "ratio": 1.3,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_pin_bar",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.64,
+    "notes": "Bullish pin bar at Fibonacci 0.0 support with RSI near oversold. However, MACD remains strongly bearish."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 35.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_k_above_d",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "%K > %D",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "retest_fib_0",
+        "type": "price_retest",
+        "level": "fib_0",
+        "lookback_candles": 3,
+        "tolerance_ticks": 5,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "bullish_pin_bar",
+        "type": "candle_pattern",
+        "pattern": "bullish_pin_bar",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_closes_below_113900",
+        "type": "price_breach",
+        "level": 113900.0,
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_continuation",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_30",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 30.0
+      },
+      {
+        "id": "bearish_engulfing_next_2",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bearish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113890.0,
+      "basis": "below_fib_0_support",
+      "distance_ticks": 86
+    },
+    "take_profit": [
+      {
+        "price": 114150.0,
+        "basis": "fib_0.5",
+        "rr": 2.0
+      },
+      {
+        "price": 114209.0,
+        "basis": "fib_0.618",
+        "rr": 2.6
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for RSI14 to rise above 35 and Stochastic %K to remain above %D",
+    "Confirm bullish pin bar close above 113900 support zone",
+    "Entry considered valid only if volume remains elevated and MACD begins turning upward",
+    "Avoid long entry if price closes below fib 0 (113900)"
+  ],
+  "improvements": "Wait for MACD line to begin turning upward for better confirmation; add Fibonacci confluence with BB midline if visible."
+}

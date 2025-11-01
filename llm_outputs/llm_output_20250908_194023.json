@@ -1,0 +1,75 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 17:40",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 112297.8,
+    "resistance": 112466.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 42.77,
+      "status": "neutral",
+      "signal": "no_signal"
+    },
+    "MACD12_26_9": {
+      "macd_line": -4.0962,
+      "signal_line": 8.7002,
+      "histogram": -12.7964,
+      "signal": "bearish"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_applicable",
+      "bandwidth": "not_applicable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_applicable"
+    },
+    "VOLUME": {
+      "current": 0.0103414,
+      "average": "not_applicable",
+      "ratio": "not_applicable",
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_applicable"
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "alignment_score": 0.4,
+    "notes": "Bearish MACD without supporting bullish RSI or volume signals"
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [],
+      "lookback_seconds": 0
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "not_applicable",
+      "distance_ticks": null
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Await clearer signals aligning indicators",
+    "Monitor RSI for potential oversold recovery",
+    "Observe MACD for any upcoming bullish crossover"
+  ],
+  "improvements": "Utilize additional indicators such as Bollinger Bands and Stochastic for more clarity"
+}

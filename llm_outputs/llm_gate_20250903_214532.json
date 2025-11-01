@@ -1,0 +1,31 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.85,
+  "reasons": [
+    "Current RSI is below 50, confirming bearish momentum",
+    "Price has breached triangle support, aligning with short signal"
+  ],
+  "warnings": [],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111836.77,
+    "stop_loss": 112183.4,
+    "take_profits": [
+      {
+        "price": 111500.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Adjust position size to ensure total portfolio risk is within acceptable limits."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

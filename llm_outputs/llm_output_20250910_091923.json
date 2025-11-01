@@ -1,0 +1,162 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 07:18",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111550.0,
+    "resistance": 111929.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 47.8,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": 11.3999,
+      "signal_line": 15.3361,
+      "histogram": -3.9362,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "unavailable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 54.94,
+      "d_percent": 47.8,
+      "signal": "bearish_crossover"
+    },
+    "VOLUME": {
+      "current": 118090,
+      "average": 101500,
+      "ratio": 1.16,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unavailable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.62,
+    "notes": "Price is respecting the rising channel, currently testing the 0.236 retracement. However, MACD and Stoch indicate fading bullish momentum."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_channel_support",
+        "type": "structure",
+        "level": "channel_lower_bound",
+        "comparator": "~=",
+        "value": 111784.9,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_structure"
+      },
+      {
+        "id": "fib_0236_support",
+        "type": "price_level",
+        "level": "fib_0.236",
+        "comparator": ">=",
+        "value": 111784.9,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "stoch_above_50",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel_and_fib_0382",
+        "type": "price_breach",
+        "level": "fib_0.382",
+        "comparator": "<",
+        "value": 111695.4
+      },
+      {
+        "id": "macd_bearish_histogram",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 0
+      },
+      {
+        "id": "stoch_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111680.0,
+      "basis": "below 0.382 retracement and channel",
+      "distance_ticks": 100
+    },
+    "take_profit": [
+      {
+        "price": 111929.5,
+        "basis": "local swing high",
+        "rr": 1.48
+      },
+      {
+        "price": 112200.0,
+        "basis": "channel top extension",
+        "rr": 2.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for bounce off 0.236 Fib and channel support",
+    "Wait for bullish crossover confirmation on Stochastic or MACD histogram turning positive",
+    "Do not enter while MACD remains bearishly crossed",
+    "Invalidate setup if price breaks below 0.382 Fib level"
+  ],
+  "improvements": "Add Bollinger Bands and confirm with a bullish candlestick pattern (e.g. hammer or bullish engulfing) at bounce area; look for a spike in volume for entry confirmation."
+}

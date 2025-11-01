@@ -1,0 +1,123 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-31 15:05",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 109717.6,
+    "resistance": 111379.6
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 56.87,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 70.0,
+      "d_percent": 65.0,
+      "signal": "bullish_cross"
+    },
+    "VOLUME": {
+      "current": 5.7554019,
+      "average": null,
+      "ratio": null,
+      "trend": "consistent"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 109130.0,
+        "to": 111379.6
+      },
+      "levels": {
+        "0.236": 110305.3,
+        "0.382": 110668.3,
+        "0.5": 110254.8,
+        "0.618": 109717.6,
+        "0.786": 109459.2
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.75,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, bullish Stochastic cross, price above 0.236 Fibonacci level."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recovery",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_bull_cross",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_above_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 110305.3,
+        "basis": "fib_0.236"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0236",
+        "type": "price_breach",
+        "level": "fib_0.236"
+      },
+      {
+        "id": "stoch_bear_cross",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 60.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109717.6,
+      "basis": "below_fib_0.618"
+    },
+    "take_profit": [
+      {
+        "price": 111379.6,
+        "basis": "fib_0.382_resistance",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm RSI above 50 for bullish momentum.",
+    "Look for bullish Stochastic cross for momentum confirmation.",
+    "Ensure price stays above Fib 0.236 for entry validation.",
+    "Set stop-loss below Fib 0.618."
+  ],
+  "improvements": "Monitor volume increase for stronger entry validation."
+}

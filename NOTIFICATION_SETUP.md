@@ -1,8 +1,31 @@
-# iPhone Notification Setup Guide
+# Notification Setup Guide
 
-This guide will help you set up iPhone notifications for valid trades in your Trading Assistant.
+This guide will help you set up notifications for valid trades in your Trading Assistant. Multiple notification methods are supported and can be used simultaneously.
 
-## Option 1: Pushover (Recommended)
+## Option 1: Telegram (Recommended for Images & Analysis)
+
+Telegram is the best option for receiving trading chart images and analysis results.
+
+### Setup Steps:
+1. **Create a Telegram bot** with @BotFather
+2. **Get your chat ID** from @userinfobot
+3. **Add credentials to your .env file:**
+
+```bash
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+TELEGRAM_CHAT_ID=your_chat_id_here
+```
+
+### Benefits:
+- ✅ Receive chart images instantly
+- ✅ Get detailed analysis results
+- ✅ Visual notifications with rich formatting
+- ✅ Works on all platforms (phone, tablet, desktop)
+- ✅ Message history saved in chat
+
+**For detailed Telegram setup instructions, see [TELEGRAM_SETUP.md](TELEGRAM_SETUP.md)**
+
+## Option 2: Pushover (Recommended for iPhone)
 
 Pushover is the most reliable method for iPhone notifications.
 
@@ -25,7 +48,7 @@ PUSHOVER_USER=your_user_key_here
 - ✅ Works even when app is closed
 - ✅ Reliable delivery
 
-## Option 2: Email to SMS (Backup)
+## Option 3: Email to SMS (Backup)
 
 Send email notifications that get converted to SMS on your phone.
 

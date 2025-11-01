@@ -1,0 +1,129 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 20:51",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 110527.6,
+    "resistance": 111295.8
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 46.81,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": -1.172,
+      "signal_line": -3.9381,
+      "histogram": 2.7661,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": 0.0,
+      "middle": 0.0,
+      "lower": 0.0,
+      "price_position": "n/a",
+      "bandwidth": "n/a"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 0.0,
+      "d_percent": 0.0,
+      "signal": "n/a"
+    },
+    "VOLUME": {
+      "current": 0.1130048,
+      "average": 0.1130048,
+      "ratio": 1.0,
+      "trend": "steady"
+    },
+    "ATR14": {
+      "value": 0.0,
+      "period": 14,
+      "volatility": "n/a"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none",
+      "candle_index": 0,
+      "confidence": 0.0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "RSI is neutral, MACD shows a bullish crossover but no significant pattern or volume spike is observed"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_neutral",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "==",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110527.6,
+      "basis": "below_support",
+      "distance_ticks": 0
+    },
+    "take_profit": [
+      {
+        "price": 111295.8,
+        "basis": "below_resistance",
+        "rr": 1.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for MACD12_26_9 and RSI confirmation",
+    "Look for volume increase to validate entry",
+    "Set stop-loss below recent support"
+  ],
+  "improvements": "Consider additional validation with Fibonacci or candlestick patterns. Monitor volume closely for better entry timing."
+}

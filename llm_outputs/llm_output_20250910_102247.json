@@ -1,0 +1,184 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 08:22",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 112575.3,
+    "resistance": 112822.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 55.62,
+      "status": "neutral",
+      "signal": "bearish_divergence"
+    },
+    "MACD12_26_9": {
+      "macd_line": 68.6445,
+      "signal_line": 88.3361,
+      "histogram": -19.6916,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 55.62,
+      "d_percent": 69.86,
+      "signal": "bearish_crossover"
+    },
+    "VOLUME": {
+      "current": 82950,
+      "average": 97000,
+      "ratio": 0.86,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bearish_inside_bar",
+      "candle_index": 0,
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "Price is at upper trend channel resistance with bearish MACD and Stochastic crossovers. Volume is decreasing. RSI showing bearish divergence. Pattern indicates possible short-term weakness."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_bearish_divergence",
+        "type": "indicator_divergence",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "condition": "lower_high_on_rsi_vs_higher_high_on_price",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_upper_channel",
+        "type": "price_level",
+        "level": "channel_upper",
+        "comparator": "<=",
+        "value": 112822.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "bearish_inside_bar",
+        "type": "candle_pattern",
+        "pattern": "bearish_inside_bar",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "volume_decreasing",
+        "type": "volume_threshold",
+        "lookback_candles": 5,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_close_above_112822",
+        "type": "price_breach",
+        "level": "112822.0",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "stoch_bull_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent"
+      },
+      {
+        "id": "two_bull_candles_large",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bullish",
+        "atr_multiple": 1.2
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112840.0,
+      "basis": "above_recent_high",
+      "distance_ticks": 220
+    },
+    "take_profit": [
+      {
+        "price": 112422.7,
+        "basis": "fib_0.382",
+        "rr": 1.5
+      },
+      {
+        "price": 112299.3,
+        "basis": "fib_0.5",
+        "rr": 2.25
+      }
+    ]
+  },
+  "summary_actions": [
+    "Bearish conditions detected at upper channel and Fib zone",
+    "Enter short as MACD and Stoch both confirm with inside bar rejection",
+    "Set stop above 112822 swing high",
+    "Target TP1 = 112422.7 (Fib 0.382), TP2 = 112299.3 (Fib 0.5)"
+  ],
+  "improvements": "Add Bollinger Bands and ATR to confirm volatility compression or breakout potential; if bands expand while crossing middle, invalidate short. Seek confirmation candle with volume uptick if unsure."
+}

@@ -1,0 +1,129 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 11:20",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 110610.5,
+    "resistance": 111109.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 53.81,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "undefined"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "undefined",
+      "bandwidth": "undefined"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "undefined"
+    },
+    "VOLUME": {
+      "current": 22970,
+      "average": null,
+      "ratio": "undefined",
+      "trend": "spike"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "undefined"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "undefined",
+      "candle_index": null,
+      "confidence": null
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "RSI recovering towards neutral indicating potential stabilization; volume spike noted."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_recovery",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "support",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_falls",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 45.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110600.0,
+      "basis": "below_support",
+      "distance_ticks": null
+    },
+    "take_profit": [
+      {
+        "price": 111000.0,
+        "basis": "fib_retracement",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for recovery above 50",
+    "Confirm volume spike sustainability",
+    "Enter long if checklist items are true",
+    "Invalidate on drop below support level"
+  ],
+  "improvements": "Include MACD for trend confirmation, validate with Bollinger Bands if possible"
+}

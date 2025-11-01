@@ -1,0 +1,116 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-31 15:44",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 109793.2,
+    "resistance": 110998.7
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 41.41,
+      "status": "neutral",
+      "signal": "decreasing"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 30.0,
+      "d_percent": 41.0,
+      "signal": "approaching_oversold"
+    },
+    "VOLUME": {
+      "current": 102560,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 108498.5,
+        "to": 111087.9
+      },
+      "levels": {
+        "0.236": 110476.8,
+        "0.382": 109998.7,
+        "0.5": 109793.2,
+        "0.618": 109487.7,
+        "0.786": 109052.6
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Rising wedge present; RSI and Stochastic not yet confirming entry."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_decreasing",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_approaching_oversold",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<=",
+        "value": 20.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_below_fib_0.382",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 109998.7,
+        "basis": "fib_0.382"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_above_fib_0.236",
+        "type": "price_breach",
+        "level": 110476.8
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110476.8,
+      "basis": "above_fib_0.236"
+    },
+    "take_profit": [
+      {
+        "price": 109487.7,
+        "basis": "fib_0.618",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI and Stochastic for continued decrease below key levels",
+    "Confirm price below Fib 0.382 for short entry",
+    "Set stop loss above Fib 0.236 level"
+  ],
+  "improvements": "Consider monitoring volume for additional confirmation; wait for RSI to confirm oversold status."
+}

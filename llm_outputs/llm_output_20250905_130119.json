@@ -1,0 +1,180 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-05 11:00",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 112021.8,
+    "resistance": 112940.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 45.79,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": -18.8,
+      "signal_line": -6.0,
+      "histogram": -12.8,
+      "signal": "bearish"
+    },
+    "BB20_2": {
+      "upper": 113200.0,
+      "middle": 112600.0,
+      "lower": 111800.0,
+      "price_position": "near_middle",
+      "bandwidth": "medium"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.11,
+      "d_percent": 45.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 41490,
+      "average": 50000,
+      "ratio": 0.83,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": 120.0,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_chart": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "RSI is neutral, MACD indicates bearish trend, low volume"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_neutral",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 45.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 55.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_below_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_within_channel",
+        "type": "price_level",
+        "level": "channel",
+        "comparator": "<=",
+        "value": 112600.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_channel",
+        "type": "price_breach",
+        "level": "channel_upper",
+        "comparator": ">=",
+        "value": 113200.0
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.5,
+        "baseline": "average_volume"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113200.0,
+      "basis": "above_channel",
+      "distance_ticks": 988
+    },
+    "take_profit": [
+      {
+        "price": 112000.0,
+        "basis": "recent_low",
+        "rr": 1.2
+      },
+      {
+        "price": 111500.0,
+        "basis": "fib_0_786",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor MACD and RSI for continuation of bearish signals",
+    "Confirm price remains within the channel",
+    "Consider short entry if all conditions align"
+  ],
+  "improvements": "Monitor volume for any significant changes; ensure RSI and MACD continue to confirm bearish trend"
+}

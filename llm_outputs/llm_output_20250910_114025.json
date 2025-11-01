@@ -1,0 +1,184 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 09:40",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 112239.8,
+    "resistance": 112441.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 50.01,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": 11.4725,
+      "signal_line": 13.1856,
+      "histogram": -1.7131,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 54.88,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 41690,
+      "average": 39000,
+      "ratio": 1.07,
+      "trend": "rising"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_wedge_breakout",
+      "candle_index": 3,
+      "confidence": 0.87
+    },
+    {
+      "pattern": "bullish_engulfing",
+      "candle_index": 6,
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.74,
+    "notes": "Falling wedge breakout at 0.236 Fib with rising volume supports bullish reversal setup. MACD bearish divergence is a risk."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_neutral",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 45.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">=",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "wedge_breakout",
+        "type": "trendline_break",
+        "level": "falling_wedge_upper",
+        "observed_on_candle": 3,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "fib_support_respected",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": ">=",
+        "value": 112239.8,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "bullish_engulfing",
+        "type": "candle_pattern",
+        "pattern": "bullish_engulfing",
+        "candle_index": 6,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_wedge_break",
+        "type": "price_breach",
+        "level": "falling_wedge_upper",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "close_below_fib_0236",
+        "type": "price_breach",
+        "level": "fib_0_236",
+        "comparator": "<="
+      },
+      {
+        "id": "rsi_lower_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112210.0,
+      "basis": "below_0.236_fib",
+      "distance_ticks": 80
+    },
+    "take_profit": [
+      {
+        "price": 112351.0,
+        "basis": "0.382_fib",
+        "rr": 0.75
+      },
+      {
+        "price": 112441.0,
+        "basis": "0.5_fib",
+        "rr": 1.9
+      },
+      {
+        "price": 112530.9,
+        "basis": "0.618_fib",
+        "rr": 3.2
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry supported after breakout above wedge resistance and 0.236 Fib with bullish engulfing pattern",
+    "Ensure RSI remains above 45 and volume above prior average",
+    "Target 0.382\u20130.618 Fib levels for staged take-profits",
+    "Place stop loss just below 0.236 Fib level and falling wedge break point",
+    "Exit early on MACD crossover or RSI drop below 40"
+  ],
+  "improvements": "Monitor MACD closely for bullish crossover to support continuation. Use BB or VWAP for dynamic support confirmations."
+}

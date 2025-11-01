@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 12:06",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111819.0,
+    "resistance": 112143.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 63.81,
+      "status": "neutral",
+      "signal": "approaching_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 32.8934,
+      "signal_line": 43.6608,
+      "histogram": -10.7674,
+      "signal": "bearish_divergence"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_available",
+      "bandwidth": "not_available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_provided"
+    },
+    "VOLUME": {
+      "current": 2.70864991,
+      "average": null,
+      "ratio": null,
+      "trend": "not_available"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel_breakout",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Price breaks above a descending channel with RSI approaching overbought conditions."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_618",
+        "type": "price_level",
+        "level": "fib_0_618",
+        "comparator": ">=",
+        "value": 111981.2,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "descending_channel_breakout",
+        "type": "candle_pattern",
+        "pattern": "descending_channel_breakout",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_618",
+        "type": "price_breach",
+        "level": "fib_0_618",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111819.0,
+      "basis": "below_support",
+      "distance_ticks": null
+    },
+    "take_profit": [
+      {
+        "price": 112143.5,
+        "basis": "recent_high",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for RSI14 to remain below 70.",
+    "Ensure price stays above 0.618 Fib level for validation.",
+    "Watch for continuation or breakout confirmation."
+  ],
+  "improvements": "Consider using MACD crossover for additional confirmation."
+}

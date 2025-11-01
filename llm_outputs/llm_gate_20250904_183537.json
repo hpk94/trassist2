@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "Checklist requirements are fully met",
+    "No invalidation conditions are triggered",
+    "RSI is in a neutral, non-overbought state",
+    "Falling wedge pattern supports potential bullish reversal"
+  ],
+  "warnings": [
+    "Market conditions on the 1-minute timeframe may be volatile"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 109497.64,
+    "stop_loss": 109360.0,
+    "take_profits": [
+      {
+        "price": 109560.0,
+        "portion": 0.5
+      },
+      {
+        "price": 109646.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Position sizing should account for extreme short-term volatility on a 1m chart"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-09 13:37",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 112614.4,
+    "resistance": 112878.7
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 59.53,
+      "status": "neutral",
+      "signal": "bullish_push_toward_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 36.2914,
+      "signal_line": 32.4848,
+      "histogram": 3.8066,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": 377060,
+      "average": null,
+      "ratio": null,
+      "trend": "slightly_increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_breakout_attempt",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "MACD bullish crossover and RSI approaching overbought align with momentum attempt above 0.786 Fib resistance. Volume is picking up, suggesting potential breakout, but structure needs confirmation through sustained close above 112765.6."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_close_above_fib_0_786",
+        "type": "price_level",
+        "level": "fib_0_786",
+        "comparator": ">=",
+        "value": 112765.6,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "breakout_volume_confirmation",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "increase",
+        "value": "prior_avg",
+        "baseline": "baseline_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "bullish_breakout_pattern",
+        "type": "candle_pattern",
+        "pattern": "bullish_breakout_attempt",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_closes_below_fib_0_5",
+        "type": "price_breach",
+        "level": "fib_0_5",
+        "comparator": "<=",
+        "value": 112614.4
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_under_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112614.4,
+      "basis": "below_fib_0_5_retrace",
+      "distance_ticks": 179.5
+    },
+    "take_profit": [
+      {
+        "price": 112878.7,
+        "basis": "recent_swing_high_fib_1",
+        "rr": 1.5
+      },
+      {
+        "price": 113000.0,
+        "basis": "round_number_extension",
+        "rr": 2.1
+      }
+    ]
+  },
+  "summary_actions": [
+    "Setup aligned for breakout above 0.786 Fib level",
+    "MACD crossover and RSI above 50 support bullish momentum",
+    "Entry valid if close confirms above 112765.6 with volume expansion",
+    "Stop below 0.5 fib (112614.4) and target Fib 1 & psychological level 113000"
+  ],
+  "improvements": "In future setups, include BB20_2 and Stochastic indicators for better timing; monitor for bearish divergence if RSI nears 70 before breakout follow-through"
+}

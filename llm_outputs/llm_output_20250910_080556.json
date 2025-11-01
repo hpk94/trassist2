@@ -1,0 +1,187 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 06:05",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 111372.8,
+    "resistance": 111692.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 40.37,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -10.8457,
+      "signal_line": -9.7784,
+      "histogram": -1.0673,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 43.64,
+      "d_percent": 41.9,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 10.90465344,
+      "average": 8.51,
+      "ratio": 1.28,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bearish_engulfing",
+      "candle_index": 0,
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "Bearish engulfing at channel resistance aligns with MACD crossover. RSI is low but not in full oversold."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "bearish_engulfing_top",
+        "type": "candle_pattern",
+        "pattern": "bearish_engulfing",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_below_0786_fib",
+        "type": "price_level",
+        "level": "fib_0.786",
+        "comparator": "<",
+        "value": 111513.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "channel_rejection",
+        "type": "price_retest",
+        "level": "descending_channel_top",
+        "lookback_candles": 3,
+        "tolerance_ticks": 10,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_engulf_high",
+        "type": "price_breach",
+        "level": "engulfing_high",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 60.0
+      },
+      {
+        "id": "close_above_0786_fib",
+        "type": "price_level",
+        "level": "fib_0.786",
+        "comparator": ">=",
+        "value": 111513.4
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111584.0,
+      "basis": "above bearish engulfing high",
+      "distance_ticks": 135.99
+    },
+    "take_profit": [
+      {
+        "price": 111274.1,
+        "basis": "fib_0.5",
+        "rr": 1.3
+      },
+      {
+        "price": 111175.4,
+        "basis": "fib_0.382",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Bearish engulfing confirmed at top of ascending channel.",
+    "MACD histogram turning down, crossover confirmed.",
+    "Short entry valid below 0.786 retracement level",
+    "Target 50% and 38.2% retracements",
+    "Invalidate on close above engulfing high or bullish MACD crossover"
+  ],
+  "improvements": "Consider waiting for price to break below 0.618 Fib (111372.8) with volume confirmation for higher confidence breakdown entry."
+}

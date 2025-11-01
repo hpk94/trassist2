@@ -1,0 +1,174 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 13:21",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 113078.0,
+    "resistance": 113713.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 53.68,
+      "status": "neutral",
+      "signal": "pullback_from_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 78.1583,
+      "signal_line": 112.8888,
+      "histogram": -34.7305,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "undetermined",
+      "bandwidth": "unavailable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 6.24014082,
+      "average": 4.8825,
+      "ratio": 1.28,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unavailable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge_breakdown",
+      "candle_index": 0,
+      "confidence": 0.91
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Rising wedge breakdown supported by bearish MACD crossover and RSI retreat from overbought. Strong volume confirms move. Watch for support at 0.786 (113278.9) and 113078.0."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 60,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "pattern_breakout",
+        "type": "candle_pattern",
+        "pattern": "rising_wedge_breakdown",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "price_rejected_at_1.618",
+        "type": "price_level",
+        "level": "fib_extension_1.618",
+        "comparator": "<=",
+        "value": 113713.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_closes_above_113713",
+        "type": "price_breach",
+        "level": 113713.4,
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70
+      },
+      {
+        "id": "wedge_reentry",
+        "type": "structure",
+        "condition": "price re-enters wedge after breakdown"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113730.0,
+      "basis": "above_wedge_and_1.618_fib",
+      "distance_ticks": 180
+    },
+    "take_profit": [
+      {
+        "price": 113278.9,
+        "basis": "0.786_fib_retracement",
+        "rr": 1.5
+      },
+      {
+        "price": 113078.0,
+        "basis": "previous_support",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry valid based on wedge breakdown, MACD crossover, RSI drop, and volume confirmation",
+    "Place stop-loss above 113730 (wedge top + 1.618 Fib)",
+    "First TP at 113278.9 (Fib 0.786), second TP at 113078 (support)",
+    "Invalidate if MACD crosses bullish or price reclaims wedge top above 113713.4"
+  ],
+  "improvements": "Add confirmation with Stoch or BB if available next time; monitor for potential higher low near 0.786 (113278.9) before short continuation or reversal"
+}

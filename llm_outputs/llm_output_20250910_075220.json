@@ -1,0 +1,179 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 05:51",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111513.4,
+    "resistance": 111692.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 46.3,
+      "status": "neutral",
+      "signal": "cooling_down"
+    },
+    "MACD12_26_9": {
+      "macd_line": 16.5497,
+      "signal_line": 22.7017,
+      "histogram": -6.152,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 49.46,
+      "d_percent": 60.23,
+      "signal": "bearish_cross"
+    },
+    "VOLUME": {
+      "current": 5.14368407,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": "multi",
+      "confidence": 0.88
+    },
+    {
+      "pattern": "shooting_star",
+      "candle_index": 0,
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "Potential bearish rejection from wedge resistance and overextended Fibonacci 1.0 level; MACD and Stoch showing bearish cross."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "bearish_shooting_star",
+        "type": "candle_pattern",
+        "pattern": "shooting_star",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_rejected_near_fib_1_0",
+        "type": "price_level",
+        "level": "fib_1_0",
+        "comparator": "<",
+        "value": 111692.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "rising_wedge_touched",
+        "type": "structure_event",
+        "level": "wedge_resistance",
+        "comparator": "=",
+        "value": 111692.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_resistance",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "stoch_bullish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent"
+      },
+      {
+        "id": "price_closes_above_111700",
+        "type": "price_level",
+        "level": "hard_resistance",
+        "comparator": ">=",
+        "value": 111700
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111702.0,
+      "basis": "above_fib_1.0_and_wedge",
+      "distance_ticks": 140
+    },
+    "take_profit": [
+      {
+        "price": 111372.8,
+        "basis": "fib_0.618",
+        "rr": 2.0
+      },
+      {
+        "price": 111274.1,
+        "basis": "fib_0.5",
+        "rr": 3.4
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter short after confirmation of rejection at wedge resistance and fib 1.0",
+    "MACD and Stoch both confirm bearish momentum",
+    "Place stop loss just above 111700 zone",
+    "Target 111372.8 and consider trailing to 111274.1"
+  ],
+  "improvements": "Add confirmation candle with volume spike to validate rejection; consider using BB20_2 middle band and ATR14 values for more precise stop and volatility-adjusted SL/TP."
+}

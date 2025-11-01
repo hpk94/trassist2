@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.83,
+  "reasons": [
+    "All checklist conditions passed, including structure, RSI, and volume confluence",
+    "No invalidation conditions triggered",
+    "Price is holding above ascending channel support and 0.382 Fib level",
+    "RSI > 50 supports bullish momentum"
+  ],
+  "warnings": [
+    "Opening on 1-minute timeframe; increased noise and potential for early stop-outs"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111153.15,
+    "stop_loss": 110970.0,
+    "take_profits": [
+      {
+        "price": 111257.5,
+        "portion": 0.5
+      },
+      {
+        "price": 111385.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Size based on SL of 183.15 USDT per BTC; manage accordingly for 1-2% risk"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

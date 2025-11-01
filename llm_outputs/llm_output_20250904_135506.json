@@ -1,0 +1,84 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 11:54",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 110610.5,
+    "resistance": 111109.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 51.8,
+      "status": "neutral",
+      "signal": "neutral_no_signal"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "no_data"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "no_data"
+    },
+    "VOLUME": {
+      "current": 3000,
+      "average": null,
+      "ratio": null,
+      "trend": "static"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "alignment_score": 0.4,
+    "notes": "Price is near 0.382 Fibonacci level with neutral RSI. Lack of directional indicators."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110728.3,
+      "basis": "below_0.236_Fibonacci",
+      "distance_ticks": 110
+    },
+    "take_profit": [
+      {
+        "price": 111109.6,
+        "basis": "Fibonacci_1.0",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor price action near key Fibonacci levels.",
+    "Check for breakout of descending trendline before entry."
+  ],
+  "improvements": "Incorporate MACD and Bollinger Bands to get a clearer market direction signal."
+}

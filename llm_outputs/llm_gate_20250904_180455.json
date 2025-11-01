@@ -1,0 +1,34 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price exceeds planned entry scope.",
+    "Market context shows potential overextension."
+  ],
+  "warnings": [
+    "Entry price is above the planned take profit.",
+    "Possibility of market correction due to stretched price."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 109637.07,
+    "stop_loss": 109353.8,
+    "take_profits": [
+      {
+        "price": 109609.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Adjust size to maintain max risk due to elevated entry level vs. plan."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

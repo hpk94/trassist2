@@ -1,0 +1,115 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-02 17:28",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110420.3,
+    "resistance": 111688.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 51.03,
+      "status": "neutral",
+      "signal": "rising"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 208770,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 110420.3,
+        "to": 111688.0
+      },
+      "levels": {
+        "0.236": 110719.5,
+        "0.382": 110904.6,
+        "0.5": 111054.2,
+        "0.618": 111203.7,
+        "0.786": 111416.7
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel_breakout",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.75,
+    "confluence_with_pattern": true,
+    "notes": "RSI rising with breakout above descending channel and Fibonacci level."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_rising",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 110904.6,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "channel_top"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110719.5,
+      "basis": "below_fib_0236"
+    },
+    "take_profit": [
+      {
+        "price": 111054.2,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      },
+      {
+        "price": 111203.7,
+        "basis": "fib_0.618",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if RSI continues to rise and price remains above Fib 0.382 level.",
+    "Set stop loss below Fib 0.236.",
+    "Target Fib 0.5 and 0.618 for profit levels.",
+    "Invalidate if price falls back into descending channel."
+  ],
+  "improvements": "Monitor volume for a clearer increasing trend; consider stochastic data if available."
+}

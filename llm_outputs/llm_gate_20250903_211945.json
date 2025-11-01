@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price significantly exceeds both the stop loss level and the anticipated take profit targets, suggesting an unfavorable risk-reward ratio."
+  ],
+  "warnings": [
+    "Price has moved significantly beyond the anticipated entry level, reducing expected profitability.",
+    "Potential for reduced retracement back into profitable range."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111912.78,
+    "stop_loss": 110966.8,
+    "take_profits": [
+      {
+        "price": 111495.7,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 0.35,
+    "position_size_note": "Position sizing needs adjustment for increased risk due to high entry price."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

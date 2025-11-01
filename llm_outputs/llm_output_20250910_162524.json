@@ -1,0 +1,192 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 14:24",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 113261.2,
+    "resistance": 114532.2
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 64.14,
+      "status": "neutral",
+      "signal": "bullish_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": 56.7285,
+      "signal_line": 45.7495,
+      "histogram": 10.979,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "upper",
+      "bandwidth": "expanding"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 64.14,
+      "d_percent": 55.25,
+      "signal": "bullish_crossover"
+    },
+    "VOLUME": {
+      "current": 569500,
+      "average": 500000,
+      "ratio": 1.14,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": 122.3,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.84,
+    "notes": "Multiple confluences in bullish momentum: RSI, MACD crossover, and upward structure inside ascending channel. Price is approaching measured move target at 2.618 level aligning with channel top."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_bullish_momentum",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 60.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_near_upper_channel",
+        "type": "price_structure",
+        "level": "ascending_channel_top",
+        "comparator": "<=",
+        "value": 114540.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "stoch_bullish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_1",
+        "type": "price_level",
+        "level": "fib_1",
+        "anchors": {
+          "from": 112868.5,
+          "to": 113504.0
+        },
+        "comparator": ">=",
+        "value": 113504.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_rejects_2_618",
+        "type": "price_breach",
+        "level": 114532.2,
+        "comparator": ">="
+      },
+      {
+        "id": "rsi_overbought_failure",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 70.0
+      },
+      {
+        "id": "macd_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "break_below_channel",
+        "type": "price_structure_breach",
+        "level": "ascending_channel_bottom",
+        "comparator": "<"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113896.7,
+      "basis": "below_1.618_extension",
+      "distance_ticks": 298
+    },
+    "take_profit": [
+      {
+        "price": 114532.2,
+        "basis": "fib_2_618_extension",
+        "rr": 1.13
+      },
+      {
+        "price": 114700.0,
+        "basis": "channel_top_extension",
+        "rr": 1.8
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry valid above Fib 1 level inside strong ascending channel.",
+    "MACD and RSI trend support continuation toward Fib 2.618.",
+    "Volume confirms continued bullish interest.",
+    "Set SL just below Fib 1.618 to protect against false breakout.",
+    "Target Fib 2.618 (TP1) and channel upper extension (TP2)."
+  ],
+  "improvements": "Tighten stop if momentum fades or RSI hits overbought; monitor volume closely for thrust confirmation above 114300."
+}

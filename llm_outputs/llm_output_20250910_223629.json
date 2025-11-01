@@ -1,0 +1,178 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 20:36",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 113577.6,
+    "resistance": 113848.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 45.44,
+      "status": "neutral",
+      "signal": "descending_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": 11.7271,
+      "signal_line": 31.3275,
+      "histogram": -19.6004,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "undetermined",
+      "bandwidth": "undetermined"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 44.15,
+      "d_percent": 56.04,
+      "signal": "bearish_cross"
+    },
+    "VOLUME": {
+      "current": 0.5273548,
+      "average": null,
+      "ratio": null,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "undetermined"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge_breakdown",
+      "candle_index": 0,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.84,
+    "notes": "Bearish divergence with RSI, bearish MACD crossover, wedge breakdown at 0.382 Fib adds confluence to potential short setup"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stochastic_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "break_rising_wedge",
+        "type": "price_breach",
+        "level": "wedge_support_trendline",
+        "comparator": "<",
+        "value": 113600.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "price_below_0382_fib",
+        "type": "price_level",
+        "level": "fib_0_382",
+        "comparator": "<=",
+        "value": 113577.6,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_above_wedge_high",
+        "type": "price_breach",
+        "level": "wedge_resistance_trendline",
+        "comparator": ">",
+        "value": 113860.0
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 60.0
+      },
+      {
+        "id": "strong_bullish_engulf",
+        "type": "candle_pattern",
+        "pattern": "bullish_engulfing",
+        "candle_index": 0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113860.0,
+      "basis": "above_wedge",
+      "distance_ticks": 275
+    },
+    "take_profit": [
+      {
+        "price": 113409.8,
+        "basis": "fib_0_236_support",
+        "rr": 0.62
+      },
+      {
+        "price": 113138.6,
+        "basis": "fib_0",
+        "rr": 1.62
+      }
+    ]
+  },
+  "summary_actions": [
+    "Signal satisfied for short setup after wedge breakdown at Fib 0.382",
+    "RSI, MACD, and Stochastic all show bearish alignment",
+    "Set stop-loss above wedge resistance @ 113860",
+    "Consider partial TP @ 113409.8 and full TP @ 113138.6"
+  ],
+  "improvements": "Add 20-period Bollinger Bands and confirm break below lower band with volume expansion for added edge. Monitor volume trend more closely and consider waiting for breakdown retest before entering for improved R/R."
+}

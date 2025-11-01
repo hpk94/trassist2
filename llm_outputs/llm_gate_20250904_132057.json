@@ -1,0 +1,33 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI has recovered above 50, indicating bullish momentum.",
+    "Volume spike observed, suggesting increased interest in the move."
+  ],
+  "warnings": [
+    "Price is close to take profit level, which might limit upside potential."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 110857.48,
+    "stop_loss": 110600.0,
+    "take_profits": [
+      {
+        "price": 111000.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Ensure position size accounts for proximity to take profit level to maximize risk management efficiency."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

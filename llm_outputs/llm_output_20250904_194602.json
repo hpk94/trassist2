@@ -1,0 +1,132 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 17:45",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 109353.6,
+    "resistance": 109826.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 50.96,
+      "status": "neutral",
+      "signal": "bearish_divergence"
+    },
+    "MACD12_26_9": {
+      "macd_line": -21.9,
+      "signal_line": -7.8,
+      "histogram": -14.1,
+      "signal": "bearish"
+    },
+    "BB20_2": {
+      "upper": 0.0,
+      "middle": 0.0,
+      "lower": 0.0,
+      "price_position": "n/a",
+      "bandwidth": "n/a"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 0.0,
+      "d_percent": 0.0,
+      "signal": "n/a"
+    },
+    "VOLUME": {
+      "current": 213010,
+      "average": 0,
+      "ratio": 0,
+      "trend": "steady"
+    },
+    "ATR14": {
+      "value": 0.0,
+      "period": 14,
+      "volatility": "n/a"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_chart": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "Bearish divergence on RSI and MACD hints at potential reversal despite bullish channel pattern"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_bearish_divergence",
+        "type": "indicator_behaviour",
+        "indicator": "RSI14",
+        "description": "RSI shows divergence with price",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish_histogram",
+        "type": "indicator_behaviour",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "histogram < 0",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "rsi_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "price_above_channel",
+        "type": "pattern_breach",
+        "level": "channel_upper",
+        "comparator": ">"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109826.9,
+      "basis": "above_channel",
+      "distance_ticks": 249
+    },
+    "take_profit": [
+      {
+        "price": 109353.6,
+        "basis": "channel_support",
+        "rr": 1.0
+      },
+      {
+        "price": 109300.0,
+        "basis": "below_support",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Consider shorting given RSI and MACD bearish signals",
+    "Confirm price stays inside the channel",
+    "Use channel upper boundary for stop-loss",
+    "Target channel support for first take-profit"
+  ],
+  "improvements": "Monitor additional confirmations like volume increase for higher conviction"
+}

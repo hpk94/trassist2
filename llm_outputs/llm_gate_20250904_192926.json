@@ -1,0 +1,33 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "Checklist conditions met, confirming price breakout with RSI above 50.",
+    "No invalidation conditions triggered."
+  ],
+  "warnings": [
+    "Current price significantly higher than initial setup; consider adjusted entry point."
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 109809.32,
+    "stop_loss": 109361.7,
+    "take_profits": [
+      {
+        "price": 109646.1,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Consider reducing position size due to high volatility potential."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

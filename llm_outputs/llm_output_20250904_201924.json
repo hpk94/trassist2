@@ -1,0 +1,169 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 18:18",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 109936.4,
+    "resistance": 110318.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 65.11,
+      "status": "neutral",
+      "signal": "approaching_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 76.8,
+      "signal_line": 82.1,
+      "histogram": -5.3,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": 110500.0,
+      "middle": 110000.0,
+      "lower": 109500.0,
+      "price_position": "upper",
+      "bandwidth": "medium"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 65,
+      "d_percent": 62,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 200560,
+      "average": 205000,
+      "ratio": 0.98,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": 100.0,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_candle": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.68,
+    "notes": "Rising wedge and MACD bearish crossover suggest cautious approach despite bullish trend"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_wedge",
+        "type": "chart_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "chart_pattern"
+      },
+      {
+        "id": "macd_bear_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_approaching_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 65.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_below_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_below_bb_upper",
+        "type": "price_level",
+        "level": "bollinger_upper",
+        "comparator": "<=",
+        "value": 110500.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110150.0,
+      "basis": "above_wedge_high",
+      "distance_ticks": 110
+    },
+    "take_profit": [
+      {
+        "price": 109800.0,
+        "basis": "0.618_fib_retracement",
+        "rr": 1.5
+      },
+      {
+        "price": 109600.0,
+        "basis": "support_test",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor volume trend for confirmation",
+    "Check MACD and RSI alignment for entry",
+    "Consider short entry with close monitoring",
+    "Invalidate if RSI14 >= 70 or close above wedge"
+  ],
+  "improvements": "Add confirmation with stochastic alignment and monitor for bullish reversals"
+}

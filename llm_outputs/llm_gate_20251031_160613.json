@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI above 50 indicates bullish momentum",
+    "Price above fib_0.236 supports long setup",
+    "No invalidations triggered"
+  ],
+  "warnings": [
+    "No retest of key level observed, increasing risk"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 110462.89,
+    "stop_loss": 109717.6,
+    "take_profits": [
+      {
+        "price": 111379.6,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 2.5,
+    "position_size_note": "Size based on 2.5 RR ratio"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-09 13:30",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 112552.0,
+    "resistance": 112878.7
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 64.04,
+      "status": "neutral",
+      "signal": "bullish_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": 42.1497,
+      "signal_line": 21.7901,
+      "histogram": 20.3596,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "n/a",
+      "bandwidth": "n/a"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "n/a"
+    },
+    "VOLUME": {
+      "current": 0.00556586,
+      "average": null,
+      "ratio": null,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_flag_breakout",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.83,
+    "notes": "MACD bullish crossover aligns with price breakout above 0.786 Fib, RSI near overbought confirms momentum push"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0786",
+        "type": "price_level",
+        "level": "fib_0_786",
+        "comparator": ">=",
+        "value": 112765.6,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "bull_flag_breakout_confirmed",
+        "type": "candle_pattern_breakout",
+        "pattern": "bullish_flag_breakout",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0786",
+        "type": "price_breach",
+        "level": "fib_0_786",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "bearish_engulfing_near_top",
+        "type": "candle_pattern",
+        "pattern": "bearish_engulfing",
+        "candle_index": 0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112752.0,
+      "basis": "below breakout candle low / Fib 0.786",
+      "distance_ticks": 64.3
+    },
+    "take_profit": [
+      {
+        "price": 112878.7,
+        "basis": "Fib 1.0 extension",
+        "rr": 1.95
+      },
+      {
+        "price": 112970.0,
+        "basis": "anticipated extension",
+        "rr": 3.4
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry valid on confirmed breakout above Fib 0.786 and bullish flag resistance",
+    "Ensure MACD remains in bullish crossover",
+    "Monitor RSI nearing overbought for any reversal signals",
+    "Use Fib 1.0 as conservative TP1 and exit partial",
+    "Invalidate if MACD reverses or close falls below Fib 0.786"
+  ],
+  "improvements": "Add volume-weighted average price (VWAP) as dynamic support check, wait for retest of Fib 0.786 if next candle shows fading momentum"
+}

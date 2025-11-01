@@ -1,0 +1,158 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 19:55",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 112010.7,
+    "resistance": 112158.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 42.28,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -26.098,
+      "signal_line": -27.1316,
+      "histogram": 1.0336,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below",
+      "bandwidth": "narrow"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 8.44342359,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.75,
+    "notes": "Descending channel supports bearish trend, MACD histogram's positive rise indicates possible short-term reversal."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_recovery",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_positive",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_at_channel_support",
+        "type": "price_level",
+        "level": "channel_support",
+        "comparator": ">=",
+        "value": 112010.7,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_near_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">=",
+        "value": 0.8,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel_support",
+        "type": "price_breach",
+        "level": "channel_support",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_dips",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 30.0
+      },
+      {
+        "id": "macd_histogram_negative",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111980.0,
+      "basis": "below_channel_support",
+      "distance_ticks": 30
+    },
+    "take_profit": [
+      {
+        "price": 112158.0,
+        "basis": "channel_resistance",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor MACD histogram for continued positive growth",
+    "Confirm RSI14 stability above 40",
+    "Wait for price confirmation at channel support before long entry",
+    "Invalidate on close below channel support or RSI14 drop below 30"
+  ],
+  "improvements": "Look for confirmation from volume trend or additional momentum indicators to strengthen entry signal."
+}

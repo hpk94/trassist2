@@ -1,0 +1,159 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 18:15",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 109590.8,
+    "resistance": 110150.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 66.75,
+      "status": "neutral",
+      "signal": "approaching_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 1.2,
+      "signal_line": -8.41,
+      "histogram": 9.61,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": 110400.0,
+      "middle": 109800.0,
+      "lower": 109200.0,
+      "price_position": "above_middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 66.75,
+      "d_percent": 63.14,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 46940,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": 30.5,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_candle": "bullish_flag",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.74,
+    "notes": "RSI moving towards overbought, MACD bullish crossover, price above BB middle band."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": ">=",
+        "value": 109800.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "bullish_flag",
+        "type": "candle_pattern",
+        "pattern": "bullish_flag",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "price_below_bb_lower",
+        "type": "price_level",
+        "level": "bollinger_lower",
+        "comparator": "<=",
+        "value": 109200.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109500.0,
+      "basis": "below_support",
+      "distance_ticks": 100.0
+    },
+    "take_profit": [
+      {
+        "price": 110150.0,
+        "basis": "recent_high",
+        "rr": 1.2
+      },
+      {
+        "price": 110350.0,
+        "basis": "extension_target",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Consider long entry if RSI remains below 70 and MACD is bullish.",
+    "Ensure price stays above BB middle band.",
+    "Set stop-loss below recent support level."
+  ],
+  "improvements": "Monitor volume increase for stronger confluence; consider tightening stop-loss based on ATR."
+}

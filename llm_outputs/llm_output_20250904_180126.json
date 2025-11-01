@@ -1,0 +1,155 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 16:00",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 109353.8,
+    "resistance": 109609.1
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 52.44,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "data not visible"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "data not visible",
+      "bandwidth": "data not visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "data not visible"
+    },
+    "VOLUME": {
+      "current": 2245,
+      "average": null,
+      "ratio": "data not visible",
+      "trend": "spiking"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "data not visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none identified",
+      "candle_index": 0,
+      "confidence": 0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "RSI is neutral, volume is spiking, no distinct pattern identified on visible data."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_above_0_618_fib",
+        "type": "price_level",
+        "level": "fib_0_618",
+        "comparator": ">",
+        "value": 109408.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "ascending_channel",
+        "type": "pattern",
+        "pattern": "ascending_channel",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "chart_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_0_618_fib",
+        "type": "price_breach",
+        "level": "fib_0_618",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0
+      },
+      {
+        "id": "volume_drops",
+        "type": "volume_threshold",
+        "lookback_candles": 1,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "previous_volume"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109353.8,
+      "basis": "below_support",
+      "distance_ticks": 50
+    },
+    "take_profit": [
+      {
+        "price": 109609.1,
+        "basis": "resistance",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for movement above or below 50 to confirm trend direction.",
+    "Align price movement with volume spikes indicating continuation.",
+    "Enter long position above 0.618 Fibonacci retracement and maintain position inside ascending channel.",
+    "Invalidate setup if price closes below 0.618 Fibonacci level or RSI falls below 50."
+  ],
+  "improvements": "Consider additional confirmation from a visible MACD setup, integrate Bollinger Bands for volatility assessment."
+}

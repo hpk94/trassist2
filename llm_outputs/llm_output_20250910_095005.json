@@ -1,0 +1,187 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 07:49",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111779.5,
+    "resistance": 112242.1
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 72.11,
+      "status": "overbought",
+      "signal": "overbought_warning"
+    },
+    "MACD12_26_9": {
+      "macd_line": 71.4383,
+      "signal_line": 65.4509,
+      "histogram": 5.9874,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "above_upper",
+      "bandwidth": "expanding"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 71.39,
+      "d_percent": 63.92,
+      "signal": "approaching_overbought"
+    },
+    "VOLUME": {
+      "current": 1811959,
+      "average": 1400000,
+      "ratio": 1.29,
+      "trend": "rising"
+    },
+    "ATR14": {
+      "value": 112.8,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_channel",
+      "candle_index": "multi",
+      "confidence": 0.9
+    },
+    {
+      "pattern": "bullish_breakout",
+      "candle_index": 0,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.81,
+    "notes": "Price is in strong bullish channel and just broke out with rising volume and momentum confirmation from MACD; RSI and Stochastics nearing overbought may suggest caution."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_surge",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.1,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "bullish_breakout_confirmed",
+        "type": "candle_pattern",
+        "pattern": "bullish_breakout",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "rsi_valid_zone",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 75.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "channel_respect_pre_break",
+        "type": "price_structure",
+        "description": "price stayed in ascending channel for 10+ candles before breakout",
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "fib_support_hold",
+        "type": "price_level",
+        "level": "fib_0.382",
+        "anchors": {
+          "from": "111316.8",
+          "to": "112242.1"
+        },
+        "comparator": ">=",
+        "value": 111888.6,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel_mid",
+        "type": "price_structure_breach",
+        "description": "price closes below channel midline or below 112020",
+        "level": 112020,
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_extreme_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 80.0
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111888.0,
+      "basis": "below breakout zone/fib 0.382",
+      "distance_ticks": 400
+    },
+    "take_profit": [
+      {
+        "price": 112405.0,
+        "basis": "channel upper bound extension",
+        "rr": 1.5
+      },
+      {
+        "price": 112745.0,
+        "basis": "fib 1.618 extension",
+        "rr": 2.7
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if volume continues above average and MACD stays trending bullish",
+    "Set stop below 111888.0 (fib 0.382 zone and prior support)",
+    "First take profit near 112405.0 (channel extension), secondary at 1.618 fib",
+    "Watch RSI and Stoch for bearish divergence or overbought reversals near 75+",
+    "Immediate exit if candle closes below 112020 or MACD crosses down"
+  ],
+  "improvements": "Consider trailing stop method through channel midline or 20 EMA for maximizing profits with trend continuation; remain cautious of decreasing momentum or volume drop."
+}

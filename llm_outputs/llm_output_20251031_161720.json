@@ -1,0 +1,128 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-31 15:15",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110054.3,
+    "resistance": 113019.4
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 53.88,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 65,
+      "d_percent": 60,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 2.78,
+      "average": 2.5,
+      "ratio": 1.11,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 107670.7,
+        "to": 113019.4
+      },
+      "levels": {
+        "0.236": 113019.4,
+        "0.382": 111379.6,
+        "0.5": 110054.3,
+        "0.618": 108728.9,
+        "0.786": 106842.0
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI neutral, volume increasing, ascending channel breakout potential"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 120
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_channel",
+        "indicator": "PRICE",
+        "comparator": ">",
+        "value": 111000.0,
+        "basis": "ascending_channel_upper_bound"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "ascending_channel_lower_bound"
+      },
+      {
+        "id": "rsi_below_45",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 45.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109800.0,
+      "basis": "below_channel"
+    },
+    "take_profit": [
+      {
+        "price": 111379.6,
+        "basis": "fib_0.382",
+        "rr": 1.5
+      },
+      {
+        "price": 113019.4,
+        "basis": "fib_0.236",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for RSI > 50 and confirm volume is above average",
+    "Look for breakout above ascending channel",
+    "Enter long if conditions are met",
+    "Invalidate if price falls below channel lower bound"
+  ],
+  "improvements": "Monitor RSI divergence and adjust stop-loss for volatility"
+}

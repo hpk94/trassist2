@@ -1,0 +1,139 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 07:12",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 110852.1,
+    "resistance": 111345.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 63.22,
+      "status": "neutral",
+      "signal": "approaching_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 24.5127,
+      "signal_line": 22.1569,
+      "histogram": 2.3558,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_applicable",
+      "bandwidth": "not_applicable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_applicable"
+    },
+    "VOLUME": {
+      "current": 1.06177935,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_applicable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": "recent",
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "MACD bullish crossover supports potential breakout, but RSI nearing overbought zone could cause rejection at resistance."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0_618",
+        "type": "price_level",
+        "level": "fib_0_618",
+        "comparator": ">=",
+        "value": 111156.7,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_below_fib_0_5",
+        "type": "price_breach",
+        "level": "fib_0_5",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111098.6,
+      "basis": "below_fib_0.5",
+      "distance_ticks": null
+    },
+    "take_profit": [
+      {
+        "price": 111239.5,
+        "basis": "fib_0.786_extension",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if MACD line is above signal line and RSI < 70",
+    "Ensure price above 0.618 Fibonacci level and not overbought",
+    "Set stop-loss below 0.5 Fibonacci level",
+    "Target take-profit at 0.786 Fibonacci extension"
+  ],
+  "improvements": "Monitor RSI and MACD closely for confirmation; consider volume spikes for additional confirmation"
+}

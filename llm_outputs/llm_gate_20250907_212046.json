@@ -1,0 +1,31 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.85,
+  "reasons": [
+    "Checklist alignment is strong with all checks passed.",
+    "Market context does not contradict the setup: RSI is well below 70, supporting short direction."
+  ],
+  "warnings": [],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111091.63,
+    "stop_loss": 111400.0,
+    "take_profits": [
+      {
+        "price": 110911.2,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Adjust size according to usual risk allocation, considering high confidence in alignment."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

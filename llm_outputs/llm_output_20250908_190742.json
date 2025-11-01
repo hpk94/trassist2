@@ -1,0 +1,122 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 17:06",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 112241.1,
+    "resistance": 112459.8
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 34.6,
+      "status": "approaching_oversold",
+      "signal": "weakening_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": -40.0709,
+      "signal_line": -25.822,
+      "histogram": -14.2489,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below_middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": null
+    },
+    "VOLUME": {
+      "current": 272050,
+      "average": null,
+      "ratio": null,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "Bearish trend with RSI near oversold territory and a bearish MACD crossover"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": "resistance",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112459.8,
+      "basis": "above_resistance",
+      "distance_ticks": null
+    },
+    "take_profit": [
+      {
+        "price": 112150.0,
+        "basis": "recent_support",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter short if RSI14 <= 40 and MACD crossover is bearish",
+    "Use resistance level for stop-loss placement",
+    "Take profit at recent support level"
+  ],
+  "improvements": "Monitor volume for better entry confirmation; consider ATR for stop-loss adjustment"
+}

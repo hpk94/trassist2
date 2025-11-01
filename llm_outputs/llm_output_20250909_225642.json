@@ -1,0 +1,182 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-09 20:56",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111129.4,
+    "resistance": 111567.8
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 67.67,
+      "status": "neutral",
+      "signal": "approaching_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 57.9143,
+      "signal_line": 37.1824,
+      "histogram": 20.7319,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 60.26,
+      "d_percent": 38.4,
+      "signal": "bullish_cross"
+    },
+    "VOLUME": {
+      "current": 741000,
+      "average": 500000,
+      "ratio": 1.48,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_breakout",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.83,
+    "notes": "Price broke 0.618 Fib and structure resistance with high volume and MACD + RSI confirming momentum. RSI not yet overbought and volume spike confirms strength."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 60.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_positive",
+        "type": "indicator_threshold",
+        "indicator": "MACD_Histogram",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0_618",
+        "type": "price_level",
+        "level": "fib_0_618",
+        "comparator": ">=",
+        "value": 111385.5,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "stoch_k_above_d",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_closes_below_fib_0_618",
+        "type": "price_breach",
+        "level": "fib_0_618",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111257.5,
+      "basis": "below_fib_0_5",
+      "distance_ticks": 131.3
+    },
+    "take_profit": [
+      {
+        "price": 111567.8,
+        "basis": "fib_0_786",
+        "rr": 1.5
+      },
+      {
+        "price": 111800.0,
+        "basis": "fib_1.0",
+        "rr": 3.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry long triggered above 0.618 Fib at 111385.5",
+    "Confirm RSI stays below 70 and MACD maintains bullish stance",
+    "Maintain SL just below 0.5 Fib",
+    "Watch volume consistency to support continuation"
+  ],
+  "improvements": "Add a Bollinger Band overlay to catch upper breakout extremes for reversion risk. Watch RSI divergence in next few candles to confirm momentum sustainability."
+}

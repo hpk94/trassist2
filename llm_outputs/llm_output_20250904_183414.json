@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 16:33",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 109284.3,
+    "resistance": 109507.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 41.64,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "none"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": null,
+      "bandwidth": "not_available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "none"
+    },
+    "VOLUME": {
+      "current": 165930,
+      "average": null,
+      "ratio": null,
+      "trend": "not_available"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Bearish descending triangle pattern supported by RSI approaching oversold."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 45.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "break_below_support",
+        "type": "price_level",
+        "level": "support",
+        "comparator": "<=",
+        "value": 109284.3,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_increase",
+        "type": "volume_trend",
+        "trend": "increasing",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "descending_triangle",
+        "type": "candle_pattern",
+        "pattern": "descending_triangle",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": "resistance",
+        "comparator": ">=",
+        "value": 109507.9
+      },
+      {
+        "id": "rsi_above_neutral",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0
+      },
+      {
+        "id": "lower_volume",
+        "type": "volume_trend",
+        "trend": "decreasing"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109507.9,
+      "basis": "above_resistance",
+      "distance_ticks": 150
+    },
+    "take_profit": [
+      {
+        "price": 109150.0,
+        "basis": "recent_low",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Look for RSI14 <= 45 to confirm oversold conditions.",
+    "Monitor for price break below support at 109284.3.",
+    "Verify volume increase for strong downside momentum.",
+    "Confirm pattern breakout on descending triangle."
+  ],
+  "improvements": "Consider validating breakouts with additional momentum indicators such as MACD or Bollinger Bands for enhanced confirmation."
+}

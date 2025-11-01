@@ -1,0 +1,164 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 17:58",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 112037.1,
+    "resistance": 112813.7
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 38.2,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -57.7028,
+      "signal_line": -55.3193,
+      "histogram": -2.3835,
+      "signal": "bearish"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": null,
+      "bandwidth": null
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": null
+    },
+    "VOLUME": {
+      "current": 0.14222785,
+      "average": null,
+      "ratio": null,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "undefined"
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "RSI is recovering from oversold, but MACD remains bearish with increasing volume indicating uncertainty."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_oversold_recover",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0_236",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": ">=",
+        "value": 112220.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_increasing",
+        "type": "volume_trend",
+        "lookback_candles": 3,
+        "condition": "increasing",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0",
+        "type": "price_breach",
+        "level": "fib_0",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112020.0,
+      "basis": "below_fib_0",
+      "distance_ticks": 50
+    },
+    "take_profit": [
+      {
+        "price": 112333.8,
+        "basis": "fib_0_382",
+        "rr": 1.2
+      },
+      {
+        "price": 112517.0,
+        "basis": "fib_0_618",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for recovery and MACD for bullish crossover",
+    "Wait for price above 0.236 Fib level",
+    "Enter long if all checklist items are true",
+    "Invalidate if RSI reaches overbought or price closes below Fib 0"
+  ],
+  "improvements": "Consider tightening stop loss below recent low for better risk management."
+}

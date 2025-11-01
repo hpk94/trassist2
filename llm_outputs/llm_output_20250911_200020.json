@@ -1,0 +1,175 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-11 17:59",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 114483.2,
+    "resistance": 114649.8
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 57.27,
+      "status": "neutral",
+      "signal": "consolidating_near_resistance"
+    },
+    "MACD12_26_9": {
+      "macd_line": 17.1292,
+      "signal_line": 11.9898,
+      "histogram": 5.1394,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 51.2,
+      "d_percent": 57.27,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 82840,
+      "average": 50000,
+      "ratio": 1.66,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": [
+        0,
+        1,
+        2
+      ],
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.68,
+    "notes": "Rising wedge approaching 0.786 Fib level resistance with neutral RSI and bullish MACD crossover; volume is increasing, suggesting a breakout attempt, but wedge pattern leans bearish."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_wedge_near_resistance",
+        "type": "candle_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "macd_bullish_but_flat",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 60.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.5,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_at_fib_0_786",
+        "type": "price_level",
+        "level": "fib_0_786",
+        "comparator": "==",
+        "value": 114483.2,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_above_114650",
+        "type": "price_breach",
+        "level": 114649.8,
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "macd_histogram_negative",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 0,
+        "parameter": "histogram"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 114660.0,
+      "basis": "above_wedge_top",
+      "distance_ticks": 26.0
+    },
+    "take_profit": [
+      {
+        "price": 114260.7,
+        "basis": "fib_0_5",
+        "rr": 2.5
+      },
+      {
+        "price": 114168.8,
+        "basis": "fib_0_382",
+        "rr": 4.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for price reaction at 0.786 Fib (114483.2)",
+    "Look for wedge breakdown with RSI staying neutral and MACD weakening",
+    "Short entry valid on break of wedge base with volume confirmation",
+    "Place stops above 114650 and target Fib 0.5 or 0.382 retracement"
+  ],
+  "improvements": "Confirm price loses wedge support with a strong candle close before entry; add MACD histogram negative confirmation for stronger signal"
+}

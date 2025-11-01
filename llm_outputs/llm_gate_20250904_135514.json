@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Opening signal direction is 'none'.",
+    "No valid trade setup identified."
+  ],
+  "warnings": [
+    "Market values or indicators may not present a conducive environment for opening a position as no signal direction is specified."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 0.0,
+    "stop_loss": 110728.3,
+    "take_profits": [
+      {
+        "price": 111109.6,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 3.0,
+    "position_size_note": "Position size should be determined based on overall capital and risk tolerance, but not applicable as no position is advised."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

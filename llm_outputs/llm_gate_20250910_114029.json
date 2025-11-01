@@ -1,0 +1,43 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.87,
+  "reasons": [
+    "Breakout of falling wedge structure confirmed with no invalidations triggered",
+    "Price currently holding above the 0.236 Fib level with bullish engulfing pattern recently observed",
+    "RSI at 53.33 indicates healthy bullish momentum without overbought conditions",
+    "Volume is above recent average, supporting breakout reliability"
+  ],
+  "warnings": [
+    "No retest of breakout level; minor pullback could occur before continuation"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 112338.64,
+    "stop_loss": 112210.0,
+    "take_profits": [
+      {
+        "price": 112351.0,
+        "portion": 0.25
+      },
+      {
+        "price": 112441.0,
+        "portion": 0.35
+      },
+      {
+        "price": 112530.9,
+        "portion": 0.4
+      }
+    ],
+    "risk_reward": 3.2,
+    "position_size_note": "Use standard risk sizing based on stop of ~129 USDT"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

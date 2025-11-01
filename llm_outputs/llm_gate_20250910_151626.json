@@ -1,0 +1,41 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.83,
+  "reasons": [
+    "All invalidation conditions remain untriggered",
+    "Checklist strongly passed with RSI below 70 confirming no overbought condition",
+    "Price cleanly broke above ascending channel and is now sustaining above",
+    "Volume is above average in recent candles, confirming strength",
+    "Fib 1.618 level was recently retested, acting as support"
+  ],
+  "warnings": [
+    "Moderate RSI near 70 indicates momentum is nearing overextension",
+    "1m timeframe can produce noise; short-term spike risk"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 113742.21,
+    "stop_loss": 113540.0,
+    "take_profits": [
+      {
+        "price": 114016.0,
+        "portion": 0.5
+      },
+      {
+        "price": 114200.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.03,
+    "position_size_note": "Position sized for 220 tick risk with half off at 1.15R"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

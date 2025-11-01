@@ -18,12 +18,33 @@ import queue
 import time
 
 # Import notification service
-from services.notification_service import notify_valid_trade, notify_invalidated_trade
+from services.notification_service import (
+    notify_valid_trade, 
+    notify_invalidated_trade,
+    send_image_to_telegram,
+    send_initial_analysis_to_telegram,
+    send_analysis_to_telegram
+)
 
-# pymexc will be imported when needed to avoid compatibility issues
+# Import Telegram bot for command control
+from telegram_bot import (
+    get_analysis_state, 
+    should_stop_analysis, 
+    set_analysis_running, 
+    set_analysis_info,
+    send_telegram_status,
+    start_bot
+)
 
 # Load environment variables
 load_dotenv()
+
+# Start Telegram bot for command control
+try:
+    start_bot()
+    print("✅ Telegram bot started for command control")
+except Exception as e:
+    print(f"⚠️  Could not start Telegram bot: {e}")
 
 # Configure LiteLLM models (can be changed via environment variable)
 # Vision model for chart analysis (must support vision)
@@ -71,93 +92,146 @@ def emit_progress(message, step=None, total_steps=None):
     progress_queue.put(progress_data)
     print(message)  # Also print to console
 
-def _convert_symbol_to_mexc_futures(symbol: str) -> str:
-    """Convert symbols like BTCUSDT or BTC/USDT to MEXC futures format (e.g., BTC_USDT)."""
-    if not symbol:
-        return symbol
-    cleaned = symbol.strip().upper()
-    if "/" in cleaned:
-        base, quote = cleaned.split("/", 1)
-        return f"{base}_{quote}"
-    return cleaned.replace("/", "_")
-
 def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
     """Place a futures order on MEXC based on the gate result.
-
-    Environment overrides:
-    - MEXC_DEFAULT_VOL: float volume in contracts/base units (default 0.001)
-    - MEXC_OPEN_TYPE: 1 isolated, 2 cross (default 2)
-    - MEXC_LEVERAGE: int leverage for isolated (optional)
+    
+    Environment variables:
+    - MEXC_API_KEY: Your MEXC API key
+    - MEXC_API_SECRET: Your MEXC API secret
+    - MEXC_DEFAULT_SIZE: Order size in USDT (default: 10.0)
+    - MEXC_LEVERAGE: Leverage multiplier (default: 30, max: 200)
+    - MEXC_ENABLE_ORDERS: Set to 'true' to enable live trading
     """
     try:
         from pymexc import futures
+        
+        # Get credentials and settings from environment
+        api_key = os.getenv("MEXC_API_KEY")
+        api_secret = os.getenv("MEXC_API_SECRET")
+        
+        if not api_key or not api_secret:
+            return {"ok": False, "error": "MEXC_API_KEY or MEXC_API_SECRET not set in environment"}
+        
+        # Get trading parameters
+        try:
+            default_size = float(os.getenv("MEXC_DEFAULT_SIZE", "10.0"))
+        except Exception:
+            default_size = 10.0
+        
+        try:
+            leverage = int(os.getenv("MEXC_LEVERAGE", "30"))
+        except Exception:
+            leverage = 30
+        
+        # Initialize MEXC Futures client
+        futures_client = futures.HTTP(api_key=api_key, api_secret=api_secret)
+        
+        # Extract trading parameters from gate result
+        direction = (gate_result.get("direction") or "").lower()
+        execution = gate_result.get("execution", {})
+        entry_price = execution.get("entry_price")
+        stop_loss = execution.get("stop_loss")
+        take_profits = execution.get("take_profits") or []
+        
+        # Convert symbol to MEXC format (e.g., BTCUSDT, ETHUSDT)
+        mexc_symbol = symbol.replace(".P", "").replace("USDT", "").upper() + "_USDT"
+        
+        # Determine order side (1 = buy/long, 2 = sell/short, 3 = close long, 4 = close short)
+        side = 1 if direction == "long" else 2
+        
+        print(f"📊 MEXC Futures Order Parameters:")
+        print(f"   Symbol: {mexc_symbol}")
+        print(f"   Side: {'LONG' if side == 1 else 'SHORT'}")
+        print(f"   Leverage: {leverage}x")
+        print(f"   Size: ${default_size} USDT")
+        if entry_price:
+            print(f"   Entry Price: ${entry_price:.2f}")
+        if stop_loss:
+            print(f"   Stop Loss: ${stop_loss:.2f}")
+        
+        # Set leverage for the symbol
+        try:
+            leverage_result = futures_client.change_leverage(
+                symbol=mexc_symbol,
+                leverage=leverage,
+                openType=1  # 1 = isolated, 2 = cross
+            )
+            print(f"   ✅ Leverage set to {leverage}x: {leverage_result}")
+        except Exception as e:
+            print(f"   ⚠️  Warning: Could not set leverage: {e}")
+            # Continue anyway - leverage might already be set
+        
+        # Place the main order
+        # Order type: 1 = limit, 2 = market, 3 = post-only, 4 = IOC, 5 = FOK
+        order_params = {
+            "symbol": mexc_symbol,
+            "side": side,
+            "type": 2,  # Market order
+            "vol": default_size / (entry_price if entry_price else 1),  # Calculate volume from USDT amount
+        }
+        
+        print(f"\n🚀 Placing MEXC Futures Order...")
+        order_result = futures_client.create_order(**order_params)
+        
+        print(f"✅ Order placed successfully!")
+        print(f"   Order ID: {order_result.get('orderId', 'N/A')}")
+        print(f"   Status: {order_result.get('status', 'N/A')}")
+        
+        # Set stop loss if provided
+        if stop_loss and order_result.get('orderId'):
+            try:
+                # Stop loss order (trigger order)
+                sl_side = 4 if direction == "long" else 3  # 3 = close long, 4 = close short
+                sl_params = {
+                    "symbol": mexc_symbol,
+                    "side": sl_side,
+                    "type": 3,  # Trigger market order
+                    "vol": order_params["vol"],
+                    "triggerPrice": stop_loss,
+                    "triggerType": 1,  # 1 = mark price, 2 = last price
+                    "executeCycle": 1  # 1 = always valid
+                }
+                sl_result = futures_client.create_order(**sl_params)
+                print(f"✅ Stop Loss set at ${stop_loss:.2f}")
+                print(f"   SL Order ID: {sl_result.get('orderId', 'N/A')}")
+            except Exception as e:
+                print(f"⚠️  Warning: Could not set stop loss: {e}")
+        
+        # Set take profit orders if provided
+        if take_profits and order_result.get('orderId'):
+            for i, tp in enumerate(take_profits, 1):
+                try:
+                    tp_price = tp.get('price')
+                    tp_portion = tp.get('portion', 1.0)
+                    if tp_price:
+                        tp_side = 4 if direction == "long" else 3
+                        tp_vol = order_params["vol"] * tp_portion
+                        tp_params = {
+                            "symbol": mexc_symbol,
+                            "side": tp_side,
+                            "type": 3,  # Trigger market order
+                            "vol": tp_vol,
+                            "triggerPrice": tp_price,
+                            "triggerType": 1,
+                            "executeCycle": 1
+                        }
+                        tp_result = futures_client.create_order(**tp_params)
+                        print(f"✅ Take Profit {i} set at ${tp_price:.2f} ({tp_portion*100:.0f}% of position)")
+                except Exception as e:
+                    print(f"⚠️  Warning: Could not set TP{i}: {e}")
+        
+        return {
+            "ok": True,
+            "response": order_result,
+            "symbol": mexc_symbol,
+            "leverage": leverage,
+            "size": default_size
+        }
+        
     except Exception as e:
-        return {"ok": False, "error": f"Failed to import pymexc.futures: {e}"}
-
-    mexc_symbol = _convert_symbol_to_mexc_futures(symbol)
-    direction = (gate_result.get("direction") or "").lower()
-    execution = gate_result.get("execution", {})
-    entry_type = (execution.get("entry_type") or "market").lower()
-    entry_price = execution.get("entry_price")
-    stop_loss = execution.get("stop_loss")
-    take_profits = execution.get("take_profits") or []
-
-    # Defaults and envs
-    try:
-        default_vol = float(os.getenv("MEXC_DEFAULT_VOL", "0.001"))
-    except Exception:
-        default_vol = 0.001
-    try:
-        open_type = int(os.getenv("MEXC_OPEN_TYPE", "2"))  # 1 isolated, 2 cross
-    except Exception:
-        open_type = 2
-    leverage_env = os.getenv("MEXC_LEVERAGE")
-    leverage = int(leverage_env) if leverage_env and leverage_env.isdigit() else None
-
-    # Map direction to MEXC side
-    # 1 open long, 2 close short, 3 open short, 4 close long
-    if direction == "long":
-        side = 1
-    elif direction == "short":
-        side = 3
-    else:
-        return {"ok": False, "error": f"Unknown trade direction: {direction}"}
-
-    # Order type: 5 = market, 1 = limit
-    if entry_type == "market":
-        order_type = 5
-        price = 0
-    else:
-        order_type = 1
-        price = float(entry_price or 0)
-
-    # Use first TP as take-profit if provided
-    tp_price = None
-    if take_profits:
-        first_tp = take_profits[0]
-        tp_price = first_tp.get("price") if isinstance(first_tp, dict) else None
-
-    try:
-        futures_client = futures.HTTP(api_key=os.getenv("MEXC_API_KEY"), api_secret=os.getenv("MEXC_API_SECRET"))
-    except Exception as e:
-        return {"ok": False, "error": f"Failed to init futures client: {e}"}
-
-    try:
-        response = futures_client.order(
-            symbol=mexc_symbol,
-            price=price,
-            vol=default_vol,
-            side=side,
-            type=order_type,
-            open_type=open_type,
-            leverage=leverage,
-            stop_loss_price=stop_loss,
-            take_profit_price=tp_price,
-            reduce_only=False,
-        )
-        return {"ok": True, "response": response}
-    except Exception as e:
-        return {"ok": False, "error": str(e)}
+        error_msg = f"MEXC futures order failed: {str(e)}"
+        print(f"❌ {error_msg}")
+        return {"ok": False, "error": error_msg}
 
 def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
     """Analyze trading chart using LLM Vision API with optional market data"""
@@ -1069,7 +1143,7 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
                 }
             }))
         
-        # Send iPhone notification for invalidated trade
+        # Send notification for invalidated trade (to Pushover, Email, and Telegram)
         try:
             trade_data = {
                 "symbol": llm_output.get("symbol", "Unknown"),
@@ -1079,7 +1153,7 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
             }
             notification_results = notify_invalidated_trade(trade_data)
             if emit_progress_fn:
-                emit_progress_fn(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}")
+                emit_progress_fn(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
         except Exception as e:
             if emit_progress_fn:
                 emit_progress_fn(f"⚠️ Invalidation notification failed: {str(e)}")
@@ -1114,6 +1188,14 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
     wait_seconds = _timeframe_seconds(timeframe)
     
     while True:
+        # Check if stop was requested
+        if should_stop_analysis():
+            if emit_progress_fn:
+                emit_progress_fn("⏹️ Polling stopped by user request")
+            set_analysis_running(False)
+            send_telegram_status("⏹️ <b>Analysis Stopped</b>\n\nPolling was cancelled by user.")
+            return False, "stopped", [], {}
+        
         if emit_progress_fn:
             emit_progress_fn(f"Polling cycle {cycles + 1}: fetching fresh market data...")
         
@@ -1143,6 +1225,11 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
                 emit_progress_fn(f"Polling complete: max cycles ({max_cycles}) reached")
             return signal_valid, signal_status, triggered_conditions, market_values
 
+        # Send periodic status updates
+        if cycles % 5 == 0:  # Every 5 cycles
+            elapsed_min = int((cycles * wait_seconds) / 60)
+            send_telegram_status(f"⏳ <b>Still Polling...</b>\n\nCycle {cycles}\nElapsed: {elapsed_min}m\nStatus: {signal_status}")
+
         if emit_progress_fn:
             emit_progress_fn(f"Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
         time.sleep(wait_seconds)
@@ -1155,6 +1242,10 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
     Falls back to image-only analysis if data fetching fails.
     """
     try:
+        # Mark analysis as running
+        set_analysis_running(True)
+        send_telegram_status("🚀 <b>Analysis Started</b>\n\nPreparing market data...")
+        
         # Step 1: Prepare market data BEFORE calling the LLM
         emit_progress("Step 1: Preparing market data (if provided)...", 1, 14)
         df = pd.DataFrame()
@@ -1223,6 +1314,17 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
             df=df if not df.empty else None,
         )
         emit_progress("Step 2 Complete: Chart analysis finished", 2, 14)
+        
+        # Send initial analysis to Telegram immediately
+        try:
+            emit_progress("Step 2.5: Sending initial analysis to Telegram...", 2, 14)
+            telegram_success = send_initial_analysis_to_telegram(llm_output)
+            if telegram_success:
+                emit_progress("Step 2.5 Complete: Initial analysis sent to Telegram ✅", 2, 14)
+            else:
+                emit_progress("Step 2.5 Warning: Failed to send initial analysis to Telegram", 2, 14)
+        except Exception as e:
+            emit_progress(f"Step 2.5 Warning: Telegram notification error: {str(e)}", 2, 14)
 
         # Step 2: Create output directory
         emit_progress("Step 2: Setting up output directory...", 2, 14)
@@ -1245,6 +1347,10 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
         symbol = llm_output['symbol']
         timeframe = llm_output['timeframe']
         time_of_screenshot = llm_output['time_of_screenshot']
+        
+        # Update analysis state with symbol and direction
+        direction = llm_output.get('opening_signal', {}).get('direction', 'Unknown')
+        set_analysis_info(symbol, direction)
         
         # Check if this is a fallback response due to LLM refusal
         is_fallback = llm_output.get('requires_manual_review', False)
@@ -1452,7 +1558,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                         "take_profits": take_profits
                     }
                     notification_results = notify_valid_trade(trade_data)
-                    emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}", 14, 14)
+                    emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}", 14, 14)
                 except Exception as e:
                     emit_progress(f"⚠️ Notification failed: {str(e)}", 14, 14)
                 
@@ -1467,6 +1573,10 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 emit_progress(f"❌ TRADE REJECTED: {direction.upper()} - Reasons: {'; '.join(reasons[:2])}", 14, 14)
         else:
             emit_progress(f"Step 11 Complete: Signal not valid (status: {signal_status}), skipping trade gate", 11, 14)
+
+        # Mark analysis as complete
+        set_analysis_running(False)
+        send_telegram_status("✅ <b>Analysis Complete</b>\n\nThe analysis has finished.")
 
         return {
             "success": True,
@@ -1483,6 +1593,9 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
 
     except Exception as e:
         emit_progress(f"ERROR: Analysis failed with {type(e).__name__}: {str(e)}")
+        # Mark analysis as stopped on error
+        set_analysis_running(False)
+        send_telegram_status(f"❌ <b>Analysis Failed</b>\n\nError: {str(e)}")
         return {
             "success": False,
             "error": str(e),
@@ -2729,6 +2842,22 @@ def upload_image_api():
         if save_permanently:
             response_data['image_path'] = image_path
         
+        # Send image to Telegram immediately upon upload
+        try:
+            telegram_success = send_image_to_telegram(
+                image_path,
+                caption=f"<b>📊 New Trading Chart Uploaded</b>\n\n<b>Filename:</b> {filename}\n<b>Size:</b> {round(file_size / 1024, 2)} KB\n<b>Time:</b> {timestamp}"
+            )
+            if telegram_success:
+                response_data['telegram_sent'] = True
+                print(f"✅ Image sent to Telegram successfully")
+            else:
+                response_data['telegram_sent'] = False
+                print(f"⚠️ Failed to send image to Telegram")
+        except Exception as e:
+            response_data['telegram_sent'] = False
+            print(f"⚠️ Telegram send exception: {str(e)}")
+        
         # Start analysis if requested
         if auto_analyze:
             # Clear the progress queue before starting
@@ -2740,7 +2869,55 @@ def upload_image_api():
             # Run analysis in background
             def run_analysis_and_cleanup():
                 try:
-                    run_trading_analysis(image_path)
+                    # Run the complete trading analysis pipeline
+                    # This includes: LLM analysis, market data fetching, signal validation,
+                    # trade gate decision, and all notifications (Pushover, Email, Telegram)
+                    result = run_trading_analysis(image_path)
+                    
+                    # run_trading_analysis() already handles all notifications internally:
+                    # - notify_valid_trade() for approved trades (sent in Step 14)
+                    # - notify_invalidated_trade() for invalidated signals (sent during polling)
+                    # These notifications are sent to Telegram, Pushover, and Email
+                    
+                    if result.get("success"):
+                        print(f"✅ Analysis completed successfully - all notifications sent via run_trading_analysis()")
+                    else:
+                        print(f"⚠️ Analysis failed: {result.get('error', 'Unknown error')}")
+                        # Send error notification to Telegram
+                        try:
+                            from services.notification_service import NotificationService
+                            service = NotificationService()
+                            error_message = f"""
+<b>❌ Analysis Error</b>
+
+<b>Image:</b> {filename}
+<b>Error:</b> {result.get('error', 'Unknown error')}
+<b>Time:</b> {timestamp}
+
+Please check the logs for more details.
+                            """.strip()
+                            service.send_telegram_image(image_path, error_message)
+                        except Exception as e:
+                            print(f"⚠️ Failed to send error notification: {str(e)}")
+                            
+                except Exception as e:
+                    print(f"❌ Analysis exception: {str(e)}")
+                    # Send exception notification to Telegram
+                    try:
+                        from services.notification_service import NotificationService
+                        service = NotificationService()
+                        error_message = f"""
+<b>❌ Analysis Exception</b>
+
+<b>Image:</b> {filename}
+<b>Exception:</b> {str(e)}
+<b>Time:</b> {timestamp}
+
+Please check the logs for more details.
+                        """.strip()
+                        service.send_telegram_image(image_path, error_message)
+                    except Exception as telegram_error:
+                        print(f"⚠️ Failed to send exception notification: {str(telegram_error)}")
                 finally:
                     # Only delete temp files
                     if temp_file and os.path.exists(image_path):
@@ -2750,7 +2927,7 @@ def upload_image_api():
             analysis_thread.start()
             
             response_data['job_id'] = job_id
-            response_data['message'] = 'Image uploaded and analysis started'
+            response_data['message'] = 'Image uploaded and analysis started - notifications will be sent to Telegram upon completion'
         
         return jsonify(response_data), 200
         
@@ -2895,6 +3072,9 @@ def resume_analysis():
 def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: str) -> dict:
     """Run trading analysis starting from existing LLM output"""
     try:
+        # Mark analysis as running
+        set_analysis_running(True)
+        
         # Step 1: Load existing LLM output
         emit_progress("Step 1: Loading existing analysis...", 1, 12)
         emit_progress(f"Step 1 Complete: Loaded analysis for {llm_output.get('symbol', 'Unknown')} from {os.path.basename(original_filepath)}", 1, 12)
@@ -2904,6 +3084,12 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
         symbol = llm_output['symbol']
         timeframe = llm_output['timeframe']
         time_of_screenshot = llm_output['time_of_screenshot']
+        
+        # Update analysis state
+        direction = llm_output.get('opening_signal', {}).get('direction', 'Unknown')
+        set_analysis_info(symbol, direction)
+        send_telegram_status(f"🔄 <b>Resumed Analysis</b>\n\n<b>Symbol:</b> {symbol}\n<b>Direction:</b> {direction}\n<b>Timeframe:</b> {timeframe}")
+        
         emit_progress(f"Step 2 Complete: Symbol={symbol}, Timeframe={timeframe}, Screenshot time={time_of_screenshot}", 2, 12)
 
         # Step 3: Validate timeframe
@@ -3063,7 +3249,7 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                         "take_profits": take_profits
                     }
                     notification_results = notify_valid_trade(trade_data)
-                    emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}", 12, 12)
+                    emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}", 12, 12)
                 except Exception as e:
                     emit_progress(f"⚠️ Notification failed: {str(e)}", 12, 12)                
                 if take_profits:
@@ -3078,6 +3264,10 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
         else:
             emit_progress(f"Step 10 Complete: Signal not valid (status: {signal_status}), skipping trade gate", 10, 12)
 
+        # Mark analysis as complete
+        set_analysis_running(False)
+        send_telegram_status("✅ <b>Resumed Analysis Complete</b>\n\nThe analysis has finished.")
+
         return {
             "success": True,
             "llm_output": llm_output,
@@ -3090,6 +3280,9 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
 
     except Exception as e:
         emit_progress(f"ERROR: Resumed analysis failed with {type(e).__name__}: {str(e)}")
+        # Mark analysis as stopped on error
+        set_analysis_running(False)
+        send_telegram_status(f"❌ <b>Resumed Analysis Failed</b>\n\nError: {str(e)}")
         return {
             "success": False,
             "error": str(e),

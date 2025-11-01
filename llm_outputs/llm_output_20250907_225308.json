@@ -1,0 +1,162 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-07 20:52",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 110527.6,
+    "resistance": 111842.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 54.72,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": -0.0321,
+      "signal_line": -3.157,
+      "histogram": 3.1249,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": 111190.69,
+      "middle": 111172.1,
+      "lower": 111172.07,
+      "price_position": "upper",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35.2,
+      "d_percent": 28.1,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 0.46833109,
+      "average": 0.3,
+      "ratio": 1.56,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 0.05,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.7,
+    "notes": "Symmetrical triangle while MACD shows bullish momentum and increasing volume"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_neutral",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_at_triangle_resistance",
+        "type": "price_level",
+        "level": "triangle_resistance",
+        "comparator": ">",
+        "value": 111295.8,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_triangle_support",
+        "type": "price_breach",
+        "level": "triangle_support",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_falls_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110527.6,
+      "basis": "below_swing_low",
+      "distance_ticks": 100
+    },
+    "take_profit": [
+      {
+        "price": 111842.6,
+        "basis": "recent_high",
+        "rr": 1.5
+      },
+      {
+        "price": 112539.1,
+        "basis": "fib_1_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for MACD bullish crossover confirmation",
+    "Check RSI maintains above 50",
+    "Ensure breakout above triangle resistance",
+    "Enter long if all conditions are met and volume confirms",
+    "Invalidate if price breaks below the triangle support"
+  ],
+  "improvements": "Consider monitoring for breakout confirmation and retest before entry to improve accuracy."
+}

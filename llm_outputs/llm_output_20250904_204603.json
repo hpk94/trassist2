@@ -1,0 +1,129 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 18:45",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 109590.8,
+    "resistance": 110150.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 55.44,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": 39.9,
+      "signal_line": 26.7,
+      "histogram": 13.2,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_applicable",
+      "bandwidth": "not_applicable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_applicable"
+    },
+    "VOLUME": {
+      "current": 65420,
+      "average": null,
+      "ratio": "not_applicable",
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_applicable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_candle": "bullish_candlestick",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "The current market shows a bullish candlestick pattern with a recent MACD bullish crossover."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_close_below_support",
+        "type": "price_breach",
+        "level": "support",
+        "comparator": "<",
+        "value": 109590.8
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109500.0,
+      "basis": "below_support",
+      "distance_ticks": 526
+    },
+    "take_profit": [
+      {
+        "price": 110150.0,
+        "basis": "resistance",
+        "rr": 1.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long position if MACD bullish crossover is confirmed",
+    "Ensure RSI stays below 70",
+    "Stop loss below support at 109500.0",
+    "Target resistance at 110150.0 for potential take-profit"
+  ],
+  "improvements": "Monitor volume for sustained momentum. Use ATR14 if possible for volatility-based stop-loss adjustment."
+}

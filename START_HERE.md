@@ -96,6 +96,8 @@ Then update `BASE_URL` in test files.
 - **Quick Start**: `QUICK_START.md`
 - **API Reference**: `API_DOCUMENTATION.md`
 - **Feature Overview**: `FEATURE_SUMMARY.md`
+- **Telegram Setup**: `TELEGRAM_SETUP.md` - Receive charts & analysis in Telegram
+- **Notifications**: `NOTIFICATION_SETUP.md` - Configure Pushover, Email, or Telegram
 
 ---
 

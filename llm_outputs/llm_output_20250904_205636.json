@@ -1,0 +1,128 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 18:54",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 109590.8,
+    "resistance": 110150.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 47.09,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": -8.4,
+      "signal_line": 24.1,
+      "histogram": -32.6,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "narrow"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 25850,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_candle": "none",
+      "candle_index": 0,
+      "confidence": 0.0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.5,
+    "notes": "Bearish MACD crossover with RSI in neutral zone suggests weakness."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "price_above_resistance",
+        "type": "price_level",
+        "level": "known_resistance",
+        "comparator": "<=",
+        "value": 110150.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110018.0,
+      "basis": "above_recent_high",
+      "distance_ticks": 55
+    },
+    "take_profit": [
+      {
+        "price": 109590.8,
+        "basis": "recent_low",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm MACD bearish crossover and RSI below 70",
+    "Enter short if checklist items are true",
+    "Invalidate on MACD bullish crossover or price above 110018.0"
+  ],
+  "improvements": "Consider incorporating Bollinger Band data for confirmation, ensure volume spike aligns with entry."
+}

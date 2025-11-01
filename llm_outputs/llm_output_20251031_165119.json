@@ -1,0 +1,125 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-31 15:50",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 109793.2,
+    "resistance": 111087.9
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 43.66,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 20.0,
+      "d_percent": 25.0,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 142620,
+      "average": null,
+      "trend": "steady"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 108498.5,
+        "to": 111087.9
+      },
+      "levels": {
+        "0.236": 110476.8,
+        "0.382": 110098.8,
+        "0.5": 109793.2,
+        "0.618": 109487.7,
+        "0.786": 109052.6
+      }
+    }
+  },
+  "secondary_indicators": {
+    "pattern": "rising_wedge",
+    "confidence": 0.8
+  },
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, Stochastic oversold recovery, within rising wedge pattern."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_recover",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_steady",
+        "indicator": "VOLUME",
+        "comparator": "==",
+        "value": "steady"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 110098.8,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_wedge",
+        "type": "price_breach",
+        "level": "upper_wedge_line"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110476.8,
+      "basis": "above_wedge"
+    },
+    "take_profit": [
+      {
+        "price": 109487.7,
+        "basis": "fib_0.618",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for drops below 50",
+    "Confirm Stochastic stays below 30",
+    "Validate steady volume",
+    "Watch for price rejection at Fib 0.382"
+  ],
+  "improvements": "Seek stronger volume spikes to confirm breakout; observe RSI and Stoch confluence more closely."
+}

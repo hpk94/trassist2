@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI is neutral and not overbought, confirming momentum is not stretched.",
+    "Price is within the ascending channel, indicating trend continuation potential.",
+    "Price holds above critical support level, providing a strong foundation."
+  ],
+  "warnings": [
+    "Rapid changes in market volatility could affect trade outcome."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 110418.94,
+    "stop_loss": 110200.0,
+    "take_profits": [
+      {
+        "price": 110760.6,
+        "portion": 0.5
+      },
+      {
+        "price": 111010.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Maintain moderate position size due to market volatility potential."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

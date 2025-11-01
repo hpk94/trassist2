@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.84,
+  "reasons": [
+    "Checklist fully passed with structural and indicator confluence",
+    "Price bouncing from rising channel lower bound and 0.236 Fib",
+    "Volume above 3-period average confirming strength behind move",
+    "No invalidation triggered, MACD histogram remains positive"
+  ],
+  "warnings": [
+    "Entry occurring without a deep retest, increasing sensitivity to volatility at entry zone"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 111884.0,
+    "stop_loss": 111680.0,
+    "take_profits": [
+      {
+        "price": 111929.5,
+        "portion": 0.5
+      },
+      {
+        "price": 112200.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.3,
+    "position_size_note": "Size should assume ~216 tick risk; adjust lot based on volatility profile of BTCUSDT on 1m"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

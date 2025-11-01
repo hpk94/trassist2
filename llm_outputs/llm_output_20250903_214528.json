@@ -1,0 +1,121 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-03 19:44",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 111724.0,
+    "resistance": 112183.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 47.56,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": "N/A",
+      "signal_line": "N/A",
+      "histogram": "N/A",
+      "signal": "data not visible"
+    },
+    "BB20_2": {
+      "upper": "N/A",
+      "middle": "N/A",
+      "lower": "N/A",
+      "price_position": "N/A",
+      "bandwidth": "data not visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": "N/A",
+      "d_percent": "N/A",
+      "signal": "data not visible"
+    },
+    "VOLUME": {
+      "current": 30900,
+      "average": "N/A",
+      "ratio": "N/A",
+      "trend": "data not visible"
+    },
+    "ATR14": {
+      "value": "N/A",
+      "period": 14,
+      "volatility": "data not visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Overall bearish context with descending triangle potentially signaling continuation"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "break_triangle_support",
+        "type": "price_level_breach",
+        "level": "triangle_support",
+        "comparator": "<",
+        "value": 111724.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_triangle_resistance",
+        "type": "price_breach",
+        "level": "triangle_resistance",
+        "comparator": ">"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112183.4,
+      "basis": "above_triangle_resistance",
+      "distance_ticks": 350
+    },
+    "take_profit": [
+      {
+        "price": 111500.0,
+        "basis": "breakout_target",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for close below triangle support at 111724.0",
+    "Ensure RSI14 remains below 50 for bearish confirmation",
+    "Enter short if checklist is met with a confirmed breach",
+    "Invalidate if price closes above triangle resistance"
+  ],
+  "improvements": "Consider adding MACD and volume analysis to confirm breakout strength"
+}

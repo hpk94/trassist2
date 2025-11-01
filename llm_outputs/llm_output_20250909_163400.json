@@ -1,0 +1,193 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-09 14:33",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 111962.4,
+    "resistance": 112878.7
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 33.27,
+      "status": "neutral",
+      "signal": "approaching_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": -79.7568,
+      "signal_line": -72.1628,
+      "histogram": -7.594,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below_middle_band",
+      "bandwidth": "compressed"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 41.08,
+      "d_percent": 35.87,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 810097.5,
+      "average": 980000,
+      "ratio": 0.83,
+      "trend": "steady"
+    },
+    "ATR14": {
+      "value": 85.0,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": "multi-bar structure",
+      "confidence": 0.85
+    },
+    {
+      "pattern": "bearish_breakout",
+      "candle_index": 0,
+      "confidence": 0.78
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.74,
+    "notes": "Descending triangle broke lower from support near 112180, price testing near Fib 0 at 111962.4. MACD and RSI show bearish momentum continuation."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "price_below_desc_triangle_support",
+        "type": "price_level",
+        "level": "112180",
+        "comparator": "<",
+        "value": 112046.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_bearish_candle_high",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.1,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "confirmed_breakout_below_support_zone",
+        "type": "price_retest",
+        "level": "112180",
+        "lookback_candles": 3,
+        "tolerance_ticks": 10,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "fib_level_broken_0.236",
+        "type": "price_level",
+        "level": "112178.6",
+        "comparator": "<=",
+        "value": 112046.4,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_112180",
+        "type": "price_breach",
+        "level": "112180",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line >= signal_line"
+      },
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0
+      },
+      {
+        "id": "2bullish_candles_above_atr",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bullish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112220.0,
+      "basis": "above prior support now resistance zone",
+      "distance_ticks": 180
+    },
+    "take_profit": [
+      {
+        "price": 111880.0,
+        "basis": "swing low support target",
+        "rr": 1.1
+      },
+      {
+        "price": 111700.0,
+        "basis": "fib extension 1.272",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Short entry valid below 112180 with confirmed descending triangle breakdown",
+    "Ensure MACD remains bearish and RSI stays below 40 post-entry",
+    "Volume breakout confirmation further strengthens validity",
+    "Stop-loss above 112220, watch for invalidation events"
+  ],
+  "improvements": "Wait for brief retest near 112180 if missed entry; use lower ATR-based stop if market turns choppy or low volatility persists."
+}

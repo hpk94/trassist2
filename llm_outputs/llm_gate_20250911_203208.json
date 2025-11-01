@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.88,
+  "reasons": [
+    "Rising wedge breakdown confirmed with RSI at 38.6, indicating downside momentum",
+    "Price remains below 0.786 Fib level and no invalidation breaches occurred",
+    "Volume remains under spike threshold supporting non-exhaustive move"
+  ],
+  "warnings": [
+    "Trade initiated without a confirmed retest of wedge base; price near first take profit"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 114187.96,
+    "stop_loss": 114660.0,
+    "take_profits": [
+      {
+        "price": 114260.7,
+        "portion": 0.5
+      },
+      {
+        "price": 114168.8,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.9,
+    "position_size_note": "Size for tighter tolerance due to proximity to first TP; trail stop after TP1 hit."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

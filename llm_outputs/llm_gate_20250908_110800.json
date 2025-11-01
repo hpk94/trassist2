@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "All checklist conditions are met, including RSI above 40 and MACD crossover.",
+    "No invalidation conditions are currently triggered.",
+    "The trade setup aligns strongly with current market conditions."
+  ],
+  "warnings": [
+    "Monitor for any quick reversals that might trigger invalidation conditions."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 111725.0,
+    "stop_loss": 111500.0,
+    "take_profits": [
+      {
+        "price": 111758.4,
+        "portion": 0.5
+      },
+      {
+        "price": 112127.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Adjust position size to maintain a risk of 1% of account equity based on stop loss."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

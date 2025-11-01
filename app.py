@@ -9,13 +9,32 @@ import pandas as pd
 from datetime import datetime
 import time
 
-from pymexc import spot, futures
+from hyperliquid.info import Info
+from hyperliquid.exchange import Exchange
+from eth_account import Account
 
 # Import notification service
 from services.notification_service import notify_valid_trade, notify_invalidated_trade
 
+# Import Telegram bot for command control
+from telegram_bot import (
+    get_analysis_state, 
+    should_stop_analysis, 
+    set_analysis_running, 
+    set_analysis_info,
+    send_telegram_status,
+    start_bot
+)
+
 # Load environment variables
 load_dotenv()
+
+# Start Telegram bot for command control
+try:
+    start_bot()
+    print("✅ Telegram bot started for command control")
+except Exception as e:
+    print(f"⚠️  Could not start Telegram bot: {e}")
 
 # Configure LiteLLM models (can be changed via environment variable)
 # Examples: "gpt-4o", "claude-3-5-sonnet-20241022", "gemini/gemini-1.5-pro", "deepseek/deepseek-chat"
@@ -108,8 +127,19 @@ def llm_trade_gate_decision(
         }
 
 print("Step 1: Analyzing trading chart with LLM...")
+# Mark analysis as running
+set_analysis_running(True)
+send_telegram_status("🚀 <b>Analysis Started</b>\n\nAnalyzing trading chart...")
+
 llm_output = analyze_trading_chart(test_image)
 print(f"Step 1 Complete: Chart analysis finished for {test_image}")
+
+# Check if stop was requested
+if should_stop_analysis():
+    print("⏹️  Analysis stopped by user request")
+    set_analysis_running(False)
+    send_telegram_status("⏹️ <b>Analysis Stopped</b>\n\nAnalysis was cancelled by user.")
+    exit(0)
 
 print("Step 2: Setting up output directory...")
 # Create output directory if it doesn't exist
@@ -133,42 +163,91 @@ timeframe = llm_output['timeframe']
 time_of_screenshot = llm_output['time_of_screenshot']
 print(f"Step 4 Complete: Symbol={symbol}, Timeframe={timeframe}, Screenshot time={time_of_screenshot}")
 
-print("Step 5: Validating timeframe against MEXC supported intervals...")
-# Validate timeframe against MEXC supported intervals
-valid_intervals = ['1m', '5m', '15m', '30m', '60m', '4h', '1d', '1W', '1M']
-if timeframe not in valid_intervals:
-    print(f"Warning: {timeframe} is not a valid MEXC interval. Using 1m as default.")
+# Get direction and update analysis state
+direction = llm_output.get('opening_signal', {}).get('direction', 'Unknown')
+set_analysis_info(symbol, direction)
+send_telegram_status(f"📊 <b>Chart Analyzed</b>\n\n<b>Symbol:</b> {symbol}\n<b>Direction:</b> {direction}\n<b>Timeframe:</b> {timeframe}\n\nFetching market data...")
+
+print("Step 5: Validating timeframe against Hyperliquid supported intervals...")
+# Validate timeframe against Hyperliquid supported intervals
+# Hyperliquid uses: 1m, 5m, 15m, 1h, 4h, 1d
+valid_intervals = ['1m', '5m', '15m', '30m', '1h', '4h', '1d']
+timeframe_mapping = {
+    '60m': '1h',
+    '1W': '1d',
+    '1M': '1d'
+}
+if timeframe in timeframe_mapping:
+    print(f"Warning: {timeframe} is not directly supported. Using {timeframe_mapping[timeframe]} as equivalent.")
+    timeframe = timeframe_mapping[timeframe]
+elif timeframe not in valid_intervals:
+    print(f"Warning: {timeframe} is not a valid Hyperliquid interval. Using 1m as default.")
     timeframe = '1m'
 print(f"Step 5 Complete: Using timeframe {timeframe}")
 
 
 
-print("Step 6: Initializing MEXC API clients...")
-# initialize HTTP client for authenticated endpoints
-spot_client = spot.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
-# initialize public HTTP client for market data (no auth required)
-public_spot_client = spot.HTTP()
-# initialize WebSocket client
-ws_spot_client = spot.WebSocket(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
-# initialize Futures HTTP client for trading (perpetual contracts)
-futures_client = futures.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
-print("Step 6 Complete: MEXC API clients initialized")
+print("Step 6: Initializing Hyperliquid API clients...")
+# Initialize Hyperliquid clients
+# For market data (public)
+info_client = Info(skip_ws=True)
+# For trading (requires private key)
+private_key = os.getenv("HYPERLIQUID_PRIVATE_KEY")
+if private_key:
+    account = Account.from_key(private_key)
+    exchange_client = Exchange(account, skip_ws=True)
+    print(f"Step 6 Complete: Hyperliquid clients initialized (wallet: {account.address})")
+else:
+    exchange_client = None
+    print("Step 6 Complete: Hyperliquid info client initialized (no private key for trading)")
 
 # make http request to api
 
+def _convert_symbol_to_hyperliquid(symbol: str) -> str:
+    """Convert symbols like BTCUSDT or BTCUSDT.P to Hyperliquid format (e.g., BTC)."""
+    if not symbol:
+        return symbol
+    # Remove .P suffix if present
+    cleaned = symbol.replace(".P", "").replace("USDT", "").replace("USDC", "")
+    # Remove any slashes
+    cleaned = cleaned.replace("/", "")
+    return cleaned.upper()
+
 def fetch_market_data(symbol, timeframe):
-    """Fetch raw klines data from MEXC API"""
+    """Fetch raw klines data from Hyperliquid API"""
     print(f"      Fetching market data for {symbol} on {timeframe} timeframe...")
     try:
-        klines = public_spot_client.klines(
-            symbol=symbol,
+        # Convert symbol to Hyperliquid format
+        hl_symbol = _convert_symbol_to_hyperliquid(symbol)
+        
+        # Hyperliquid expects intervals like "1m", "5m", "15m", "1h", "4h", "1d"
+        # Fetch candles using Hyperliquid's API
+        candles = info_client.candles_snapshot(
+            coin=hl_symbol,
             interval=timeframe,
-            limit=400
+            startTime=int((datetime.now().timestamp() - 400 * 60) * 1000),  # rough estimate
+            endTime=int(datetime.now().timestamp() * 1000)
         )
-        if klines:
-            print(f"      Successfully fetched {len(klines)} klines")
+        
+        if candles:
+            print(f"      Successfully fetched {len(candles)} klines")
+            # Convert Hyperliquid candles format to MEXC-like format for compatibility
+            # Hyperliquid format: [timestamp, open, high, low, close, volume]
+            klines = []
+            for candle in candles:
+                klines.append([
+                    candle['t'],  # timestamp in ms
+                    candle['o'],  # open
+                    candle['h'],  # high
+                    candle['l'],  # low
+                    candle['c'],  # close
+                    candle['v'],  # volume
+                    candle['T'],  # close time
+                    0  # quote asset volume (not provided by Hyperliquid)
+                ])
         else:
             print(f"      Warning: No klines data returned for {symbol} on {timeframe}")
+            klines = []
     
     except Exception as e:
         print(f"      Error retrieving klines for {symbol} on {timeframe}: {e}")
@@ -211,26 +290,18 @@ from services.indicator_service import (
     calculate_atr14,
 )
 
-def _convert_symbol_to_mexc_futures(symbol: str) -> str:
-    """Convert symbols like BTCUSDT or BTCUSDT.P to MEXC futures format (e.g., BTC_USDT)."""
-    if not symbol:
-        return symbol
-    cleaned = symbol.replace(".P", "")
-    if cleaned.endswith("USDT") and "_" not in cleaned:
-        base = cleaned[:-4]
-        return f"{base}_USDT"
-    # If already in correct format or different quote
-    return cleaned.replace("/", "_")
 
-def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
-    """Place a futures order on MEXC based on the gate result.
+def open_trade_with_hyperliquid(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
+    """Place a perpetual order on Hyperliquid based on the gate result.
 
     Environment overrides:
-    - MEXC_DEFAULT_VOL: float volume in contracts/base units (default 0.001)
-    - MEXC_OPEN_TYPE: 1 isolated, 2 cross (default 2)
-    - MEXC_LEVERAGE: int leverage for isolated (optional)
+    - HYPERLIQUID_DEFAULT_SIZE: float size in USD (default 10.0)
+    - HYPERLIQUID_LEVERAGE: int leverage (default 1, max depends on asset)
     """
-    mexc_symbol = _convert_symbol_to_mexc_futures(symbol)
+    if not exchange_client:
+        return {"ok": False, "error": "No exchange client initialized (missing HYPERLIQUID_PRIVATE_KEY)"}
+    
+    hl_symbol = _convert_symbol_to_hyperliquid(symbol)
     direction = (gate_result.get("direction") or "").lower()
     execution = gate_result.get("execution", {})
     entry_type = (execution.get("entry_type") or "market").lower()
@@ -240,54 +311,41 @@ def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, 
 
     # Defaults and envs
     try:
-        default_vol = float(os.getenv("MEXC_DEFAULT_VOL", "0.001"))
+        default_size = float(os.getenv("HYPERLIQUID_DEFAULT_SIZE", "10.0"))
     except Exception:
-        default_vol = 0.001
+        default_size = 10.0
+    
     try:
-        open_type = int(os.getenv("MEXC_OPEN_TYPE", "2"))  # 1 isolated, 2 cross
+        leverage = int(os.getenv("HYPERLIQUID_LEVERAGE", "1"))
     except Exception:
-        open_type = 2
-    leverage_env = os.getenv("MEXC_LEVERAGE")
-    leverage = int(leverage_env) if leverage_env and leverage_env.isdigit() else None
+        leverage = 1
 
-    # Map direction to MEXC side
-    # 1 open long, 2 close short, 3 open short, 4 close long
-    if direction == "long":
-        side = 1
-    elif direction == "short":
-        side = 3
-    else:
-        raise ValueError(f"Unknown trade direction: {direction}")
+    # Map direction to Hyperliquid side (true = buy/long, false = sell/short)
+    is_buy = (direction == "long")
 
-    # Order type: 5 = market, 1 = limit
+    # Determine order type
     if entry_type == "market":
-        order_type = 5
-        price = 0
+        limit_price = None  # Market order
     else:
-        order_type = 1
-        # fall back to current market if entry_price missing
-        price = float(entry_price or 0)
-
-    # Use first TP as take-profit if provided
-    tp_price = None
-    if isinstance(take_profits, list) and take_profits:
-        first_tp = take_profits[0]
-        tp_price = first_tp.get("price") if isinstance(first_tp, dict) else None
+        limit_price = float(entry_price) if entry_price else None
 
     try:
-        response = futures_client.order(
-            symbol=mexc_symbol,
-            price=price,
-            vol=default_vol,
-            side=side,
-            type=order_type,
-            open_type=open_type,
-            leverage=leverage,
-            stop_loss_price=stop_loss,
-            take_profit_price=tp_price,
-            reduce_only=False,
+        # Set leverage first
+        exchange_client.update_leverage(leverage, hl_symbol)
+        
+        # Place the order
+        order_result = exchange_client.market_open(
+            coin=hl_symbol,
+            is_buy=is_buy,
+            sz=default_size,
+            px=limit_price
         )
-        return {"ok": True, "response": response}
+        
+        # Note: Hyperliquid doesn't support stop-loss/take-profit in the same order
+        # You would need to place separate orders for those
+        # For now, we'll just place the main order
+        
+        return {"ok": True, "response": order_result}
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
@@ -669,7 +727,7 @@ def validate_trading_signal(df):
                 "current_rsi": market_values.get("current_rsi", 0)
             }
             notification_results = notify_invalidated_trade(trade_data)
-            print(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}")
+            print(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
         except Exception as e:
             print(f"⚠️ Invalidation notification failed: {str(e)}")
         
@@ -702,7 +760,15 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
     cycles = 0
     wait_seconds = _timeframe_seconds(timeframe)
     print(f"  Polling started: waiting {wait_seconds} seconds between checks")
+    
     while True:
+        # Check if stop was requested
+        if should_stop_analysis():
+            print("⏹️  Polling stopped by user request")
+            set_analysis_running(False)
+            send_telegram_status("⏹️ <b>Analysis Stopped</b>\n\nPolling was cancelled by user.")
+            return False, "stopped", [], {}
+        
         print(f"  Polling cycle {cycles + 1}: fetching fresh market data...")
         current_df = fetch_market_dataframe(symbol, timeframe)
         current_df = calculate_rsi14(current_df)
@@ -717,10 +783,16 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
         if signal_status != "pending":
             print(f"  Polling complete: final status = {signal_status}")
             return signal_valid, signal_status, triggered_conditions, market_values
+        
         cycles += 1
         if max_cycles is not None and cycles >= max_cycles:
             print(f"  Polling complete: max cycles ({max_cycles}) reached")
             return signal_valid, signal_status, triggered_conditions, market_values
+
+        # Send periodic status updates
+        if cycles % 5 == 0:  # Every 5 cycles
+            elapsed_min = int((cycles * wait_seconds) / 60)
+            send_telegram_status(f"⏳ <b>Still Polling...</b>\n\nCycle {cycles}\nElapsed: {elapsed_min}m\nStatus: {signal_status}")
 
         print(f"  Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
         time.sleep(wait_seconds)
@@ -731,6 +803,12 @@ signal_valid, signal_status, triggered_conditions, market_values = poll_until_de
 print(f"Step 10 Complete: Final Signal Status: {signal_status}")
 
 print("Step 11: Checking if signal is valid for trade gate...")
+
+# Check if analysis was stopped
+if signal_status == "stopped":
+    print("Step 11 Complete: Analysis was stopped, exiting")
+    exit(0)
+
 # If programmatic signal is valid, run LLM trade gate before opening a position
 if signal_valid and signal_status == "valid":
     print("Step 11 Complete: Signal is valid, proceeding to trade gate")
@@ -772,18 +850,18 @@ if signal_valid and signal_status == "valid":
                 "take_profits": gate_result.get("execution", {}).get("take_profits", [])
             }
             notification_results = notify_valid_trade(trade_data)
-            print(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}")
+            print(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
         except Exception as e:
             print(f"⚠️ Notification failed: {str(e)}")
         
-        # Place order on MEXC Futures
-        print("Step 15: Placing MEXC futures order...")
-        order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
+        # Place order on Hyperliquid
+        print("Step 15: Placing Hyperliquid perpetual order...")
+        order_outcome = open_trade_with_hyperliquid(llm_output.get("symbol", ""), gate_result)
         if order_outcome.get("ok"):
             print("Step 15 Complete: Order placed successfully")
             # Save order response
             try:
-                order_filename = f"mexc_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                order_filename = f"hyperliquid_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
                 order_path = os.path.join(output_dir, order_filename)
                 with open(order_path, 'w') as f:
                     json.dump(order_outcome.get("response"), f, indent=2, default=str)
@@ -796,6 +874,11 @@ if signal_valid and signal_status == "valid":
         print("Step 14 Complete: Trade not approved by gate")
 else:
     print(f"Step 11 Complete: Signal not valid (status: {signal_status}), skipping trade gate")
+
+# Mark analysis as complete
+print("Analysis complete!")
+set_analysis_running(False)
+send_telegram_status("✅ <b>Analysis Complete</b>\n\nThe analysis has finished.")
 
 def calculate_time_difference(time_of_screenshot, df):
     time_of_screenshot = datetime.strptime(time_of_screenshot, "%Y-%m-%d %H:%M")

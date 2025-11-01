@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.86,
+  "reasons": [
+    "All checklist conditions are met including RSI below 50, MACD bearish histogram, rejection at 0.618 Fib, and rising wedge breakdown.",
+    "Current price remains below fib_0.618 and invalidations are not triggered.",
+    "Favorable risk-reward above 2:1 with two profit targets defined."
+  ],
+  "warnings": [
+    "No full retest confirmation, but recent rejection at fib_0.618 supports entry."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 112936.47,
+    "stop_loss": 112975.0,
+    "take_profits": [
+      {
+        "price": 112864.0,
+        "portion": 0.5
+      },
+      {
+        "price": 112801.4,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.5,
+    "position_size_note": "Size appropriately for 48-tick risk to stop at 112975.0"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

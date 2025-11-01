@@ -1,0 +1,175 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 10:20",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 112060.0,
+    "resistance": 112481.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 44.91,
+      "status": "neutral",
+      "signal": "slightly bearish"
+    },
+    "MACD12_26_9": {
+      "macd_line": -12.2558,
+      "signal_line": -2.6499,
+      "histogram": -9.6059,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "n/a"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 49.78,
+      "d_percent": 44.9,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 0.86558311,
+      "average": 0.972,
+      "ratio": 0.89,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "n/a"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": "composite",
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.64,
+    "notes": "Descending triangle pattern is forming near local support with MACD bearish crossover and weakening volume."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_neutral_bearish",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_decreasing",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "lower_high_at_resistance",
+        "type": "price_structure",
+        "level": "descending_triangle_upper",
+        "comparator": "<=",
+        "value": 112401.1,
+        "observed_on_candle": 1,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "support_test_0_236_fib",
+        "type": "price_retest",
+        "level": "fib_0_236",
+        "anchors": {
+          "from": "112060.0",
+          "to": "112742.2"
+        },
+        "comparator": "=",
+        "value": 112221.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_triangle_high",
+        "type": "price_breach",
+        "level": 112401.1,
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_above_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 60.0
+      },
+      {
+        "id": "macd_crossover_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112401.0,
+      "basis": "above descending triangle",
+      "distance_ticks": 200
+    },
+    "take_profit": [
+      {
+        "price": 112060.0,
+        "basis": "support at Fib 0",
+        "rr": 1.2
+      },
+      {
+        "price": 111920.0,
+        "basis": "extension move below support",
+        "rr": 1.8
+      }
+    ]
+  },
+  "summary_actions": [
+    "Pattern formation confirms descending triangle with retest of support at 0.236 Fib",
+    "MACD bearish crossover, neutral RSI, and declining volume support bearish continuation",
+    "Execute short entry on break and close below 112221.0 with stop above 112401.0",
+    "Watch for invalidation via bullish MACD crossover or price closing above structure"
+  ],
+  "improvements": "Add BB20_2 or VWAP to confirm squeeze or expansion breakout. Monitor volume surge at breakdown for higher conviction."
+}

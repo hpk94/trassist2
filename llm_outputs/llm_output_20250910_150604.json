@@ -1,0 +1,165 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 13:05",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 113000.0,
+    "resistance": 113800.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 70.31,
+      "status": "overbought",
+      "signal": "potential_exhaustion"
+    },
+    "MACD12_26_9": {
+      "macd_line": 138.0915,
+      "signal_line": 111.4921,
+      "histogram": 26.5995,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "above_middle_band",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_visible"
+    },
+    "VOLUME": {
+      "current": 9.87583369,
+      "average": 6.2,
+      "ratio": 1.59,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_visible"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.76,
+    "notes": "Ascending triangle indicating continuation; volume increasing at resistance, MACD supports bullish momentum. RSI in overbought zone introduces caution."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "ascending_triangle_breakout",
+        "type": "candle_pattern",
+        "pattern": "ascending_triangle",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_near_resistance",
+        "type": "price_level",
+        "level": "resistance",
+        "comparator": ">=",
+        "value": 113750.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "rsi_too_high",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 75.0
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "false_break_fail_close",
+        "type": "price_breach",
+        "level": "upper_triangle_line",
+        "comparator": "<"
+      },
+      {
+        "id": "volume_divergence",
+        "type": "sequence",
+        "count": 2,
+        "direction": "volume_down_price_up",
+        "atr_multiple": null
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113390.0,
+      "basis": "below_triangle_support",
+      "distance_ticks": 190
+    },
+    "take_profit": [
+      {
+        "price": 113800.0,
+        "basis": "pattern_measured_move",
+        "rr": 1.1
+      },
+      {
+        "price": 114000.0,
+        "basis": "psychological_level",
+        "rr": 2.1
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for breakout above 113750 with strong volume push",
+    "Enter long if MACD remains above signal and volume sustains above 1.2x average",
+    "Set stop just below ascending triangle\u2019s rising trendline (~113390)",
+    "Exit early if RSI exceeds 75 or MACD crosses bearish"
+  ],
+  "improvements": "Incorporate Bollinger Band or Fibonacci levels for added confluence. Watch for stochastic confirmation once indicator is visible. Tighten stop if entering before a confirmed breakout."
+}

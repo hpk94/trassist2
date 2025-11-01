@@ -1,0 +1,169 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 09:05",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111530.6,
+    "resistance": 111758.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 45.99,
+      "status": "neutral",
+      "signal": "steady"
+    },
+    "MACD12_26_9": {
+      "macd_line": -3.6788,
+      "signal_line": 7.4473,
+      "histogram": -11.1262,
+      "signal": "bearish"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "near_middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 48.27,
+      "d_percent": 49.86,
+      "signal": "steady"
+    },
+    "VOLUME": {
+      "current": 2.71429304,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "normal"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "Rising channel shows strength but MACD signals caution."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_neutral",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_reversal_possible",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_respect_support",
+        "type": "price_level",
+        "level": "fib_1_0",
+        "comparator": ">=",
+        "value": 111530.6,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "stochastic_steady",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 20.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_stable",
+        "type": "volume_trend",
+        "trend": "stable",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "fib_1_0",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_remains_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111500.0,
+      "basis": "below_fib_1_0",
+      "distance_ticks": 30
+    },
+    "take_profit": [
+      {
+        "price": 111758.4,
+        "basis": "fib_1_618",
+        "rr": 1.5
+      },
+      {
+        "price": 112127.0,
+        "basis": "fib_2_618_extension",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for MACD to turn bullish with price respecting support.",
+    "Confirm RSI above 40 for additional strength.",
+    "Enter long if all checklist items are true.",
+    "Invalidate if price closes below Fibonacci 1.0 retracement."
+  ],
+  "improvements": "Consider monitoring MACD closely for reversal and set stop-loss tighter to support level for better risk management."
+}

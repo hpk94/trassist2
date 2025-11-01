@@ -1,0 +1,162 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 13:45",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111718.0,
+    "resistance": 112406.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 54.03,
+      "status": "neutral",
+      "signal": "bullish_potential"
+    },
+    "MACD12_26_9": {
+      "macd_line": -6.1321,
+      "signal_line": -10.1983,
+      "histogram": 4.0662,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "above_middle",
+      "bandwidth": null
+    },
+    "STOCH14_3_3": {
+      "k_percent": 53.66,
+      "d_percent": 48.48,
+      "signal": "bullish"
+    },
+    "VOLUME": {
+      "current": 57.72,
+      "average": null,
+      "ratio": 1.0,
+      "trend": "spike"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "none",
+      "candle_index": 0,
+      "confidence": 0.0
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "MACD bullish crossover and RSI recovery align with large volume spike"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_bullish_recovery",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stochastic_bullish",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "fib_0_236",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111881.0,
+      "basis": "below_fib_0_382",
+      "distance_ticks": 200
+    },
+    "take_profit": [
+      {
+        "price": 112248.0,
+        "basis": "near_resistance",
+        "rr": 1.5
+      },
+      {
+        "price": 112406.0,
+        "basis": "fib_1_618_extension",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if RSI14 > 50 and MACD12_26_9 shows bullish crossover",
+    "Confirm volume is above average",
+    "Set stop-loss below 111881.0",
+    "Target take profits at 112248.0 and 112406.0"
+  ],
+  "improvements": "Ensure volume spikes align with RSI and MACD signals for entry confirmation"
+}

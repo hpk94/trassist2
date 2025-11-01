@@ -1,0 +1,124 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-31 15:36",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 110054.3,
+    "resistance": 113019.4
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 41.41,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not provided"
+    },
+    "VOLUME": {
+      "current": 8.60794691,
+      "average": null,
+      "ratio": null,
+      "trend": "context provided"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 113019.4,
+        "to": 106842.0
+      },
+      "levels": {
+        "0.236": 113019.4,
+        "0.382": 111379.6,
+        "0.5": 110054.3,
+        "0.618": 108728.9,
+        "0.786": 107670.7
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": null,
+    "MACD12_26_9": {
+      "macd_line": -40.0595,
+      "signal_line": -24.1763,
+      "histogram": -15.8832
+    },
+    "ATR14": null
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": false,
+    "notes": "RSI near neutral; volume context needs further analysis"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_05",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 110054.3,
+        "basis": "fib_0.5"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "support"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109900.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 111379.6,
+        "basis": "fib_0.382",
+        "rr": 1.5
+      },
+      {
+        "price": 113019.4,
+        "basis": "fib_0.236",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for RSI14 recovery",
+    "Confirm price holds above Fib 0.5 level",
+    "Enter long if supported by volume",
+    "Invalidate if price falls below key support"
+  ],
+  "improvements": "Monitor volume and MACD for additional confirmation; ensure clear stop-loss placement"
+}

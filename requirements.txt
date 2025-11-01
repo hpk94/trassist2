@@ -1,6 +1,6 @@
 litellm>=1.55.0
 python-dotenv==1.0.0
 requests==2.31.0
-pymexc==1.0.1
+pymexc
 pandas
 flask==3.0.0

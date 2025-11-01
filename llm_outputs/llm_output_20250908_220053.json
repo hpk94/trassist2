@@ -1,0 +1,150 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 20:00",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 112010.7,
+    "resistance": 112322.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 51.58,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": -25.4514,
+      "signal_line": -28.9797,
+      "histogram": 3.5283,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below_middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.76,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 11.53950357,
+      "average": null,
+      "ratio": null,
+      "trend": "spiking"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Bullish MACD crossover and volume spike suggest possible reversal in descending channel."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_support",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": ">=",
+        "value": 112158.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_lower_channel",
+        "type": "price_breach",
+        "level": "channel_lower",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112000.0,
+      "basis": "below_channel",
+      "distance_ticks": 20
+    },
+    "take_profit": [
+      {
+        "price": 112250.0,
+        "basis": "fib_0_382",
+        "rr": 2.0
+      },
+      {
+        "price": 112322.9,
+        "basis": "fib_0_5",
+        "rr": 3.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long on bullish MACD confirmation and RSI above 50",
+    "Set stop-loss below descending channel",
+    "Target take-profit at fib levels 0.382 and 0.5"
+  ],
+  "improvements": "Consider checking further trend confirmation beyond the channel boundary for greater reliability."
+}

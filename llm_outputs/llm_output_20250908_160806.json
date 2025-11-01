@@ -1,0 +1,185 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-08 14:07",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 111719.7,
+    "resistance": 112143.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 53.55,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": -20.1663,
+      "signal_line": -42.6563,
+      "histogram": 22.49,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": 112400.0,
+      "middle": 112050.0,
+      "lower": 111700.0,
+      "price_position": "between_middle_and_upper",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 53.66,
+      "d_percent": 43.55,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 9.24183786,
+      "average": 8.5,
+      "ratio": 1.09,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 60.0,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "downtrend_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.75,
+    "notes": "RSI is neutral but MACD shows a bullish crossover; increasing volume supports potential reversal."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_not_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": ">=",
+        "value": 112050.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "retest_of_support",
+        "type": "price_retest",
+        "level": "fib_0_618",
+        "lookback_candles": 3,
+        "tolerance_ticks": 10,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "fib_0_618",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "price_below_bb_lower",
+        "type": "price_level",
+        "level": "bollinger_lower",
+        "comparator": "<=",
+        "value": 111700.0
+      },
+      {
+        "id": "two_bear_candles_large",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bearish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111900.0,
+      "basis": "below_support",
+      "distance_ticks": 30
+    },
+    "take_profit": [
+      {
+        "price": 112300.0,
+        "basis": "fib_1_618_extension",
+        "rr": 1.5
+      },
+      {
+        "price": 112500.0,
+        "basis": "recent_high",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor MACD12_26_9 for sustained bullish crossover",
+    "Ensure price remains above BB20_2 middle band",
+    "Consider long entry if checklist items are validated",
+    "Invalidate on RSI14 crossing into overbought or price closing below support"
+  ],
+  "improvements": "Consider adding Stochastic confirmation for stronger entry signal, tighten stop-loss to increase risk/reward"
+}

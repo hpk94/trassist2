@@ -1,0 +1,191 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-04 19:03",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 109710.5,
+    "resistance": 110018.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 49.51,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": -9.6,
+      "signal_line": -8.3,
+      "histogram": -1.3,
+      "signal": "bearish"
+    },
+    "BB20_2": {
+      "upper": 110150.0,
+      "middle": 109983.0,
+      "lower": 109816.0,
+      "price_position": "middle",
+      "bandwidth": "medium"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.0,
+      "d_percent": 45.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 59890,
+      "average": 62000,
+      "ratio": 0.97,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": 73.5,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern_candle": "none",
+      "candle_index": 0,
+      "confidence": 0.0
+    },
+    {
+      "pattern_chart": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.6,
+    "notes": "Sideways movement with descending resistance and support near 0.382 Fib level. Neutral RSI and bearish MACD signal indicates caution."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_midrange",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_midrange",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 55.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_bb_middle",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": "<=",
+        "value": 109983.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_below_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_above_descending_resistance",
+        "type": "price_breach",
+        "level": "resistance",
+        "comparator": ">",
+        "value": 110018.0
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_midrange",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 60.0
+      },
+      {
+        "id": "price_above_bb_upper",
+        "type": "price_level",
+        "level": "bollinger_upper",
+        "comparator": ">=",
+        "value": 110150.0
+      },
+      {
+        "id": "two_bull_candles_large",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bullish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 110021.0,
+      "basis": "above_resistance",
+      "distance_ticks": 101
+    },
+    "take_profit": [
+      {
+        "price": 109710.0,
+        "basis": "previous_low",
+        "rr": 1.2
+      },
+      {
+        "price": 109580.0,
+        "basis": "fib_0_618_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Await MACD bearish continuation and price break below Bollinger middle band",
+    "Consider short entry if checklist conditions are met",
+    "Monitor volume for consistency and invalidate on bullish crossover or breach above resistance"
+  ],
+  "improvements": "Watch for clearer trend confirmation and reevaluate with volume above average for stronger signals"
+}

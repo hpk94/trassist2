@@ -1,0 +1,174 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 15:35",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 113698.9,
+    "resistance": 113923.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 50.11,
+      "status": "neutral",
+      "signal": "early_recovery_from_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": -28.527,
+      "signal_line": -38.6578,
+      "histogram": 10.1307,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "undefined",
+      "bandwidth": "undefined"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 41.41,
+      "d_percent": 41.41,
+      "signal": "neutral_trending_up"
+    },
+    "VOLUME": {
+      "current": 82750,
+      "average": 50000,
+      "ratio": 1.65,
+      "trend": "strong_spike"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unavailable"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_wedge",
+      "candle_index": "multi",
+      "confidence": 0.85
+    },
+    {
+      "pattern": "bullish_engulfing",
+      "candle_index": 0,
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.74,
+    "notes": "Breakout from falling wedge supported by bullish engulfing candle, bullish MACD crossover, and volume surge; RSI is recovering"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "bullish_engulfing",
+        "type": "candle_pattern",
+        "pattern": "bullish_engulfing",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.5,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_break_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0236",
+        "type": "price_level",
+        "level": "fib_0.236",
+        "comparator": ">=",
+        "value": 113837.9,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_wedge_support",
+        "type": "price_breach",
+        "level": "wedge_support",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113690.0,
+      "basis": "below_wedge_support_and_fib_0",
+      "distance_ticks": 140
+    },
+    "take_profit": [
+      {
+        "price": 113993.4,
+        "basis": "Fibonacci_0.5",
+        "rr": 1.17
+      },
+      {
+        "price": 114062.9,
+        "basis": "Fibonacci_0.618",
+        "rr": 1.69
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long now if price sustains above Fib 0.236 with confirmed bullish engulfing",
+    "Ensure MACD maintains bullish crossover and RSI stays above 50",
+    "Place stop-loss below falling wedge support and Fib 0 at ~113690",
+    "Scale out partial profits at Fib 0.5 and 0.618 (~113993.4 and ~114062.9)"
+  ],
+  "improvements": "Wait for a slight pullback to retest Fib 0.236 or falling wedge breakout zone to improve entry R/R. Add ATR14 for stop precision and optional confirmation from crossover of RSI 50 on 3-min chart."
+}

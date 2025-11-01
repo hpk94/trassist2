@@ -1,0 +1,34 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price is above the designed stop loss level.",
+    "Invalidation condition close_above_rising_wedge is highly likely as current price exceeds stop loss basis."
+  ],
+  "warnings": [
+    "Potential invalidation of the setup with price above key resistance.",
+    "Entry would immediately trigger the stop loss."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 109535.4,
+    "stop_loss": 109500.0,
+    "take_profits": [
+      {
+        "price": 109285.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.15,
+    "position_size_note": "Do not enter as current conditions invalidate the trade setup."
+  },
+  "checks": {
+    "invalidation_triggered": true,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

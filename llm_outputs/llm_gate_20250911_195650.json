@@ -1,0 +1,39 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price (114569.97) has already exceeded defined stop loss level (114540.0), violating risk threshold.",
+    "Price has likely broken above the rising wedge\u2019s upper boundary, even if not formally flagged via invalidation check \u2013 implying invalidation risk is present.",
+    "Entry at this level yields unfavorable risk/reward due to stop being above the market."
+  ],
+  "warnings": [
+    "Live price action contradicts the planned invalidation level.",
+    "Momentum (MACD and RSI) not decisively bearish enough for late short entry."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 114569.97,
+    "stop_loss": 114540.0,
+    "take_profits": [
+      {
+        "price": 114260.7,
+        "portion": 0.5
+      },
+      {
+        "price": 114168.8,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": -0.8,
+    "position_size_note": "No position should be taken since entry price invalidates original stop zone; reset setup evaluation."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "weak"
+  }
+}

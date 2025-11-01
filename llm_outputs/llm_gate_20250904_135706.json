@@ -1,0 +1,32 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.85,
+  "reasons": [
+    "Price is below the Bollinger Band middle, confirming downtrend signal.",
+    "Presence of a descending channel supports the short position.",
+    "No invalidation conditions are triggered."
+  ],
+  "warnings": [],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 110872.55,
+    "stop_loss": 111110.0,
+    "take_profits": [
+      {
+        "price": 110610.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Ensure position size accounts for the risk relative to account balance."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

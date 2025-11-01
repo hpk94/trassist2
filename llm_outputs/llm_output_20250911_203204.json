@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-11 17:59",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 114352.5,
+    "resistance": 114649.8
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 57.27,
+      "status": "neutral",
+      "signal": "bullish_bias"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 51.2,
+      "d_percent": 48.8,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 82840,
+      "average": 70000,
+      "ratio": 1.18,
+      "trend": "slightly increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 113871.5,
+        "to": 114649.8
+      },
+      "levels": {
+        "0": 113871.5,
+        "0.236": 114055.2,
+        "0.382": 114168.8,
+        "0.5": 114260.7,
+        "0.618": 114352.5,
+        "0.786": 114483.2,
+        "1": 114649.8
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.66,
+    "confluence_with_pattern": true,
+    "notes": "Moderately high RSI, a compressing rising wedge near Fib 0.786. Volume rising modestly. Short-term bullish momentum but risk of breakdown."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_60",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 60,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_does_not_spike",
+        "indicator": "VOLUME",
+        "comparator": "<=",
+        "value": 1.5,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_fails_0_786",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 114483.2,
+        "basis": "fib_0.786"
+      },
+      {
+        "id": "rising_wedge_pattern",
+        "pattern": "rising_wedge",
+        "confidence": 0.87
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_114650",
+        "type": "price_breach",
+        "level": 114649.8
+      },
+      {
+        "id": "rsi_breaks_overbought",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 70
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 114660.0,
+      "basis": "above_fib_1"
+    },
+    "take_profit": [
+      {
+        "price": 114260.7,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      },
+      {
+        "price": 114168.8,
+        "basis": "fib_0.382",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Rising wedge forming under Fib 0.786 resistance",
+    "Confirm rejection under 114483.2 with RSI < 60",
+    "Enter short if wedge breakdown occurs with volume steady",
+    "Stop above 114650; target Fib 0.5 and 0.382"
+  ],
+  "improvements": "Monitor volume spike or RSI reversal above 60 as potential invalidation. Consider Bollinger Bands for additional volatility confirmation."
+}

@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price exceeds initial take profit level indicating overextension beyond plan",
+    "Potential for reduced reward due to price being above planned entry level"
+  ],
+  "warnings": [
+    "Entry at current price would result in unfavorable risk-reward ratio"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 112252.0,
+    "stop_loss": 112000.0,
+    "take_profits": [
+      {
+        "price": 112500.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.2,
+    "position_size_note": "Calculate position size based on acceptable risk within original entry parameters"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "medium"
+  }
+}

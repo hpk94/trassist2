@@ -1,0 +1,169 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 18:47",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 113305.1,
+    "resistance": 113912.5
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 40.63,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -29.8663,
+      "signal_line": -28.8227,
+      "histogram": -1.0436,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 42.16,
+      "d_percent": 47.07,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 1.33836077,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_wedge",
+      "candle_index": 0,
+      "confidence": 0.83
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.64,
+    "notes": "Falling wedge observed with RSI recovering from low 30s. MACD still bearish. No strong volume thrust or trend reversal confirmation yet. Price near 0.236 Fib level."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_oversold_recover",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_increase",
+        "type": "indicator_condition",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "histogram increasing over last 2 candles",
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_on_fib_0_236",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": "~=",
+        "value": 113537.0,
+        "observed_on_candle": 1,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "falling_wedge_confirmed",
+        "type": "candle_pattern",
+        "pattern": "falling_wedge",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "stoch_recover_midzone",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_wedge_support",
+        "type": "price_breach",
+        "level": "113305.1",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_abrupt_drop",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 30.0
+      },
+      {
+        "id": "macd_widening_downside",
+        "type": "indicator_condition",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "histogram decreasing and macd_line < signal_line"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113305.0,
+      "basis": "below_wedge_support",
+      "distance_ticks": 110
+    },
+    "take_profit": [
+      {
+        "price": 113680.5,
+        "basis": "fib_0.382",
+        "rr": 1.7
+      },
+      {
+        "price": 113796.5,
+        "basis": "fib_0.5",
+        "rr": 2.4
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for MACD histogram improvement and potential bullish crossover",
+    "Monitor RSI14 rising above 45 and Stochastic pushing above 50",
+    "Enter long if falling wedge breaks upward with retest above 113537 (0.236 Fib)",
+    "Set tight stop below wedge and look to scale out at 0.382 / 0.5 Fib"
+  ],
+  "improvements": "Add volume breakout confirmation above wedge resistance for more confidence; wait for MACD histogram to turn positive or tighten stop on early entry"
+}

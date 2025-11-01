@@ -1,0 +1,166 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-10 08:15",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 112299.0,
+    "resistance": 112822.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 81.89,
+      "status": "overbought",
+      "signal": "possible_pullback_zone"
+    },
+    "MACD12_26_9": {
+      "macd_line": 115.8178,
+      "signal_line": 100.3151,
+      "histogram": 15.5027,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "above_upper_band",
+      "bandwidth": "wide"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 82.26,
+      "d_percent": 71.78,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 5.12503513,
+      "average": 4.2,
+      "ratio": 1.22,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 110.5,
+      "period": 14,
+      "volatility": "high"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish_channel_breakout_pending",
+      "candle_index": 0,
+      "confidence": 0.7
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "Price is at upper resistance channel boundary with strong momentum, but RSI and Stochastic are in overbought regions, suggesting exhaustion risk."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "channel_uptrend",
+        "type": "price_structure",
+        "level": "ascending_channel",
+        "comparator": "within",
+        "value": "channel_bounds",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "price_above_fib_0_236",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "anchors": {
+          "from": "111776.6",
+          "to": "112822.0"
+        },
+        "comparator": ">=",
+        "value": 112575.3,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "rsi_overbought_exit",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 85.0
+      },
+      {
+        "id": "close_outside_channel_lower",
+        "type": "price_breach",
+        "level": "ascending_channel",
+        "comparator": "<",
+        "value": "lower_bound"
+      },
+      {
+        "id": "macd_reversal",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112575.0,
+      "basis": "below_0.236_fib + channel_median",
+      "distance_ticks": 220
+    },
+    "take_profit": [
+      {
+        "price": 112950.0,
+        "basis": "channel_extension",
+        "rr": 1.8
+      },
+      {
+        "price": 113200.0,
+        "basis": "fib_extension_1.618",
+        "rr": 2.8
+      }
+    ]
+  },
+  "summary_actions": [
+    "Price remains in strong upward channel, confirm with MACD and volume",
+    "RSI and Stochastic in high-risk overbought territory, manage risk tightly",
+    "Enter long if breakout above 112822 confirmed with volume spike",
+    "Place stop-loss below 0.236 Fib and channel support (~112575)",
+    "Take profits progressively at 112950 and 113200"
+  ],
+  "improvements": "Add Bollinger Bands to validate overextension and mean reversion signals; tighten stop-loss as RSI nears 85 to reduce exposure to sudden reversal."
+}
