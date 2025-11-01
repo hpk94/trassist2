@@ -1,6 +1,15 @@
+# Core dependencies
 litellm>=1.55.0
 python-dotenv==1.0.0
 requests==2.31.0
-pymexc
-pandas
+
+# Trading and data processing
+pymexc>=1.0.0
+pandas>=2.0.0
+
+# Web framework
 flask==3.0.0
+werkzeug>=3.0.0
+
+# Additional utilities
+python-dateutil>=2.8.0
