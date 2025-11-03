@@ -141,7 +141,7 @@ def main():
         print("⏹️  Analysis stopped by user request")
         set_analysis_running(False)
         send_telegram_status("⏹️ <b>Analysis Stopped</b>\n\nAnalysis was cancelled by user.")
-        exit(0)
+        return  # Exit main() function, not the entire process
 
     print("Step 2: Setting up output directory...")
     # Create output directory if it doesn't exist
@@ -809,7 +809,7 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
     # Check if analysis was stopped
     if signal_status == "stopped":
         print("Step 11 Complete: Analysis was stopped, exiting")
-        exit(0)
+        return  # Exit main() function, not the entire process
 
     # If programmatic signal is valid, run LLM trade gate before opening a position
     if signal_valid and signal_status == "valid":
