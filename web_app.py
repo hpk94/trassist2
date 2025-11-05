@@ -16,6 +16,7 @@ import sys
 import threading
 import queue
 import time
+from collections import deque
 
 # Import notification service
 from services.notification_service import notify_valid_trade, notify_invalidated_trade
@@ -40,6 +41,28 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
 # Global progress queue for real-time updates
 progress_queue = queue.Queue()
 
+# In-process listeners and history for external integrations (e.g., Telegram bot)
+_progress_listeners = []  # list of callables taking one dict argument
+_progress_history = deque(maxlen=200)
+
+def add_progress_listener(listener):
+    """Register a callable to receive progress updates as dicts."""
+    if callable(listener) and listener not in _progress_listeners:
+        _progress_listeners.append(listener)
+
+def remove_progress_listener(listener):
+    """Unregister a previously registered listener."""
+    try:
+        _progress_listeners.remove(listener)
+    except ValueError:
+        pass
+
+def get_progress_history(limit: int = 50):
+    """Return the most recent progress messages as a list of dicts (newest last)."""
+    if limit <= 0:
+        return []
+    return list(_progress_history)[-limit:]
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -61,14 +84,24 @@ def make_json_serializable(obj):
         return str(obj)
 
 def emit_progress(message, step=None, total_steps=None):
-    """Emit a progress message to the queue"""
+    """Emit a progress message to the queue and notify in-process listeners."""
     progress_data = {
         'message': message,
         'timestamp': datetime.now().strftime('%H:%M:%S'),
         'step': step,
         'total_steps': total_steps
     }
+    # Record history for status queries
+    _progress_history.append(progress_data)
+    # Push to SSE queue for web UI
     progress_queue.put(progress_data)
+    # Notify any registered listeners (e.g., Telegram bot)
+    for listener in list(_progress_listeners):
+        try:
+            listener(progress_data)
+        except Exception:
+            # Listener errors should not break core flow
+            pass
     print(message)  # Also print to console
 
 def _convert_symbol_to_mexc_futures(symbol: str) -> str:
