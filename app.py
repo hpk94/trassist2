@@ -9,9 +9,7 @@ import pandas as pd
 from datetime import datetime
 import time
 
-from hyperliquid.info import Info
-from hyperliquid.exchange import Exchange
-from eth_account import Account
+from pymexc import spot, futures
 
 # Import notification service
 from services.notification_service import notify_valid_trade, notify_invalidated_trade
@@ -170,93 +168,49 @@ def main():
     set_analysis_info(symbol, direction)
     send_telegram_status(f"📊 <b>Chart Analyzed</b>\n\n<b>Symbol:</b> {symbol}\n<b>Direction:</b> {direction}\n<b>Timeframe:</b> {timeframe}\n\nFetching market data...")
 
-    print("Step 5: Validating timeframe against Hyperliquid supported intervals...")
-    # Validate timeframe against Hyperliquid supported intervals
-    # Hyperliquid uses: 1m, 5m, 15m, 1h, 4h, 1d
-    valid_intervals = ['1m', '5m', '15m', '30m', '1h', '4h', '1d']
-    timeframe_mapping = {
-        '60m': '1h',
-        '1W': '1d',
-        '1M': '1d'
-    }
-    if timeframe in timeframe_mapping:
-        print(f"Warning: {timeframe} is not directly supported. Using {timeframe_mapping[timeframe]} as equivalent.")
-        timeframe = timeframe_mapping[timeframe]
-    elif timeframe not in valid_intervals:
-        print(f"Warning: {timeframe} is not a valid Hyperliquid interval. Using 1m as default.")
+    print("Step 5: Validating timeframe against MEXC supported intervals...")
+    # Validate timeframe against MEXC supported intervals
+    valid_intervals = ['1m', '5m', '15m', '30m', '60m', '4h', '1d', '1W', '1M']
+    if timeframe not in valid_intervals:
+        print(f"Warning: {timeframe} is not a valid MEXC interval. Using 1m as default.")
         timeframe = '1m'
     print(f"Step 5 Complete: Using timeframe {timeframe}")
 
 
 
-    print("Step 6: Initializing Hyperliquid API clients...")
-    # Initialize Hyperliquid clients
-    # For market data (public)
-    info_client = Info(skip_ws=True)
-    # For trading (requires private key)
-    private_key = os.getenv("HYPERLIQUID_PRIVATE_KEY")
-    if private_key:
-        account = Account.from_key(private_key)
-        exchange_client = Exchange(account, skip_ws=True)
-        print(f"Step 6 Complete: Hyperliquid clients initialized (wallet: {account.address})")
-    else:
-        exchange_client = None
-        print("Step 6 Complete: Hyperliquid info client initialized (no private key for trading)")
+    print("Step 6: Initializing MEXC API clients...")
+    # initialize HTTP client for authenticated endpoints
+    spot_client = spot.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
+    # initialize public HTTP client for market data (no auth required)
+    public_spot_client = spot.HTTP()
+    # initialize WebSocket client
+    ws_spot_client = spot.WebSocket(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
+    # initialize Futures HTTP client for trading (perpetual contracts)
+    futures_client = futures.HTTP(api_key = os.getenv("MEXC_API_KEY"), api_secret = os.getenv("MEXC_API_SECRET"))
+    print("Step 6 Complete: MEXC API clients initialized")
 
     # make http request to api
 
-def _convert_symbol_to_hyperliquid(symbol: str) -> str:
-        """Convert symbols like BTCUSDT or BTCUSDT.P to Hyperliquid format (e.g., BTC)."""
-        if not symbol:
-            return symbol
-        # Remove .P suffix if present
-        cleaned = symbol.replace(".P", "").replace("USDT", "").replace("USDC", "")
-        # Remove any slashes
-        cleaned = cleaned.replace("/", "")
-        return cleaned.upper()
-
 def fetch_market_data(symbol, timeframe):
-        """Fetch raw klines data from Hyperliquid API"""
-        print(f"      Fetching market data for {symbol} on {timeframe} timeframe...")
-        try:
-            # Convert symbol to Hyperliquid format
-            hl_symbol = _convert_symbol_to_hyperliquid(symbol)
-        
-            # Hyperliquid expects intervals like "1m", "5m", "15m", "1h", "4h", "1d"
-            # Fetch candles using Hyperliquid's API
-            candles = info_client.candles_snapshot(
-                coin=hl_symbol,
-                interval=timeframe,
-                startTime=int((datetime.now().timestamp() - 400 * 60) * 1000),  # rough estimate
-                endTime=int(datetime.now().timestamp() * 1000)
-            )
-        
-            if candles:
-                print(f"      Successfully fetched {len(candles)} klines")
-                # Convert Hyperliquid candles format to MEXC-like format for compatibility
-                # Hyperliquid format: [timestamp, open, high, low, close, volume]
-                klines = []
-                for candle in candles:
-                    klines.append([
-                        candle['t'],  # timestamp in ms
-                        candle['o'],  # open
-                        candle['h'],  # high
-                        candle['l'],  # low
-                        candle['c'],  # close
-                        candle['v'],  # volume
-                        candle['T'],  # close time
-                        0  # quote asset volume (not provided by Hyperliquid)
-                    ])
-            else:
-                print(f"      Warning: No klines data returned for {symbol} on {timeframe}")
-                klines = []
+    """Fetch raw klines data from MEXC API"""
+    print(f"      Fetching market data for {symbol} on {timeframe} timeframe...")
+    try:
+        klines = public_spot_client.klines(
+            symbol=symbol,
+            interval=timeframe,
+            limit=400
+        )
+        if klines:
+            print(f"      Successfully fetched {len(klines)} klines")
+        else:
+            print(f"      Warning: No klines data returned for {symbol} on {timeframe}")
     
-        except Exception as e:
-            print(f"      Error retrieving klines for {symbol} on {timeframe}: {e}")
-            print(f"      This might be due to invalid symbol, timeframe, or API issues")
-            klines = []
+    except Exception as e:
+        print(f"      Error retrieving klines for {symbol} on {timeframe}: {e}")
+        print(f"      This might be due to invalid symbol, timeframe, or API issues")
+        klines = []
 
-        return klines
+    return klines
 
 def fetch_market_dataframe(symbol, timeframe):
         """Fetch market data and return as processed DataFrame"""
@@ -293,17 +247,26 @@ from services.indicator_service import (
 )
 
 
-def open_trade_with_hyperliquid(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
-    """Place a perpetual order on Hyperliquid based on the gate result.
+def _convert_symbol_to_mexc_futures(symbol: str) -> str:
+    """Convert symbols like BTCUSDT or BTCUSDT.P to MEXC futures format (e.g., BTC_USDT)."""
+    if not symbol:
+        return symbol
+    cleaned = symbol.replace(".P", "")
+    if cleaned.endswith("USDT") and "_" not in cleaned:
+        base = cleaned[:-4]
+        return f"{base}_USDT"
+    # If already in correct format or different quote
+    return cleaned.replace("/", "_")
+
+def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
+    """Place a futures order on MEXC based on the gate result.
 
     Environment overrides:
-    - HYPERLIQUID_DEFAULT_SIZE: float size in USD (default 10.0)
-    - HYPERLIQUID_LEVERAGE: int leverage (default 1, max depends on asset)
+    - MEXC_DEFAULT_VOL: float volume in contracts/base units (default 0.001)
+    - MEXC_OPEN_TYPE: 1 isolated, 2 cross (default 2)
+    - MEXC_LEVERAGE: int leverage for isolated (optional)
     """
-    if not exchange_client:
-        return {"ok": False, "error": "No exchange client initialized (missing HYPERLIQUID_PRIVATE_KEY)"}
-    
-    hl_symbol = _convert_symbol_to_hyperliquid(symbol)
+    mexc_symbol = _convert_symbol_to_mexc_futures(symbol)
     direction = (gate_result.get("direction") or "").lower()
     execution = gate_result.get("execution", {})
     entry_type = (execution.get("entry_type") or "market").lower()
@@ -313,41 +276,54 @@ def open_trade_with_hyperliquid(symbol: str, gate_result: Dict[str, Any]) -> Dic
 
     # Defaults and envs
     try:
-        default_size = float(os.getenv("HYPERLIQUID_DEFAULT_SIZE", "10.0"))
+        default_vol = float(os.getenv("MEXC_DEFAULT_VOL", "0.001"))
     except Exception:
-        default_size = 10.0
-    
+        default_vol = 0.001
     try:
-        leverage = int(os.getenv("HYPERLIQUID_LEVERAGE", "1"))
+        open_type = int(os.getenv("MEXC_OPEN_TYPE", "2"))  # 1 isolated, 2 cross
     except Exception:
-        leverage = 1
+        open_type = 2
+    leverage_env = os.getenv("MEXC_LEVERAGE")
+    leverage = int(leverage_env) if leverage_env and leverage_env.isdigit() else None
 
-    # Map direction to Hyperliquid side (true = buy/long, false = sell/short)
-    is_buy = (direction == "long")
-
-    # Determine order type
-    if entry_type == "market":
-        limit_price = None  # Market order
+    # Map direction to MEXC side
+    # 1 open long, 2 close short, 3 open short, 4 close long
+    if direction == "long":
+        side = 1
+    elif direction == "short":
+        side = 3
     else:
-        limit_price = float(entry_price) if entry_price else None
+        raise ValueError(f"Unknown trade direction: {direction}")
+
+    # Order type: 5 = market, 1 = limit
+    if entry_type == "market":
+        order_type = 5
+        price = 0
+    else:
+        order_type = 1
+        # fall back to current market if entry_price missing
+        price = float(entry_price or 0)
+
+    # Use first TP as take-profit if provided
+    tp_price = None
+    if isinstance(take_profits, list) and take_profits:
+        first_tp = take_profits[0]
+        tp_price = first_tp.get("price") if isinstance(first_tp, dict) else None
 
     try:
-        # Set leverage first
-        exchange_client.update_leverage(leverage, hl_symbol)
-        
-        # Place the order
-        order_result = exchange_client.market_open(
-            coin=hl_symbol,
-            is_buy=is_buy,
-            sz=default_size,
-            px=limit_price
+        response = futures_client.order(
+            symbol=mexc_symbol,
+            price=price,
+            vol=default_vol,
+            side=side,
+            type=order_type,
+            open_type=open_type,
+            leverage=leverage,
+            stop_loss_price=stop_loss,
+            take_profit_price=tp_price,
+            reduce_only=False,
         )
-        
-        # Note: Hyperliquid doesn't support stop-loss/take-profit in the same order
-        # You would need to place separate orders for those
-        # For now, we'll just place the main order
-        
-        return {"ok": True, "response": order_result}
+        return {"ok": True, "response": response}
     except Exception as e:
         return {"ok": False, "error": str(e)}
 
@@ -856,14 +832,14 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
             except Exception as e:
                 print(f"⚠️ Notification failed: {str(e)}")
         
-            # Place order on Hyperliquid
-            print("Step 15: Placing Hyperliquid perpetual order...")
-            order_outcome = open_trade_with_hyperliquid(llm_output.get("symbol", ""), gate_result)
+            # Place order on MEXC Futures
+            print("Step 15: Placing MEXC futures order...")
+            order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
             if order_outcome.get("ok"):
                 print("Step 15 Complete: Order placed successfully")
                 # Save order response
                 try:
-                    order_filename = f"hyperliquid_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                    order_filename = f"mexc_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
                     order_path = os.path.join(output_dir, order_filename)
                     with open(order_path, 'w') as f:
                         json.dump(order_outcome.get("response"), f, indent=2, default=str)
@@ -906,7 +882,16 @@ def calculate_time_difference(time_of_screenshot, df):
 
 
 if __name__ == "__main__":
-    # Only run analysis when script is called directly
-    # Not when imported as a module (e.g., by web_app.py)
-    main()
+    # Don't auto-start analysis - wait for manual trigger from Telegram bot or web app
+    # Keep the bot running to listen for commands
+    print("✅ Bot ready. Analysis will start when triggered manually.")
+    print("   • Use Telegram bot commands to control analysis")
+    print("   • Or use the web interface to upload charts")
+    
+    # Keep the process alive so the Telegram bot can listen for commands
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\n👋 Shutting down...")
 
