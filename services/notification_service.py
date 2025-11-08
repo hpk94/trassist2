@@ -70,20 +70,53 @@ class NotificationService:
             confidence = trade_data.get("confidence", 0)
             rsi = trade_data.get("current_rsi", 0)
             
-            message = f"""
-{title}
-
-📊 Symbol: {symbol}
-📈 Direction: {direction.upper()}
-💰 Price: ${price:.4f}
-📊 RSI: {rsi:.2f}
-🎯 Confidence: {confidence:.1%}
-
-✅ Trade approved by AI gate
-⏰ Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-Check your trading platform!
-            """.strip()
+            stop_loss = trade_data.get("stop_loss")
+            risk_reward = trade_data.get("risk_reward")
+            take_profits = trade_data.get("take_profits") or []
+            
+            message_lines = [
+                title,
+                "",
+                f"📊 Symbol: {symbol}",
+                f"📈 Direction: {direction.upper()}",
+                f"💰 Price: ${price:.4f}",
+                f"📊 RSI: {rsi:.2f}",
+                f"🎯 Confidence: {confidence:.1%}",
+            ]
+            
+            if stop_loss is not None:
+                try:
+                    message_lines.append(f"🛡️ Stop Loss: ${float(stop_loss):.4f}")
+                except (TypeError, ValueError):
+                    message_lines.append(f"🛡️ Stop Loss: {stop_loss}")
+            
+            if take_profits:
+                message_lines.append("🎯 Take Profits:")
+                for idx, tp in enumerate(take_profits, 1):
+                    tp_price = tp.get("price")
+                    tp_rr = tp.get("rr")
+                    if tp_price is None:
+                        continue
+                    try:
+                        tp_line = f"  • TP{idx}: ${float(tp_price):.4f}"
+                    except (TypeError, ValueError):
+                        tp_line = f"  • TP{idx}: {tp_price}"
+                    if tp_rr:
+                        tp_line += f" (R:R {tp_rr})"
+                    message_lines.append(tp_line)
+            
+            if risk_reward is not None:
+                message_lines.append(f"📐 Plan R:R: {risk_reward}")
+            
+            message_lines.extend([
+                "",
+                "✅ Trade approved by AI gate",
+                f"⏰ Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+                "",
+                "Check your trading platform!"
+            ])
+            
+            message = "\n".join(message_lines)
             
         elif notification_type == "invalidated":
             title = "❌ TRADE INVALIDATED"
