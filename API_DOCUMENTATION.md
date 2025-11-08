@@ -378,3 +378,4 @@ curl http://localhost:5000/api/list-uploads
    - Check the file size (max 16MB by default)
    - Consider compressing the image before upload
 
+

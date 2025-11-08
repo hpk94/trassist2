@@ -78,10 +78,10 @@ def start_telegram_bot_once():
             _telegram_bot_started = True
 
 
-@app.before_serving
 def ensure_telegram_bot_started():
     """Ensure the Telegram bot is running before the app starts serving requests."""
     start_telegram_bot_once()
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -3334,4 +3334,8 @@ def run_app():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    werkzeug_run_main = os.environ.get("WERKZEUG_RUN_MAIN")
+    if (werkzeug_run_main and werkzeug_run_main.lower() == "true") or not app.debug:
+        ensure_telegram_bot_started()
+
+    app.run(debug=True, host='0.0.0.0', port=5001, use_reloader=False)
