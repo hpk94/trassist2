@@ -44,6 +44,7 @@ You will receive:
    - **CRITICAL**: When market data is provided, prioritize the actual calculated values over visual estimates from the chart
    - Use the provided symbol and timeframe for accurate analysis
    - Cross-reference chart patterns with the actual market data to ensure consistency
+   - When Fibonacci levels appear color-coded in the chart, interpret colors as timeframe cues: yellow = 1m, blue = 1h, white/grey = 1d. Reference these timeframes explicitly when discussing confluence or conflict.
 
 2. **Screenshot Time Extraction**
    - **CRITICAL**: Extract the exact timestamp from the chart screenshot (usually visible in the top-right corner or bottom of TradingView charts)
