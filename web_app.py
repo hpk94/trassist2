@@ -39,12 +39,6 @@ from telegram_bot import (
 # Load environment variables
 load_dotenv()
 
-# Start Telegram bot for command control
-try:
-    start_bot()
-    print("✅ Telegram bot started for command control")
-except Exception as e:
-    print(f"⚠️  Could not start Telegram bot: {e}")
 
 # Configure LiteLLM models (can be changed via environment variable)
 # Vision model for chart analysis (must support vision)
@@ -60,6 +54,34 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'}
 
 # Global progress queue for real-time updates
 progress_queue = queue.Queue()
+
+# Track Telegram bot initialization to avoid duplicate starts (e.g., Flask reloader)
+_telegram_bot_started = False
+_telegram_bot_lock = threading.Lock()
+
+
+def start_telegram_bot_once():
+    """Start the Telegram bot only once per process."""
+    global _telegram_bot_started
+
+    with _telegram_bot_lock:
+        if _telegram_bot_started:
+            return
+
+        try:
+            start_bot()
+            print("✅ Telegram bot started for command control")
+        except Exception as e:
+            print(f"⚠️  Could not start Telegram bot: {e}")
+        finally:
+            # Mark as attempted to prevent repeated retries across Flask hooks
+            _telegram_bot_started = True
+
+
+def ensure_telegram_bot_started():
+    """Ensure the Telegram bot is running before the app starts serving requests."""
+    start_telegram_bot_once()
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -3312,4 +3334,8 @@ def run_app():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    werkzeug_run_main = os.environ.get("WERKZEUG_RUN_MAIN")
+    if (werkzeug_run_main and werkzeug_run_main.lower() == "true") or not app.debug:
+        ensure_telegram_bot_started()
+
+    app.run(debug=True, host='0.0.0.0', port=5001, use_reloader=False)
