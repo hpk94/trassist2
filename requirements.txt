@@ -6,6 +6,7 @@ requests==2.31.0
 # Trading and data processing
 pymexc>=1.0.0
 pandas>=2.0.0
+hyperliquid-python-sdk>=0.20.0
 
 # Web framework
 flask==3.0.0

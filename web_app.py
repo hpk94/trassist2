@@ -82,6 +82,7 @@ def ensure_telegram_bot_started():
     """Ensure the Telegram bot is running before the app starts serving requests."""
     start_telegram_bot_once()
 
+TRUTHY_VALUES = {"1", "true", "yes", "on"}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -254,6 +255,218 @@ def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, 
         error_msg = f"MEXC futures order failed: {str(e)}"
         print(f"❌ {error_msg}")
         return {"ok": False, "error": error_msg}
+
+def _convert_symbol_to_hyperliquid_coin(symbol: str) -> str:
+    """Convert symbol notation to Hyperliquid coin name (e.g., BTCUSDT.P -> BTC)."""
+    if not symbol:
+        return ""
+
+    cleaned = symbol.upper().strip()
+    cleaned = cleaned.replace(" ", "")
+    cleaned = cleaned.replace(".P", "")
+    cleaned = cleaned.replace("-", "")
+
+    if "/" in cleaned:
+        cleaned = cleaned.split("/", 1)[0]
+
+    if cleaned.endswith("_USDT"):
+        cleaned = cleaned[:-5]
+    elif cleaned.endswith("USDT"):
+        cleaned = cleaned[:-4]
+    elif cleaned.endswith("_USD"):
+        cleaned = cleaned[:-4]
+    elif cleaned.endswith("USD"):
+        cleaned = cleaned[:-3]
+
+    if cleaned.endswith("_PERP"):
+        cleaned = cleaned[:-5]
+    elif cleaned.endswith("PERP"):
+        cleaned = cleaned[:-4]
+
+    cleaned = cleaned.replace("_", "")
+    cleaned = cleaned.strip()
+
+    return cleaned or symbol.upper().strip()
+
+def _parse_float_env(name: str, default: float) -> float:
+    try:
+        return float(os.getenv(name, str(default)))
+    except Exception:
+        return default
+
+def _init_hyperliquid_exchange():
+    try:
+        from eth_account import Account
+        from hyperliquid.exchange import Exchange
+    except ImportError as exc:
+        return None, f"Hyperliquid SDK not installed: {exc}"
+
+    private_key = os.getenv("HYPERLIQUID_PRIVATE_KEY")
+    if not private_key:
+        return None, "HYPERLIQUID_PRIVATE_KEY not set in environment"
+
+    try:
+        wallet = Account.from_key(private_key)
+    except Exception as exc:
+        return None, f"Invalid Hyperliquid private key: {exc}"
+
+    base_url = os.getenv("HYPERLIQUID_BASE_URL") or None
+    account_address = os.getenv("HYPERLIQUID_ACCOUNT_ADDRESS") or None
+    vault_address = os.getenv("HYPERLIQUID_VAULT_ADDRESS") or None
+
+    timeout = None
+    timeout_env = os.getenv("HYPERLIQUID_TIMEOUT")
+    if timeout_env:
+        try:
+            timeout = float(timeout_env)
+        except Exception:
+            timeout = None
+
+    try:
+        exchange = Exchange(
+            wallet,
+            base_url=base_url,
+            account_address=account_address,
+            vault_address=vault_address,
+            timeout=timeout,
+        )
+        return exchange, None
+    except Exception as exc:
+        return None, f"Failed to initialize Hyperliquid exchange: {exc}"
+
+def open_trade_with_hyperliquid(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
+    """Execute an opening order on Hyperliquid based on gate result."""
+    exchange, error = _init_hyperliquid_exchange()
+    if error:
+        return {"ok": False, "error": error}
+
+    coin = _convert_symbol_to_hyperliquid_coin(symbol)
+    if not coin:
+        return {"ok": False, "error": f"Unable to convert symbol '{symbol}' to Hyperliquid coin"}
+
+    direction = (gate_result.get("direction") or "").lower()
+    if direction not in ("long", "short"):
+        return {"ok": False, "error": f"Unknown trade direction: {direction}"}
+
+    execution = gate_result.get("execution", {}) or {}
+    entry_type = (execution.get("entry_type") or "market").lower()
+    entry_price = execution.get("entry_price")
+
+    size = _parse_float_env("HYPERLIQUID_DEFAULT_SIZE", 0.001)
+    if size <= 0:
+        size = 0.001
+
+    slippage = _parse_float_env("HYPERLIQUID_SLIPPAGE", 0.01)
+    tif = os.getenv("HYPERLIQUID_LIMIT_TIF", "Gtc")
+
+    is_buy = direction == "long"
+
+    try:
+        if entry_type == "limit" and entry_price:
+            limit_px = float(entry_price)
+            order_type = {"limit": {"tif": tif}}
+            response = exchange.order(
+                name=coin,
+                is_buy=is_buy,
+                sz=size,
+                limit_px=limit_px,
+                order_type=order_type,
+                reduce_only=False,
+            )
+        else:
+            response = exchange.market_open(
+                name=coin,
+                is_buy=is_buy,
+                sz=size,
+                px=float(entry_price) if entry_price else None,
+                slippage=slippage,
+            )
+        return {"ok": True, "response": response, "coin": coin, "size": size}
+    except Exception as exc:
+        return {"ok": False, "error": f"Hyperliquid order failed: {exc}"}
+
+def close_trade_with_hyperliquid(symbol: str, current_price: Optional[float] = None) -> Dict[str, Any]:
+    """Close an existing position on Hyperliquid for the given symbol using a limit order."""
+    exchange, error = _init_hyperliquid_exchange()
+    if error:
+        return {"ok": False, "error": error}
+
+    coin = _convert_symbol_to_hyperliquid_coin(symbol)
+    if not coin:
+        return {"ok": False, "error": f"Unable to convert symbol '{symbol}' to Hyperliquid coin"}
+
+    slippage = max(_parse_float_env("HYPERLIQUID_CLOSE_SLIPPAGE", 0.002), 0.0)
+    tif = os.getenv("HYPERLIQUID_CLOSE_TIF", "Gtc")
+
+    try:
+        address = exchange.wallet.address
+        if exchange.account_address:
+            address = exchange.account_address
+        if exchange.vault_address:
+            address = exchange.vault_address
+
+        user_state = exchange.info.user_state(address)
+        positions = user_state.get("assetPositions", []) if isinstance(user_state, dict) else []
+
+        for position_data in positions:
+            position = position_data.get("position", {}) if isinstance(position_data, dict) else {}
+            if position.get("coin") != coin:
+                continue
+
+            try:
+                szi = float(position.get("szi", 0))
+            except (TypeError, ValueError):
+                szi = 0.0
+
+            if abs(szi) < 1e-12:
+                continue
+
+            size = abs(szi)
+            is_buy = szi < 0  # short -> buy to close, long -> sell to close
+
+            reference_price = None
+            if current_price is not None:
+                try:
+                    reference_price = float(current_price)
+                except (TypeError, ValueError):
+                    reference_price = None
+
+            if reference_price is None or reference_price <= 0:
+                try:
+                    mids = exchange.info.all_mids()
+                    if isinstance(mids, dict) and mids.get(coin) is not None:
+                        reference_price = float(mids[coin])
+                except Exception:
+                    reference_price = None
+
+            if reference_price is None or reference_price <= 0:
+                return {"ok": False, "error": "Unable to determine reference price for Hyperliquid limit close"}
+
+            if is_buy:
+                limit_px = reference_price * (1 + slippage)
+            else:
+                limit_px = reference_price * (1 - slippage)
+
+            if limit_px <= 0:
+                limit_px = reference_price
+
+            try:
+                response = exchange.order(
+                    name=coin,
+                    is_buy=is_buy,
+                    sz=size,
+                    limit_px=limit_px,
+                    order_type={"limit": {"tif": tif}},
+                    reduce_only=True,
+                )
+            except Exception as exc:
+                return {"ok": False, "error": f"Hyperliquid close failed: {exc}"}
+
+            return {"ok": True, "response": response, "coin": coin, "size": size, "limit_px": limit_px}
+
+        return {"ok": True, "response": None, "message": "No active Hyperliquid position found"}
+    except Exception as exc:
+        return {"ok": False, "error": f"Hyperliquid close failed: {exc}"}
 
 def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
     """Analyze trading chart using LLM Vision API with optional market data"""
@@ -1179,6 +1392,23 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
         except Exception as e:
             if emit_progress_fn:
                 emit_progress_fn(f"⚠️ Invalidation notification failed: {str(e)}")
+
+        # Attempt to close any open Hyperliquid position if enabled
+        if os.getenv("HYPERLIQUID_ENABLE_ORDERS", "false").lower() in TRUTHY_VALUES:
+            try:
+                close_result = close_trade_with_hyperliquid(
+                    llm_output.get("symbol", ""),
+                    market_values.get("current_price"),
+                )
+                if emit_progress_fn:
+                    if close_result.get("ok"):
+                        message = close_result.get("message") or "Hyperliquid position close submitted"
+                        emit_progress_fn(f"Hyperliquid: {message}")
+                    else:
+                        emit_progress_fn(f"Hyperliquid: Close failed - {close_result.get('error')}")
+            except Exception as exc:
+                if emit_progress_fn:
+                    emit_progress_fn(f"Hyperliquid: Close exception - {str(exc)}")
         
         return False, "invalidated", triggered_conditions, market_values
     else:
@@ -1547,7 +1777,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 
                 # Place order on MEXC Futures (guarded by env flag MEXC_ENABLE_ORDERS)
                 try:
-                    if os.getenv("MEXC_ENABLE_ORDERS", "false").lower() in ("1", "true", "yes"): 
+                    if os.getenv("MEXC_ENABLE_ORDERS", "false").lower() in TRUTHY_VALUES:
                         emit_progress("Step 15: Placing MEXC futures order...", 15, 15)
                         order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
                         if order_outcome.get("ok"):
@@ -1566,6 +1796,18 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                         emit_progress("Step 15: Live order placement disabled (MEXC_ENABLE_ORDERS is false)")
                 except Exception as e:
                     emit_progress(f"⚠️ Order placement exception: {str(e)}")
+
+                # Mirror execution on Hyperliquid if enabled
+                try:
+                    if os.getenv("HYPERLIQUID_ENABLE_ORDERS", "false").lower() in TRUTHY_VALUES:
+                        emit_progress("Hyperliquid: Placing futures order...")
+                        hl_outcome = open_trade_with_hyperliquid(llm_output.get("symbol", ""), gate_result)
+                        if hl_outcome.get("ok"):
+                            emit_progress("Hyperliquid: Order placed successfully")
+                        else:
+                            emit_progress(f"Hyperliquid: Order placement error - {hl_outcome.get('error')}")
+                except Exception as e:
+                    emit_progress(f"Hyperliquid: Order placement exception - {str(e)}")
 
                 # Send iPhone notification for valid trade
                 try:
@@ -3236,7 +3478,7 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                 
                 # Place order on MEXC Futures (guarded by env flag MEXC_ENABLE_ORDERS)
                 try:
-                    if os.getenv("MEXC_ENABLE_ORDERS", "false").lower() in ("1", "true", "yes"): 
+                    if os.getenv("MEXC_ENABLE_ORDERS", "false").lower() in TRUTHY_VALUES: 
                         emit_progress("Step 13: Placing MEXC futures order...", 13, 13)
                         order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
                         if order_outcome.get("ok"):
@@ -3257,6 +3499,18 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                         emit_progress("Step 13: Live order placement disabled (MEXC_ENABLE_ORDERS is false)")
                 except Exception as e:
                     emit_progress(f"⚠️ Order placement exception: {str(e)}")
+
+                # Mirror execution on Hyperliquid if enabled
+                try:
+                    if os.getenv("HYPERLIQUID_ENABLE_ORDERS", "false").lower() in TRUTHY_VALUES:
+                        emit_progress("Hyperliquid: Placing futures order...")
+                        hl_outcome = open_trade_with_hyperliquid(llm_output.get("symbol", ""), gate_result)
+                        if hl_outcome.get("ok"):
+                            emit_progress("Hyperliquid: Order placed successfully")
+                        else:
+                            emit_progress(f"Hyperliquid: Order placement error - {hl_outcome.get('error')}")
+                except Exception as e:
+                    emit_progress(f"Hyperliquid: Order placement exception - {str(e)}")
 
                 # Send iPhone notification for valid trade
                 try:
