@@ -497,6 +497,151 @@ class NotificationService:
             traceback.print_exc()
             return False
     
+    def send_telegram_polling_start(self, llm_output: Dict[str, Any], timeframe: str, wait_seconds: int) -> bool:
+        """Send notification when polling starts, showing what we're waiting for"""
+        try:
+            symbol = llm_output.get("symbol", "Unknown")
+            opening_signal = llm_output.get("opening_signal", {})
+            direction = opening_signal.get("direction", "Unknown").upper()
+            
+            # Get checklist conditions we're waiting for
+            checklist = opening_signal.get("checklist", []) or opening_signal.get("core_checklist", [])
+            secondary_checklist = opening_signal.get("secondary_checklist", [])
+            all_checklist = checklist + secondary_checklist
+            
+            # Get invalidation conditions we're watching
+            invalidation = opening_signal.get("invalidation", [])
+            
+            # Format wait time
+            wait_minutes = wait_seconds / 60
+            if wait_minutes < 1:
+                wait_time_str = f"{wait_seconds} seconds"
+            elif wait_minutes < 60:
+                wait_time_str = f"{int(wait_minutes)} minutes"
+            else:
+                wait_hours = wait_minutes / 60
+                wait_time_str = f"{wait_hours:.1f} hours"
+            
+            # Build message
+            message = f"""
+<b>⏳ POLLING STARTED</b>
+
+━━━━━━━━━━━━━━━━━━━━
+<b>📊 PROPOSED TRADE</b>
+━━━━━━━━━━━━━━━━━━━━
+
+<b>Symbol:</b> {symbol}
+<b>Timeframe:</b> {timeframe}
+<b>Direction:</b> {'🟢 ' + direction if direction == 'LONG' else '🔴 ' + direction if direction == 'SHORT' else direction}
+
+━━━━━━━━━━━━━━━━━━━━
+<b>⏱️ POLLING DETAILS</b>
+━━━━━━━━━━━━━━━━━━━━
+
+<b>Check Interval:</b> {wait_time_str}
+<b>Status:</b> Waiting for entry conditions to be met
+
+"""
+            
+            # Add what we're waiting for (checklist conditions)
+            if all_checklist:
+                message += f"""━━━━━━━━━━━━━━━━━━━━
+<b>✅ WAITING FOR ({len(all_checklist)} conditions)</b>
+━━━━━━━━━━━━━━━━━━━━
+
+<i>These conditions must be met for the signal to be valid:</i>
+
+"""
+                for i, condition in enumerate(all_checklist[:6], 1):  # Limit to 6 to keep message concise
+                    cond_id = condition.get("id", f"condition_{i}")
+                    indicator = condition.get("indicator", "")
+                    comparator = condition.get("comparator", "")
+                    value = condition.get("value", "")
+                    cond_type = condition.get("type", "")
+                    
+                    # Format condition nicely
+                    if indicator:
+                        message += f"{i}. {indicator} {comparator} {value}\n"
+                    elif cond_type == "candle_pattern":
+                        pattern_name = condition.get("pattern", cond_id)
+                        message += f"{i}. Pattern: {pattern_name}\n"
+                    elif cond_type == "price_retest":
+                        level = condition.get("level", "key level")
+                        message += f"{i}. Retest of {level}\n"
+                    else:
+                        message += f"{i}. {cond_id.replace('_', ' ').title()}\n"
+                
+                if len(all_checklist) > 6:
+                    message += f"\n<i>...and {len(all_checklist) - 6} more conditions</i>\n"
+            else:
+                message += """━━━━━━━━━━━━━━━━━━━━
+<b>✅ WAITING FOR</b>
+━━━━━━━━━━━━━━━━━━━━
+
+<i>Entry conditions to be validated with live market data...</i>
+
+"""
+            
+            message += "\n"
+            
+            # Add what we're watching for (invalidation conditions)
+            if invalidation:
+                message += f"""━━━━━━━━━━━━━━━━━━━━
+<b>🚫 WATCHING FOR ({len(invalidation)} rules)</b>
+━━━━━━━━━━━━━━━━━━━━
+
+<i>Trade will be INVALIDATED if any of these occur:</i>
+
+"""
+                for i, invalid in enumerate(invalidation[:4], 1):  # Limit to 4
+                    inv_id = invalid.get("id", f"rule_{i}")
+                    inv_type = invalid.get("type", "")
+                    level = invalid.get("level", "")
+                    indicator = invalid.get("indicator", "")
+                    comparator = invalid.get("comparator", "")
+                    value = invalid.get("value", "")
+                    
+                    if inv_type == "price_breach":
+                        message += f"{i}. Price closes {comparator} {level}\n"
+                    elif indicator:
+                        message += f"{i}. {indicator} {comparator} {value}\n"
+                    else:
+                        message += f"{i}. {inv_id.replace('_', ' ').title()}\n"
+                
+                if len(invalidation) > 4:
+                    message += f"\n<i>...and {len(invalidation) - 4} more rules</i>\n"
+            
+            message += f"""
+━━━━━━━━━━━━━━━━━━━━
+
+<i>📱 I'll check the market every {wait_time_str} and notify you when:
+• All conditions are met ✅
+• Signal is invalidated ❌
+• Max polling cycles reached ⏱️</i>
+
+━━━━━━━━━━━━━━━━━━━━
+"""
+            
+            url = f"https://api.telegram.org/bot{self.telegram_bot_token}/sendMessage"
+            
+            data = {
+                "chat_id": self.telegram_chat_id,
+                "text": message,
+                "parse_mode": "HTML"
+            }
+            
+            response = requests.post(url, data=data, timeout=10)
+            response.raise_for_status()
+            
+            print(f"✅ Polling start notification sent to Telegram successfully")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Telegram polling start notification failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
     def send_telegram_analysis(self, image_path: str, analysis_data: Dict[str, Any]) -> bool:
         """Send trading chart image with analysis to Telegram"""
         try:
@@ -564,6 +709,11 @@ def send_initial_analysis_to_telegram(llm_output: Dict[str, Any]) -> bool:
     """Convenience function to send initial LLM analysis to Telegram"""
     service = NotificationService()
     return service.send_telegram_initial_analysis(llm_output)
+
+def send_polling_start_to_telegram(llm_output: Dict[str, Any], timeframe: str, wait_seconds: int) -> bool:
+    """Convenience function to send polling start notification to Telegram"""
+    service = NotificationService()
+    return service.send_telegram_polling_start(llm_output, timeframe, wait_seconds)
 
 def send_analysis_to_telegram(image_path: str, analysis_data: Dict[str, Any]) -> bool:
     """Convenience function to send trading analysis to Telegram"""

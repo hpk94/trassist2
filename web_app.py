@@ -23,6 +23,7 @@ from services.notification_service import (
     notify_invalidated_trade,
     send_image_to_telegram,
     send_initial_analysis_to_telegram,
+    send_polling_start_to_telegram,
     send_analysis_to_telegram
 )
 
@@ -1685,6 +1686,19 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
 
         # Step 10: Start signal validation polling
         emit_progress("Step 10: Starting signal validation polling...", 10, 14)
+        
+        # Send polling start notification to Telegram (only if not fallback)
+        if not is_fallback:
+            try:
+                emit_progress("Step 10.5: Sending polling start notification to Telegram...", 10, 14)
+                wait_seconds = _timeframe_seconds(timeframe)
+                telegram_success = send_polling_start_to_telegram(llm_output, timeframe, wait_seconds)
+                if telegram_success:
+                    emit_progress("Step 10.5 Complete: Polling start notification sent to Telegram ✅", 10, 14)
+                else:
+                    emit_progress("Step 10.5 Warning: Failed to send polling start notification to Telegram", 10, 14)
+            except Exception as e:
+                emit_progress(f"Step 10.5 Warning: Telegram polling notification error: {str(e)}", 10, 14)
         
         # Check if this is a fallback response - skip signal validation if so
         if is_fallback:
