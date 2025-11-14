@@ -379,3 +379,4 @@ curl http://localhost:5000/api/list-uploads
    - Consider compressing the image before upload
 
 
+

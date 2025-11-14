@@ -1,0 +1,129 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-07 10:47",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 102207.4,
+    "resistance": 103180.5
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 50.0,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 65.0,
+      "d_percent": 60.0,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 0.7,
+      "average": 1.0,
+      "ratio": 0.7,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 101854.6,
+        "to": 104000.0
+      },
+      "levels": {
+        "0.236": 102360.9,
+        "0.382": 102674.1,
+        "0.5": 102927.3,
+        "0.618": 103180.5,
+        "0.786": 103540.9
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 103540.0,
+      "middle": 102927.0,
+      "lower": 101854.0,
+      "price_position": "middle"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 1,
+      "confidence": 0.7
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Descending triangle formation with neutral RSI and overbought Stoch"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "stoch_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 80.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_below_fib_0236",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 102360.9,
+        "basis": "fib_0.236"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "pattern_descending_triangle",
+        "indicator": "PATTERN",
+        "pattern": "descending_triangle",
+        "confidence": ">=0.7"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_recent_high",
+        "type": "price_breach",
+        "level": 102927.3
+      },
+      {
+        "id": "stoch_crossover",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<=",
+        "value": 20.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102927.3,
+      "basis": "above_fib_0500"
+    },
+    "take_profit": [
+      {
+        "price": 102207.4,
+        "basis": "recent_support",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for Stochastic crossover to confirm short entry",
+    "Ensure price breaks below Fib 0.236 level",
+    "Monitor descending triangle pattern confirmation"
+  ],
+  "improvements": "Monitor volume for breakout confirmation; adjust stop-loss if producing higher highs"
+}

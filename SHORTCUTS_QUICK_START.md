@@ -162,3 +162,4 @@ If you see JSON, your server is accessible! ✅
 For detailed setup, see [APPLE_SHORTCUTS_SETUP.md](APPLE_SHORTCUTS_SETUP.md)
 
 
+

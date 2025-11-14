@@ -1629,6 +1629,20 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
         except Exception:
             pass
 
+        # Send proposed trade and polling details to Telegram (only if not fallback)
+        # This comes after "Preparing market data..." and before "Still Polling..." messages
+        if not is_fallback:
+            try:
+                emit_progress("Step 4.5: Sending proposed trade and polling details to Telegram...", 4, 14)
+                wait_seconds = _timeframe_seconds(timeframe)
+                telegram_success = send_polling_start_to_telegram(llm_output, timeframe, wait_seconds)
+                if telegram_success:
+                    emit_progress("Step 4.5 Complete: Proposed trade and polling details sent to Telegram ✅", 4, 14)
+                else:
+                    emit_progress("Step 4.5 Warning: Failed to send proposed trade notification to Telegram", 4, 14)
+            except Exception as e:
+                emit_progress(f"Step 4.5 Warning: Telegram polling notification error: {str(e)}", 4, 14)
+
         # Step 5: Validate timeframe
         emit_progress("Step 5: Validating timeframe against MEXC supported intervals...", 5, 14)
         valid_intervals = ['1m', '5m', '15m', '30m', '60m', '4h', '1d', '1W', '1M']
@@ -1686,19 +1700,6 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
 
         # Step 10: Start signal validation polling
         emit_progress("Step 10: Starting signal validation polling...", 10, 14)
-        
-        # Send polling start notification to Telegram (only if not fallback)
-        if not is_fallback:
-            try:
-                emit_progress("Step 10.5: Sending polling start notification to Telegram...", 10, 14)
-                wait_seconds = _timeframe_seconds(timeframe)
-                telegram_success = send_polling_start_to_telegram(llm_output, timeframe, wait_seconds)
-                if telegram_success:
-                    emit_progress("Step 10.5 Complete: Polling start notification sent to Telegram ✅", 10, 14)
-                else:
-                    emit_progress("Step 10.5 Warning: Failed to send polling start notification to Telegram", 10, 14)
-            except Exception as e:
-                emit_progress(f"Step 10.5 Warning: Telegram polling notification error: {str(e)}", 10, 14)
         
         # Check if this is a fallback response - skip signal validation if so
         if is_fallback:
@@ -3424,6 +3425,21 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
             emit_progress(f"Step 8 Complete: Latest MACD Line = {latest_macd_line:.4f}, Signal = {latest_macd_signal:.4f}, Histogram = {latest_macd_histogram:.4f}", 8, 12)
         else:
             emit_progress("Step 8 Complete: No MACD data available", 8, 12)
+
+        # Step 8.5: Send proposed trade and polling details to Telegram
+        # This comes before "Still Polling..." messages
+        is_fallback = llm_output.get('requires_manual_review', False)
+        if not is_fallback:
+            try:
+                emit_progress("Step 8.5: Sending proposed trade and polling details to Telegram...", 8, 12)
+                wait_seconds = _timeframe_seconds(timeframe)
+                telegram_success = send_polling_start_to_telegram(llm_output, timeframe, wait_seconds)
+                if telegram_success:
+                    emit_progress("Step 8.5 Complete: Proposed trade and polling details sent to Telegram ✅", 8, 12)
+                else:
+                    emit_progress("Step 8.5 Warning: Failed to send proposed trade notification to Telegram", 8, 12)
+            except Exception as e:
+                emit_progress(f"Step 8.5 Warning: Telegram polling notification error: {str(e)}", 8, 12)
 
         # Step 9: Start signal validation polling
         emit_progress("Step 9: Starting signal validation polling...", 9, 12)

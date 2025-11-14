@@ -112,8 +112,8 @@ class NotificationService:
                 "",
                 "✅ Trade approved by AI gate",
                 f"⏰ Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-                "",
-                "Check your trading platform!"
+                ""
+                
             ])
             
             message = "\n".join(message_lines)
