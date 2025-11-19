@@ -21,6 +21,7 @@ import time
 from services.notification_service import (
     notify_valid_trade, 
     notify_invalidated_trade,
+    notify_rejected_trade,
     send_image_to_telegram,
     send_initial_analysis_to_telegram,
     send_polling_start_to_telegram,
@@ -46,6 +47,11 @@ load_dotenv()
 LITELLM_VISION_MODEL = os.getenv("LITELLM_VISION_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
 # Text model for trade gate decisions (can be any model, including non-vision models like DeepSeek)
 LITELLM_TEXT_MODEL = os.getenv("LITELLM_TEXT_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
+
+# Multi-model comparison configuration
+# Models to test for trading decisions (can be configured via environment variables)
+MULTI_MODEL_CHATGPT = os.getenv("MULTI_MODEL_CHATGPT", "gpt-4o")  # ChatGPT5.1 - using gpt-4o as default
+MULTI_MODEL_DEEPSEEK = os.getenv("MULTI_MODEL_DEEPSEEK", "deepseek/deepseek-chat")  # deepseek-chat
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -258,7 +264,7 @@ def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, 
         return {"ok": False, "error": error_msg}
 
 def _convert_symbol_to_hyperliquid_coin(symbol: str) -> str:
-    """Convert symbol notation to Hyperliquid coin name (e.g., BTCUSDT.P -> BTC)."""
+    """Convert symbol notation to Hyperliquid coin name (e.g., BTCUSDT.P -> BTC, BTCUSDC -> BTC)."""
     if not symbol:
         return ""
 
@@ -270,7 +276,12 @@ def _convert_symbol_to_hyperliquid_coin(symbol: str) -> str:
     if "/" in cleaned:
         cleaned = cleaned.split("/", 1)[0]
 
-    if cleaned.endswith("_USDT"):
+    # Remove quote currency suffixes (order matters - check longer suffixes first)
+    if cleaned.endswith("_USDC"):
+        cleaned = cleaned[:-5]
+    elif cleaned.endswith("USDC"):
+        cleaned = cleaned[:-4]
+    elif cleaned.endswith("_USDT"):
         cleaned = cleaned[:-5]
     elif cleaned.endswith("USDT"):
         cleaned = cleaned[:-4]
@@ -279,6 +290,7 @@ def _convert_symbol_to_hyperliquid_coin(symbol: str) -> str:
     elif cleaned.endswith("USD"):
         cleaned = cleaned[:-3]
 
+    # Remove perpetual suffixes
     if cleaned.endswith("_PERP"):
         cleaned = cleaned[:-5]
     elif cleaned.endswith("PERP"):
@@ -294,6 +306,37 @@ def _parse_float_env(name: str, default: float) -> float:
         return float(os.getenv(name, str(default)))
     except Exception:
         return default
+
+def _get_hyperliquid_base_url() -> Optional[str]:
+    """Get Hyperliquid base URL based on testnet setting or explicit base URL."""
+    # Check if explicit base URL is set (takes precedence)
+    explicit_base_url = os.getenv("HYPERLIQUID_BASE_URL")
+    if explicit_base_url:
+        return explicit_base_url
+    
+    # Check if testnet is enabled
+    testnet_enabled = os.getenv("HYPERLIQUID_TESTNET", "false").lower() in ("true", "1", "yes")
+    if testnet_enabled:
+        return "https://api.hyperliquid-testnet.xyz"
+    
+    # Default to mainnet (None means mainnet for Hyperliquid SDK)
+    return None
+
+def _init_hyperliquid_info():
+    """Initialize Hyperliquid Info client for public market data."""
+    try:
+        from hyperliquid.info import Info
+    except ImportError as exc:
+        return None, f"Hyperliquid SDK not installed: {exc}"
+    
+    base_url = _get_hyperliquid_base_url()
+    skip_ws = os.getenv("HYPERLIQUID_SKIP_WS", "true").lower() in ("true", "1", "yes")
+    
+    try:
+        info = Info(base_url=base_url, skip_ws=skip_ws)
+        return info, None
+    except Exception as exc:
+        return None, f"Failed to initialize Hyperliquid Info client: {exc}"
 
 def _init_hyperliquid_exchange():
     try:
@@ -311,7 +354,7 @@ def _init_hyperliquid_exchange():
     except Exception as exc:
         return None, f"Invalid Hyperliquid private key: {exc}"
 
-    base_url = os.getenv("HYPERLIQUID_BASE_URL") or None
+    base_url = _get_hyperliquid_base_url()
     account_address = os.getenv("HYPERLIQUID_ACCOUNT_ADDRESS") or None
     vault_address = os.getenv("HYPERLIQUID_VAULT_ADDRESS") or None
 
@@ -470,6 +513,7 @@ def close_trade_with_hyperliquid(symbol: str, current_price: Optional[float] = N
         return {"ok": False, "error": f"Hyperliquid close failed: {exc}"}
 
 def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
+    # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
     """Analyze trading chart using LLM Vision API with optional market data"""
     emit_progress("Chart: Reading image file...")
     
@@ -489,11 +533,31 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
         raise
     
     # Prepare the prompt based on whether we have market data
-    if df is not None and not df.empty:
-        emit_progress("Chart: Preparing enhanced prompt with market data...")
-        # Create a summary of the market data for the LLM
-        market_data_summary = create_market_data_summary(df, symbol, timeframe)
-        enhanced_prompt = OPENAI_VISION_PROMPT + f"\n\n## MARKET DATA CONTEXT\n{symbol} {timeframe} - Latest market data:\n{market_data_summary}\n\nUse this market data to enhance your analysis and provide more accurate technical indicator values."
+    # df can be a dict with 'minute', 'hourly', 'daily' keys or a single DataFrame
+    if df is not None:
+        if isinstance(df, dict):
+            df_minute = df.get('minute')
+            df_hourly = df.get('hourly')
+            df_daily = df.get('daily')
+        else:
+            df_minute = df
+            df_hourly = None
+            df_daily = None
+        
+        if df_minute is not None and not df_minute.empty:
+            emit_progress("Chart: Preparing enhanced prompt with market data...")
+            # Create a summary of the market data for the LLM
+            market_data_summary = create_market_data_summary(
+                df=df_minute, 
+                df_hourly=df_hourly, 
+                df_daily=df_daily, 
+                symbol=symbol, 
+                timeframe=timeframe
+            )
+            enhanced_prompt = OPENAI_VISION_PROMPT + f"\n\n## MARKET DATA CONTEXT\n{symbol} {timeframe} - Latest market data:\n{market_data_summary}\n\nUse this market data to enhance your analysis and provide more accurate technical indicator values. Pay special attention to the hourly and daily timeframes for trend context."
+        else:
+            emit_progress("Chart: Using standard prompt without market data...")
+            enhanced_prompt = OPENAI_VISION_PROMPT
     else:
         emit_progress("Chart: Using standard prompt without market data...")
         enhanced_prompt = OPENAI_VISION_PROMPT
@@ -586,6 +650,273 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
             emit_progress(f"Chart: No content available in response")
         raise
 
+def analyze_trading_chart_with_model(image_path: str, model_name: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
+    # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
+    """Analyze trading chart using a specific LLM Vision API model"""
+    try:
+        with open(image_path, "rb") as image_file:
+            image_bytes = image_file.read()
+            image_data = base64.b64encode(image_bytes).decode("utf-8")
+        
+        if not image_data:
+            raise ValueError("Image file appears to be empty")
+        
+        # Prepare the prompt based on whether we have market data
+        # df can be a dict with 'minute', 'hourly', 'daily' keys or a single DataFrame
+        if df is not None:
+            if isinstance(df, dict):
+                df_minute = df.get('minute')
+                df_hourly = df.get('hourly')
+                df_daily = df.get('daily')
+            else:
+                df_minute = df
+                df_hourly = None
+                df_daily = None
+            
+            if df_minute is not None and not df_minute.empty:
+                market_data_summary = create_market_data_summary(
+                    df=df_minute, 
+                    df_hourly=df_hourly, 
+                    df_daily=df_daily, 
+                    symbol=symbol, 
+                    timeframe=timeframe
+                )
+                enhanced_prompt = OPENAI_VISION_PROMPT + f"\n\n## MARKET DATA CONTEXT\n{symbol} {timeframe} - Latest market data:\n{market_data_summary}\n\nUse this market data to enhance your analysis and provide more accurate technical indicator values. Pay special attention to the hourly and daily timeframes for trend context."
+            else:
+                enhanced_prompt = OPENAI_VISION_PROMPT
+        else:
+            enhanced_prompt = OPENAI_VISION_PROMPT
+        
+        response = litellm.completion(
+            model=model_name,
+            messages=[
+                {"role": "system", "content": enhanced_prompt},
+                {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+            ],
+            response_format={"type": "json_object"},
+            timeout=120  # Longer timeout for multi-model analysis
+        )
+        
+        if not response.choices or not response.choices[0].message.content:
+            # Try retry without response_format
+            response = litellm.completion(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": enhanced_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
+                    {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                ],
+                timeout=120
+            )
+        
+        content = response.choices[0].message.content if response.choices and response.choices[0].message.content else None
+        if not content:
+            raise ValueError(f"{model_name} returned empty content")
+        
+        # Clean markdown formatting if present
+        if content.strip().startswith('```json'):
+            content = content.strip()
+            if content.startswith('```json'):
+                content = content[7:]
+            if content.endswith('```'):
+                content = content[:-3]
+            content = content.strip()
+        
+        result = json.loads(content)
+        return result
+    except Exception as e:
+        # Return error information instead of raising
+        return {
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "model": model_name,
+            "symbol": symbol or "UNKNOWN",
+            "timeframe": timeframe or "1m"
+        }
+
+def analyze_trading_chart_multi_model(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
+    # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
+    """Analyze trading chart using multiple models in parallel and compare results"""
+    emit_progress("🔬 Starting multi-model analysis...")
+    emit_progress(f"   Testing models: {MULTI_MODEL_CHATGPT}, {MULTI_MODEL_DEEPSEEK}")
+    
+    # Define models to test
+    models_to_test = {
+        "ChatGPT5.1": MULTI_MODEL_CHATGPT,
+        "DeepSeek": MULTI_MODEL_DEEPSEEK
+    }
+    
+    # Store results from each model
+    results = {}
+    errors = {}
+    
+    # Thread-safe storage
+    results_lock = threading.Lock()
+    
+    def analyze_with_model(model_display_name: str, model_name: str):
+        """Thread function to analyze with a specific model"""
+        try:
+            # Check for required API keys before attempting analysis
+            api_key_hint = None
+            if "deepseek" in model_name.lower():
+                if not os.getenv("DEEPSEEK_API_KEY"):
+                    api_key_hint = "DEEPSEEK_API_KEY not found in environment"
+                else:
+                    # DeepSeek doesn't support vision - warn but still try
+                    emit_progress(f"   ⚠️  Warning: DeepSeek does not support vision/image analysis. This may fail.")
+            elif "gpt" in model_name.lower() or "openai" in model_name.lower():
+                if not os.getenv("OPENAI_API_KEY"):
+                    api_key_hint = "OPENAI_API_KEY not found in environment"
+            
+            if api_key_hint:
+                with results_lock:
+                    error_msg = f"API key missing: {api_key_hint}. Add the required API key to your .env file."
+                    errors[model_display_name] = {
+                        "error": error_msg,
+                        "error_type": "MissingAPIKey",
+                        "model": model_name,
+                        "hint": api_key_hint
+                    }
+                    emit_progress(f"   ❌ {model_display_name} skipped: {error_msg}")
+                return
+            
+            emit_progress(f"   🚀 Starting analysis with {model_display_name} ({model_name})...")
+            start_time = time.time()
+            result = analyze_trading_chart_with_model(image_path, model_name, symbol, timeframe, df)
+            elapsed_time = time.time() - start_time
+            
+            with results_lock:
+                if "error" in result:
+                    error_msg = result.get('error', 'Unknown error')
+                    # Provide more helpful error messages
+                    if "provider not provided" in error_msg.lower() or "not provi" in error_msg.lower():
+                        error_msg = f"API key missing. Check your .env file for the required API key for {model_name}."
+                    elif "deepseek" in error_msg.lower() or "authentication" in error_msg.lower() or "api key" in error_msg.lower():
+                        error_msg = f"Authentication failed. Check your DEEPSEEK_API_KEY in .env file."
+                    
+                    errors[model_display_name] = {
+                        "error": error_msg,
+                        "error_type": "AnalysisError",
+                        "model": model_name
+                    }
+                    emit_progress(f"   ❌ {model_display_name} failed: {error_msg}")
+                else:
+                    results[model_display_name] = {
+                        "model_name": model_name,
+                        "result": result,
+                        "elapsed_time": elapsed_time,
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    direction = result.get('opening_signal', {}).get('direction', 'unknown')
+                    confidence = result.get('validity_assessment', {}).get('core_alignment_score', 0)
+                    emit_progress(f"   ✅ {model_display_name} completed in {elapsed_time:.2f}s - Direction: {direction}, Confidence: {confidence}")
+        except Exception as e:
+            error_str = str(e)
+            error_type = type(e).__name__
+            
+            # Provide more helpful error messages based on exception type
+            if "BadRequestError" in error_type or "provider not provided" in error_str.lower():
+                if "deepseek" in model_name.lower():
+                    error_msg = f"DeepSeek API key missing. Add DEEPSEEK_API_KEY to your .env file."
+                else:
+                    error_msg = f"API key missing for {model_name}. Check your .env file."
+            elif "DeepseekException" in error_type or "authentication" in error_str.lower():
+                error_msg = f"DeepSeek authentication failed. Check your DEEPSEEK_API_KEY in .env file."
+            elif "vision" in error_str.lower() or "image" in error_str.lower():
+                error_msg = f"{model_display_name} does not support vision/image analysis. This model cannot analyze charts."
+            else:
+                error_msg = error_str
+                # Truncate very long error messages
+                if len(error_msg) > 150:
+                    error_msg = error_msg[:147] + "..."
+            
+            with results_lock:
+                errors[model_display_name] = {
+                    "error": error_msg,
+                    "error_type": error_type,
+                    "model": model_name
+                }
+                emit_progress(f"   ❌ {model_display_name} exception: {error_msg}")
+    
+    # Start all analyses in parallel
+    threads = []
+    for model_display_name, model_name in models_to_test.items():
+        thread = threading.Thread(target=analyze_with_model, args=(model_display_name, model_name))
+        thread.start()
+        threads.append(thread)
+    
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
+    
+    emit_progress(f"   📊 Multi-model analysis complete: {len(results)} successful, {len(errors)} failed")
+    
+    # Create comparison summary
+    comparison = {
+        "timestamp": datetime.now().isoformat(),
+        "image_path": image_path,
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "models_tested": list(models_to_test.keys()),
+        "results": results,
+        "errors": errors,
+        "summary": {}
+    }
+    
+    # Generate summary comparison
+    if results:
+        directions = {}
+        confidences = {}
+        times = {}
+        
+        for model_name, data in results.items():
+            result = data["result"]
+            direction = result.get('opening_signal', {}).get('direction', 'unknown')
+            confidence = result.get('validity_assessment', {}).get('core_alignment_score', 0)
+            
+            directions[model_name] = direction
+            confidences[model_name] = confidence
+            times[model_name] = data["elapsed_time"]
+        
+        # Calculate consensus direction (most common direction)
+        consensus_direction = None
+        if directions:
+            direction_counts = {}
+            for direction in directions.values():
+                direction_counts[direction] = direction_counts.get(direction, 0) + 1
+            consensus_direction = max(direction_counts.items(), key=lambda x: x[1])[0] if direction_counts else None
+        
+        comparison["summary"] = {
+            "directions": directions,
+            "confidences": confidences,
+            "response_times": times,
+            "agreement": len(set(directions.values())) == 1 if directions else False,
+            "consensus_direction": consensus_direction,
+            "fastest_model": min(times.items(), key=lambda x: x[1])[0] if times else None,
+            "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+        }
+        
+        emit_progress(f"   📈 Summary: Consensus direction = {comparison['summary'].get('consensus_direction', 'N/A')}")
+        emit_progress(f"   📊 All models' confidences: {confidences}")
+        emit_progress(f"   ⚡ Fastest model: {comparison['summary'].get('fastest_model', 'N/A')}")
+        emit_progress(f"   ℹ️  Note: Review all results manually to determine best model")
+    
+    # Save comparison results
+    output_dir = "llm_outputs"
+    os.makedirs(output_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    comparison_filename = f"multi_model_comparison_{timestamp}.json"
+    comparison_path = os.path.join(output_dir, comparison_filename)
+    
+    with open(comparison_path, 'w') as f:
+        json.dump(comparison, f, indent=2, default=str)
+    
+    emit_progress(f"   💾 Comparison saved to {comparison_path}")
+    
+    # Store the path in the comparison dict for easy access
+    comparison["comparison_file_path"] = comparison_path
+    
+    return comparison
+
 def create_fallback_llm_response(symbol: str = None, timeframe: str = None) -> dict:
     """Create a fallback LLM response structure when the AI refuses to analyze the chart"""
     emit_progress("Chart: Creating fallback response due to LLM refusal...")
@@ -674,18 +1005,18 @@ def create_fallback_llm_response(symbol: str = None, timeframe: str = None) -> d
     emit_progress("Chart: Fallback response structure created successfully")
     return fallback_response
 
-def create_market_data_summary(df: pd.DataFrame, symbol: str, timeframe: str) -> str:
-    """Create a summary of market data for the LLM"""
-    if df.empty:
-        return "No market data available"
+def create_market_data_summary(df: pd.DataFrame = None, df_hourly: pd.DataFrame = None, df_daily: pd.DataFrame = None, symbol: str = None, timeframe: str = None) -> str:
+    """Create a summary of market data for the LLM, including multiple timeframes for trend context"""
+    summary_parts = []
     
-    # Get the latest values
-    latest = df.iloc[-1]
-    latest_time = latest['Open_time'] if 'Open_time' in df.columns else "Unknown"
-    
-    summary = f"""
-Symbol: {symbol}
-Timeframe: {timeframe}
+    # Primary timeframe (minute data)
+    if df is not None and not df.empty:
+        latest = df.iloc[-1]
+        latest_time = latest['Open_time'] if 'Open_time' in df.columns else "Unknown"
+        
+        summary_parts.append(f"""
+=== PRIMARY TIMEFRAME: {timeframe or '1m'} ===
+Symbol: {symbol or 'N/A'}
 Latest Candle Time: {latest_time}
 Latest Price Data:
 - Open: {latest.get('Open', 'N/A')}
@@ -693,30 +1024,83 @@ Latest Price Data:
 - Low: {latest.get('Low', 'N/A')}
 - Close: {latest.get('Close', 'N/A')}
 - Volume: {latest.get('Volume', 'N/A')}
-"""
-    
-    # Add technical indicators if available
-    if 'RSI14' in df.columns and not pd.isna(latest['RSI14']):
-        summary += f"- RSI14: {latest['RSI14']:.2f}\n"
-    
-    if 'MACD_Line' in df.columns and not pd.isna(latest['MACD_Line']):
-        summary += f"- MACD Line: {latest['MACD_Line']:.4f}\n"
-        summary += f"- MACD Signal: {latest['MACD_Signal']:.4f}\n"
-        summary += f"- MACD Histogram: {latest['MACD_Histogram']:.4f}\n"
+""")
+        
+        # Add technical indicators if available
+        if 'RSI14' in df.columns and not pd.isna(latest['RSI14']):
+            summary_parts.append(f"- RSI14: {latest['RSI14']:.2f}\n")
+        
+        if 'MACD_Line' in df.columns and not pd.isna(latest['MACD_Line']):
+            summary_parts.append(f"- MACD Line: {latest['MACD_Line']:.4f}\n")
+            summary_parts.append(f"- MACD Signal: {latest['MACD_Signal']:.4f}\n")
+            summary_parts.append(f"- MACD Histogram: {latest['MACD_Histogram']:.4f}\n")
 
-    if 'ATR14' in df.columns and not pd.isna(latest['ATR14']):
-        summary += f"- ATR14: {latest['ATR14']:.4f}\n"
+        if 'ATR14' in df.columns and not pd.isna(latest['ATR14']):
+            summary_parts.append(f"- ATR14: {latest['ATR14']:.4f}\n")
+        
+        # Add recent price action context (last 5 candles)
+        if len(df) >= 5:
+            recent_5 = df.tail(5)
+            summary_parts.append(f"\nRecent 5 Candles ({timeframe or '1m'}):\n")
+            for i, (_, candle) in enumerate(recent_5.iterrows()):
+                candle_time = candle.get('Open_time', 'Unknown')
+                close_price = candle.get('Close', 'N/A')
+                summary_parts.append(f"- Candle {i+1}: {candle_time} - Close: {close_price}\n")
     
-    # Add recent price action context (last 5 candles)
-    if len(df) >= 5:
-        recent_5 = df.tail(5)
-        summary += f"\nRecent 5 Candles Context:\n"
-        for i, (_, candle) in enumerate(recent_5.iterrows()):
-            candle_time = candle.get('Open_time', 'Unknown')
-            close_price = candle.get('Close', 'N/A')
-            summary += f"- Candle {i+1}: {candle_time} - Close: {close_price}\n"
+    # Hourly timeframe for trend context
+    if df_hourly is not None and not df_hourly.empty:
+        latest_h = df_hourly.iloc[-1]
+        latest_time_h = latest_h['Open_time'] if 'Open_time' in df_hourly.columns else "Unknown"
+        
+        summary_parts.append(f"""
+=== HOURLY TIMEFRAME (Trend Context) ===
+Latest Hourly Candle Time: {latest_time_h}
+Latest Hourly Price:
+- Open: {latest_h.get('Open', 'N/A')}
+- High: {latest_h.get('High', 'N/A')}
+- Low: {latest_h.get('Low', 'N/A')}
+- Close: {latest_h.get('Close', 'N/A')}
+- Volume: {latest_h.get('Volume', 'N/A')}
+""")
+        
+        # Add recent hourly candles for trend context (last 10)
+        if len(df_hourly) >= 10:
+            recent_10h = df_hourly.tail(10)
+            summary_parts.append(f"\nRecent 10 Hourly Candles (Trend Context):\n")
+            for i, (_, candle) in enumerate(recent_10h.iterrows()):
+                candle_time = candle.get('Open_time', 'Unknown')
+                close_price = candle.get('Close', 'N/A')
+                summary_parts.append(f"- Hour {i+1}: {candle_time} - Close: {close_price}\n")
     
-    return summary
+    # Daily timeframe for longer-term trend context
+    if df_daily is not None and not df_daily.empty:
+        latest_d = df_daily.iloc[-1]
+        latest_time_d = latest_d['Open_time'] if 'Open_time' in df_daily.columns else "Unknown"
+        
+        summary_parts.append(f"""
+=== DAILY TIMEFRAME (Long-term Trend Context) ===
+Latest Daily Candle Time: {latest_time_d}
+Latest Daily Price:
+- Open: {latest_d.get('Open', 'N/A')}
+- High: {latest_d.get('High', 'N/A')}
+- Low: {latest_d.get('Low', 'N/A')}
+- Close: {latest_d.get('Close', 'N/A')}
+- Volume: {latest_d.get('Volume', 'N/A')}
+""")
+        
+        # Add recent daily candles for trend context (last 10)
+        if len(df_daily) >= 10:
+            recent_10d = df_daily.tail(10)
+            summary_parts.append(f"\nRecent 10 Daily Candles (Long-term Trend Context):\n")
+            for i, (_, candle) in enumerate(recent_10d.iterrows()):
+                candle_time = candle.get('Open_time', 'Unknown')
+                close_price = candle.get('Close', 'N/A')
+                summary_parts.append(f"- Day {i+1}: {candle_time} - Close: {close_price}\n")
+    
+    if not summary_parts:
+        return "No market data available"
+    
+    return "".join(summary_parts)
 
 def llm_trade_gate_decision(
     base_llm_output: Dict[str, Any],
@@ -808,25 +1192,25 @@ def llm_trade_gate_decision(
             }
         }
 
-def fetch_market_data(symbol, timeframe):
+def fetch_market_data(symbol, timeframe, limit=400):
     """Fetch raw klines data from MEXC API"""
-    print(f"Fetching market data for {symbol} {timeframe}")
+    print(f"Fetching market data for {symbol} {timeframe} (limit={limit})")
     try:
         from pymexc import spot
         public_spot_client = spot.HTTP()
         klines = public_spot_client.klines(
             symbol=symbol,
             interval=timeframe,
-            limit=400
+            limit=limit
         )
         return klines
     except Exception as e:
         print(f"Error retrieving klines: {e}")
         return []
 
-def fetch_market_dataframe(symbol, timeframe):
+def fetch_market_dataframe(symbol, timeframe, limit=400):
     """Fetch market data and return as processed DataFrame"""
-    klines = fetch_market_data(symbol, timeframe)
+    klines = fetch_market_data(symbol, timeframe, limit=limit)
     
     if not klines:
         return pd.DataFrame()
@@ -1502,6 +1886,8 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
         # Step 1: Prepare market data BEFORE calling the LLM
         emit_progress("Step 1: Preparing market data (if provided)...", 1, 14)
         df = pd.DataFrame()
+        df_hourly = pd.DataFrame()
+        df_daily = pd.DataFrame()
         effective_symbol = symbol or "BTCUSDT"
         effective_timeframe = timeframe or "1m"
 
@@ -1517,8 +1903,8 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
             public_spot_client_local = spot.HTTP()
 
             # Local light wrapper mirroring existing function signature
-            def _fetch_market_dataframe(sym: str, tf: str) -> pd.DataFrame:
-                kl = public_spot_client_local.klines(symbol=sym, interval=tf, limit=400)
+            def _fetch_market_dataframe(sym: str, tf: str, limit: int = 400) -> pd.DataFrame:
+                kl = public_spot_client_local.klines(symbol=sym, interval=tf, limit=limit)
                 if not kl:
                     return pd.DataFrame()
                 frame = pd.DataFrame(kl)
@@ -1532,7 +1918,28 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 frame['Volume'] = pd.to_numeric(frame['Volume'])
                 return frame
 
-            df = _fetch_market_dataframe(effective_symbol, effective_timeframe)
+            # Fetch primary timeframe data (400 candles)
+            emit_progress(f"Step 1.1: Fetching {effective_timeframe} data (400 candles)...", 1, 14)
+            df = _fetch_market_dataframe(effective_symbol, effective_timeframe, limit=400)
+            
+            # Fetch hourly data for trend context (100 candles)
+            emit_progress("Step 1.2: Fetching hourly data (100 candles) for trend context...", 1, 14)
+            try:
+                df_hourly = _fetch_market_dataframe(effective_symbol, '60m', limit=100)
+                if not df_hourly.empty:
+                    emit_progress(f"Step 1.2: Fetched {len(df_hourly)} hourly candles", 1, 14)
+            except Exception as e:
+                emit_progress(f"Step 1.2 Warning: Failed to fetch hourly data: {e}", 1, 14)
+            
+            # Fetch daily data for longer-term trend context (100 candles)
+            emit_progress("Step 1.3: Fetching daily data (100 candles) for long-term trend context...", 1, 14)
+            try:
+                df_daily = _fetch_market_dataframe(effective_symbol, '1d', limit=100)
+                if not df_daily.empty:
+                    emit_progress(f"Step 1.3: Fetched {len(df_daily)} daily candles", 1, 14)
+            except Exception as e:
+                emit_progress(f"Step 1.3 Warning: Failed to fetch daily data: {e}", 1, 14)
+            
             if df.empty:
                 emit_progress("Step 1: No klines returned; proceeding without market data", 1, 14)
             else:
@@ -1553,20 +1960,82 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 except Exception:
                     # BB function may not always be available; continue with other indicators
                     pass
-                emit_progress(f"Step 1 Complete: Market data prepared ({len(df)} candles)", 1, 14)
+                emit_progress(f"Step 1 Complete: Market data prepared ({len(df)} {effective_timeframe} candles, {len(df_hourly)} hourly, {len(df_daily)} daily)", 1, 14)
             
         except Exception as e:
             emit_progress(f"Step 1 Warning: Market data prep failed: {e}. Proceeding image-only.", 1, 14)
 
-        # Step 2: Analyze trading chart with LLM (now with df if available)
-        emit_progress("Step 2: Analyzing trading chart with LLM...", 2, 14)
-        llm_output = analyze_trading_chart(
+        # Step 2: Analyze trading chart with multiple models in parallel
+        emit_progress("Step 2: Analyzing trading chart with multiple models...", 2, 14)
+        # Prepare market data dict with all timeframes
+        market_data_dict = None
+        if not df.empty:
+            market_data_dict = {
+                'minute': df,
+                'hourly': df_hourly if not df_hourly.empty else None,
+                'daily': df_daily if not df_daily.empty else None
+            }
+        multi_model_comparison = analyze_trading_chart_multi_model(
             image_path,
             symbol=effective_symbol,
             timeframe=effective_timeframe,
-            df=df if not df.empty else None,
+            df=market_data_dict,
         )
-        emit_progress("Step 2 Complete: Chart analysis finished", 2, 14)
+        emit_progress("Step 2 Complete: Multi-model analysis finished", 2, 14)
+        
+        # Select a model for the rest of the pipeline
+        # Note: We don't select based on confidence - user will evaluate manually
+        # For now, we use consensus if all models agree, otherwise first successful model
+        llm_output = None
+        selected_model = None
+        selection_reason = None
+        
+        if multi_model_comparison.get("results"):
+            results = multi_model_comparison["results"]
+            summary = multi_model_comparison.get("summary", {})
+            
+            # Check if all models agree on direction (consensus)
+            agreement = summary.get("agreement", False)
+            consensus_direction = summary.get("consensus_direction")
+            
+            if agreement and consensus_direction:
+                # All models agree - use first model (they're all the same direction anyway)
+                selected_model = list(results.keys())[0]
+                llm_output = results[selected_model]["result"]
+                selection_reason = f"consensus (all models agree on {consensus_direction})"
+                emit_progress(f"Step 2.1: Using {selected_model} - {selection_reason}", 2, 14)
+            else:
+                # Models disagree - use first successful model
+                # User can review all results manually to determine which is best
+                selected_model = list(results.keys())[0]
+                llm_output = results[selected_model]["result"]
+                selection_reason = "first successful model (models disagree - manual review recommended)"
+                emit_progress(f"Step 2.1: Using {selected_model} - {selection_reason}", 2, 14)
+                emit_progress(f"Step 2.1 Note: Models disagree on direction. Review all results to determine best model.", 2, 14)
+        else:
+            # No successful results - create fallback
+            emit_progress("Step 2 Warning: No models succeeded, using fallback response", 2, 14)
+            llm_output = create_fallback_llm_response(effective_symbol, effective_timeframe)
+            selected_model = "fallback"
+            selection_reason = "fallback (no models succeeded)"
+        
+        # Store multi-model comparison info in llm_output for reference
+        llm_output["_multi_model_comparison"] = {
+            "selected_model": selected_model,
+            "selection_reason": selection_reason,
+            "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+            "comparison_summary": multi_model_comparison.get("summary", {}),
+            "all_results": {k: {
+                "direction": v["result"].get("opening_signal", {}).get("direction"), 
+                "confidence": v["result"].get("validity_assessment", {}).get("core_alignment_score", 0),
+                "elapsed_time": v["elapsed_time"],
+                "stop_loss": v["result"].get("risk_management", {}).get("stop_loss", {}).get("price") if v["result"].get("risk_management", {}).get("stop_loss") else None,
+                "take_profits": [{"price": tp.get("price"), "rr": tp.get("rr")} for tp in v["result"].get("risk_management", {}).get("take_profit", []) if tp.get("price") is not None],
+                "max_rr": max([tp.get("rr", 0) for tp in v["result"].get("risk_management", {}).get("take_profit", []) if tp.get("rr") is not None], default=None)
+            } 
+                           for k, v in multi_model_comparison.get("results", {}).items()},
+            "errors": multi_model_comparison.get("errors", {})
+        }
         
         # Send initial analysis to Telegram immediately
         try:
@@ -1720,6 +2189,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
         # Step 11: Check if signal is valid for trade gate
         emit_progress("Step 11: Checking if signal is valid for trade gate...", 11, 14)
         gate_result = None
+        gate_path = None  # Initialize gate_path to avoid reference errors
         
         if is_fallback:
             emit_progress("Step 11 Warning: Skipping trade gate due to LLM refusal fallback", 11, 14)
@@ -1834,7 +2304,8 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                         "current_rsi": market_values.get("current_rsi", 0),
                         "stop_loss": stop_loss,
                         "risk_reward": risk_reward,
-                        "take_profits": take_profits
+                        "take_profits": take_profits,
+                        "_multi_model_comparison": llm_output.get("_multi_model_comparison")  # Include multi-model comparison data
                     }
                     notification_results = notify_valid_trade(trade_data)
                     emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}", 14, 14)
@@ -1850,6 +2321,22 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 confidence = gate_result.get("confidence", 0.0)
                 emit_progress(f"Step 14 Complete: Trade not approved by gate - Direction: {direction}, Confidence: {confidence:.2f}", 14, 14)
                 emit_progress(f"❌ TRADE REJECTED: {direction.upper()} - Reasons: {'; '.join(reasons[:2])}", 14, 14)
+                
+                # Send Telegram notification for rejected trade
+                try:
+                    rejection_data = {
+                        "symbol": llm_output.get("symbol", "Unknown"),
+                        "direction": direction,
+                        "current_price": market_values.get("current_price", 0),
+                        "confidence": confidence,
+                        "reasons": reasons,
+                        "warnings": gate_result.get("warnings", []),
+                        "checks": gate_result.get("checks", {})
+                    }
+                    notification_results = notify_rejected_trade(rejection_data)
+                    emit_progress(f"📱 Rejection notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}", 14, 14)
+                except Exception as e:
+                    emit_progress(f"⚠️ Rejection notification failed: {str(e)}", 14, 14)
         else:
             emit_progress(f"Step 11 Complete: Signal not valid (status: {signal_status}), skipping trade gate", 11, 14)
 
@@ -1864,9 +2351,12 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
             "signal_valid": signal_valid,
             "market_values": market_values,
             "gate_result": gate_result,
+            "multi_model_comparison": multi_model_comparison,
+            "selected_model": selected_model,
             "output_files": {
                 "llm_output": output_path,
-                "gate_result": gate_path if gate_result else None
+                "gate_result": gate_path if gate_result else None,
+                "multi_model_comparison": multi_model_comparison.get("comparison_file_path") if multi_model_comparison else None
             }
         }
 
@@ -3309,6 +3799,84 @@ def list_json_files():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/list-comparisons')
+def list_comparisons():
+    """List all available multi-model comparison files"""
+    try:
+        output_dir = "llm_outputs"
+        if not os.path.exists(output_dir):
+            return jsonify({'success': True, 'comparisons': []})
+        
+        comparison_files = []
+        for filename in os.listdir(output_dir):
+            if filename.endswith('.json') and filename.startswith('multi_model_comparison_'):
+                file_path = os.path.join(output_dir, filename)
+                file_stat = os.stat(file_path)
+                
+                # Try to read the JSON to extract basic info
+                try:
+                    with open(file_path, 'r') as f:
+                        data = json.load(f)
+                    
+                    summary = data.get('summary', {})
+                    results = data.get('results', {})
+                    
+                    comparison_files.append({
+                        'filename': filename,
+                        'filepath': file_path,
+                        'created': datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
+                        'symbol': data.get('symbol', 'Unknown'),
+                        'timeframe': data.get('timeframe', 'Unknown'),
+                        'models_tested': data.get('models_tested', []),
+                        'successful_models': list(results.keys()),
+                        'failed_models': list(data.get('errors', {}).keys()),
+                        'consensus_direction': summary.get('consensus_direction'),
+                        'agreement': summary.get('agreement', False),
+                        'highest_confidence_model': summary.get('highest_confidence_model'),
+                        'fastest_model': summary.get('fastest_model'),
+                        'directions': summary.get('directions', {}),
+                        'confidences': summary.get('confidences', {})
+                    })
+                except Exception as e:
+                    # If we can't read the JSON, still include the file
+                    comparison_files.append({
+                        'filename': filename,
+                        'filepath': file_path,
+                        'created': datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
+                        'error': f'Could not parse: {str(e)}'
+                    })
+        
+        # Sort by creation time (newest first)
+        comparison_files.sort(key=lambda x: x.get('created', ''), reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'comparisons': comparison_files
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/view-comparison')
+def view_comparison():
+    """View a specific multi-model comparison file"""
+    try:
+        filepath = request.args.get('filepath')
+        if not filepath:
+            return jsonify({'success': False, 'error': 'No filepath provided'})
+        
+        if not os.path.exists(filepath):
+            return jsonify({'success': False, 'error': 'File not found'})
+        
+        with open(filepath, 'r') as f:
+            comparison_data = json.load(f)
+        
+        return jsonify({
+            'success': True,
+            'comparison': comparison_data
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
 @app.route('/resume-analysis', methods=['POST'])
 def resume_analysis():
     """Resume analysis from an existing JSON file"""
@@ -3552,7 +4120,8 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                         "current_rsi": market_values.get("current_rsi", 0),
                         "stop_loss": stop_loss,
                         "risk_reward": risk_reward,
-                        "take_profits": take_profits
+                        "take_profits": take_profits,
+                        "_multi_model_comparison": llm_output.get("_multi_model_comparison")  # Include multi-model comparison data
                     }
                     notification_results = notify_valid_trade(trade_data)
                     emit_progress(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}", 12, 12)
@@ -3567,6 +4136,22 @@ def run_trading_analysis_from_llm_output(llm_output: dict, original_filepath: st
                 confidence = gate_result.get("confidence", 0.0)
                 emit_progress(f"Step 12 Complete: Trade not approved by gate - Direction: {direction}, Confidence: {confidence:.2f}", 12, 12)
                 emit_progress(f"❌ TRADE REJECTED: {direction.upper()} - Reasons: {'; '.join(reasons[:2])}", 12, 12)
+                
+                # Send Telegram notification for rejected trade
+                try:
+                    rejection_data = {
+                        "symbol": llm_output.get("symbol", "Unknown"),
+                        "direction": direction,
+                        "current_price": market_values.get("current_price", 0),
+                        "confidence": confidence,
+                        "reasons": reasons,
+                        "warnings": gate_result.get("warnings", []),
+                        "checks": gate_result.get("checks", {})
+                    }
+                    notification_results = notify_rejected_trade(rejection_data)
+                    emit_progress(f"📱 Rejection notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}", 12, 12)
+                except Exception as e:
+                    emit_progress(f"⚠️ Rejection notification failed: {str(e)}", 12, 12)
         else:
             emit_progress(f"Step 10 Complete: Signal not valid (status: {signal_status}), skipping trade gate", 10, 12)
 
