@@ -51,7 +51,7 @@ def analyze_trading_chart(image_path: str) -> dict:
         model=LITELLM_VISION_MODEL,  # Use vision model for image analysis
         messages=[
             {"role": "system", "content": OPENAI_VISION_PROMPT},
-            {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+            {"role": "user", "content": [{"type": "text", "text": "Analyze this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
         ],
         response_format={"type": "json_object"}
     )
@@ -705,7 +705,7 @@ def validate_trading_signal(df):
                     "current_rsi": market_values.get("current_rsi", 0)
                 }
                 notification_results = notify_invalidated_trade(trade_data)
-                print(f"📱 Invalidation notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
+                print(f"📱 Invalidation notifications sent - Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
             except Exception as e:
                 print(f"⚠️ Invalidation notification failed: {str(e)}")
         
@@ -828,7 +828,7 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
                     "take_profits": gate_result.get("execution", {}).get("take_profits", [])
                 }
                 notification_results = notify_valid_trade(trade_data)
-                print(f"📱 Notifications sent - Pushover: {'✅' if notification_results.get('pushover') else '❌'}, Email: {'✅' if notification_results.get('email') else '❌'}, Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
+                print(f"📱 Notifications sent - Telegram: {'✅' if notification_results.get('telegram') else '❌'}")
             except Exception as e:
                 print(f"⚠️ Notification failed: {str(e)}")
         

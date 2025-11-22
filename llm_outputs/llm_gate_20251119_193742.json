@@ -1,0 +1,38 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.3,
+  "reasons": [
+    "RSI is above 50, supporting recovery",
+    "No invalidations triggered"
+  ],
+  "warnings": [
+    "Current price is below the required fib_0.236 level of 89316.7",
+    "Price is near the stop loss, increasing risk of premature stop"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 89316.7,
+    "stop_loss": 89220.0,
+    "take_profits": [
+      {
+        "price": 89611.6,
+        "portion": 0.5
+      },
+      {
+        "price": 89850.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 1,
+      "total": 2
+    },
+    "context_alignment": "weak"
+  }
+}

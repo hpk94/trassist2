@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.7,
+  "reasons": [
+    "RSI and Stochastics show recovery above thresholds",
+    "Price is near key Fibonacci level without invalidation",
+    "Checklist fully passed with no conflicting signals"
+  ],
+  "warnings": [
+    "Entry without strong retest of support; confidence reduced",
+    "Monitor for volatility spikes in 1m timeframe"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92033.03,
+    "stop_loss": 91800.0,
+    "take_profits": [
+      {
+        "price": 92200.0,
+        "portion": 0.5
+      },
+      {
+        "price": 92365.9,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.75,
+    "position_size_note": "Risk 0.5% per trade based on stop distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "medium"
+  }
+}

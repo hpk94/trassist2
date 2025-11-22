@@ -1,0 +1,443 @@
+{
+  "timestamp": "2025-11-21T16:45:26.565933",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmpg8ne2l52.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Gemini"
+  ],
+  "results": {
+    "ChatGPT5.1": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 15:44",
+        "trend_direction": "neutral",
+        "support_resistance": {
+          "support": 82576.0,
+          "resistance": 83673.2
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 31.06,
+            "status": "oversold",
+            "signal": "recovering"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "data_not_provided"
+          },
+          "VOLUME": {
+            "current": 710930,
+            "average": null,
+            "ratio": null,
+            "trend": "increasing"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 85166.3,
+              "to": 83124.6
+            },
+            "levels": {
+              "0.236": 84352.0,
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "descending_channel_breakout",
+            "candle_index": 0,
+            "confidence": 0.8
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.75,
+          "confluence_with_pattern": true,
+          "notes": "RSI oversold recovery, descending channel breakout, increased volume"
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_recover",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 30.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "channel_breakout",
+              "type": "pattern",
+              "pattern": "descending_channel",
+              "confirmation": "breakout"
+            }
+          ],
+          "secondary_checklist": [],
+          "invalidation": [
+            {
+              "id": "close_below_618_fib",
+              "type": "price_breach",
+              "level": 82576.0
+            },
+            {
+              "id": "rsi_overbought",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 70.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 82450.0,
+            "basis": "below_fib_618"
+          },
+          "take_profit": [
+            {
+              "price": 83673.2,
+              "basis": "fib_0.382_retracement",
+              "rr": 1.5
+            }
+          ]
+        },
+        "summary_actions": [
+          "Monitor RSI recovery above 30",
+          "Watch for descending channel breakout confirmation",
+          "Enter long if volume supports breakout",
+          "Invalidate if price closes below 618 Fib level"
+        ],
+        "improvements": "Incorporate Stochastic indicator for additional confluence"
+      },
+      "elapsed_time": 25.823688983917236,
+      "timestamp": "2025-11-21T16:45:12.491190"
+    },
+    "DeepSeek": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 15:44",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 82576.0,
+          "resistance": 84352.0
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 31.06,
+            "status": "oversold",
+            "signal": "recovering"
+          },
+          "STOCH14_3_3": {
+            "k_percent": "Not provided",
+            "d_percent": "Not provided",
+            "signal": "N/A"
+          },
+          "VOLUME": {
+            "current": 710930,
+            "average": "Estimated as insufficient data",
+            "ratio": "N/A",
+            "trend": "steady"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 85449.2,
+              "to": 83124.6
+            },
+            "levels": {
+              "0.236": 84352.0,
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "falling_wedge",
+            "candle_index": 0,
+            "confidence": 0.85
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.7,
+          "confluence_with_pattern": true,
+          "notes": "RSI oversold recovery, Fibonacci levels tested, falling wedge breakout"
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_recover",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 30.0,
+              "observed_on_candle": 0
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "price_break_fib_0382",
+              "indicator": "PRICE",
+              "comparator": ">=",
+              "value": 83673.2,
+              "basis": "fib_0.382"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_fib_0618",
+              "type": "price_breach",
+              "level": 82576.0
+            },
+            {
+              "id": "rsi_fail_recovery",
+              "indicator": "RSI14",
+              "comparator": "<=",
+              "value": 30.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 82500.0,
+            "basis": "below_fib_0618"
+          },
+          "take_profit": [
+            {
+              "price": 84352.0,
+              "basis": "fib_0.236",
+              "rr": 1.5
+            },
+            {
+              "price": 85000.0,
+              "basis": "trendline_projection",
+              "rr": 2.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Confirm RSI14 recovers above 30 for bullish entry",
+          "Ensure breakout over Fib 0.382 level at 83673.2",
+          "Enter long if conditions align",
+          "Invalidate if close below Fib 0.618 at 82576.0"
+        ],
+        "improvements": "Use the Stochastic indicator to improve momentum confirmation prior to entry"
+      },
+      "elapsed_time": 28.27451801300049,
+      "timestamp": "2025-11-21T16:45:14.942188"
+    },
+    "Gemini": {
+      "model_name": "gemini/gemini-3-pro-preview",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 15:44",
+        "trend_direction": "bearish_reversal",
+        "support_resistance": {
+          "support": 83124.6,
+          "resistance": 83673.2
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 42.83,
+            "status": "neutral_bullish",
+            "signal": "bullish_divergence_recovery"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "data_not_provided"
+          },
+          "VOLUME": {
+            "current": 11.6,
+            "average": 10.5,
+            "ratio": 1.1,
+            "trend": "increasing_on_green"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 85449.2,
+              "to": 80799.0
+            },
+            "levels": {
+              "0.0": 85449.2,
+              "0.236": 84352.0,
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {
+          "MACD12_26_9": {
+            "macd_line": -292.69,
+            "signal_line": -294.23,
+            "histogram": 1.53
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "price_position": "middle_upper_break"
+          },
+          "ATR14": {
+            "value": null
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "falling_wedge",
+            "candle_index": 0,
+            "confidence": 0.85
+          },
+          {
+            "pattern": "fib_level_reclaim",
+            "candle_index": 0,
+            "confidence": 0.9
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.85,
+          "confluence_with_pattern": true,
+          "notes": "Price reclaimed the 0.5 Fib level (83,124) coinciding with a potential Falling Wedge breakout. RSI is recovering from oversold with visible bullish divergence. Volume on the breakout candle is supportive."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1
+            ],
+            "lookback_seconds": 120
+          },
+          "core_checklist": [
+            {
+              "id": "price_above_fib_0.5",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 83124.6,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "rsi_momentum_shift",
+              "indicator": "RSI14",
+              "comparator": ">",
+              "value": 40.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "macd_bullish_cross",
+              "indicator": "MACD_HISTOGRAM",
+              "comparator": ">",
+              "value": 0.0,
+              "observed_on_candle": 0
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "wedge_trendline_break",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 83300.0,
+              "basis": "visual_trendline"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_fib_0.5",
+              "type": "price_breach",
+              "level": 83124.0
+            },
+            {
+              "id": "rsi_rejection",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 35.0
+            }
+          ],
+          "is_met": true
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 82800.0,
+            "basis": "below_local_consolidation_low"
+          },
+          "take_profit": [
+            {
+              "price": 83673.2,
+              "basis": "fib_0.382",
+              "rr": 1.2
+            },
+            {
+              "price": 84352.0,
+              "basis": "fib_0.236",
+              "rr": 3.2
+            }
+          ]
+        },
+        "summary_actions": [
+          "Enter Long immediately as price holds above 0.5 Fib (83,124).",
+          "Monitor RSI to ensure it continues rising towards 50.",
+          "Target the 0.382 Fib level at 83,673 as first take profit.",
+          "Invalidate if price closes back below 83,124 or RSI drops below 40."
+        ],
+        "improvements": "Wait for a 1m candle close specifically above 83,300 to confirm the wedge trendline break for higher certainty, though current Fib reclaim is a valid aggressive entry."
+      },
+      "elapsed_time": 39.89801788330078,
+      "timestamp": "2025-11-21T16:45:26.565720"
+    }
+  },
+  "errors": {},
+  "summary": {
+    "directions": {
+      "ChatGPT5.1": "long",
+      "DeepSeek": "long",
+      "Gemini": "long"
+    },
+    "confidences": {
+      "ChatGPT5.1": 0.75,
+      "DeepSeek": 0.7,
+      "Gemini": 0.85
+    },
+    "response_times": {
+      "ChatGPT5.1": 25.823688983917236,
+      "DeepSeek": 28.27451801300049,
+      "Gemini": 39.89801788330078
+    },
+    "agreement": true,
+    "consensus_direction": "long",
+    "fastest_model": "ChatGPT5.1",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

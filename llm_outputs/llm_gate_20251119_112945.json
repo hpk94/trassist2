@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI recovery above 45 supports momentum",
+    "Price is above channel middle and near fib 0.236 level",
+    "No invalidations triggered and checklist fully passed"
+  ],
+  "warnings": [
+    "Entry is close to invalidation level; monitor for price stability"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91507.98,
+    "stop_loss": 91100.0,
+    "take_profits": [
+      {
+        "price": 91700.0,
+        "portion": 0.5
+      },
+      {
+        "price": 91900.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

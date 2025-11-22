@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI above 30 and Stoch reversal conditions met",
+    "Price above 0.382 fib level supporting long setup",
+    "No invalidations triggered and checklist alignment strong"
+  ],
+  "warnings": [
+    "Current price near first take profit, consider partial profit taking",
+    "RSI at 40.27, not deeply oversold, potential for limited upside"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91416.82,
+    "stop_loss": 90977.9,
+    "take_profits": [
+      {
+        "price": 91510.8,
+        "portion": 0.5
+      },
+      {
+        "price": 91987.1,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.25,
+    "position_size_note": "Size position to risk 1-2% of capital based on stop loss"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-20 16:43",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 89200.0,
+    "resistance": 91100.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 40.5,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35.0,
+      "d_percent": 29.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 1200000,
+      "average": 980000,
+      "ratio": 1.22,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 92000.0,
+        "to": 90000.0
+      },
+      "levels": {
+        "0.236": 90500.0,
+        "0.382": 91000.0,
+        "0.5": 91500.0,
+        "0.618": 92000.0,
+        "0.786": 93000.0
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 91500.0,
+      "middle": 90250.0,
+      "lower": 89000.0,
+      "price_position": "middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": -40.5,
+      "signal_line": -45.0,
+      "histogram": 4.5
+    },
+    "ATR14": {
+      "value": 150.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, volume decreasing, inside descending channel"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 120
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_neutral",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 45.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_k_below_d",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 40.0,
+        "referenced_value": "stoch_d",
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_bb_middle",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 90250.0,
+        "basis": "bb_middle"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_upper_channel",
+        "type": "price_breach",
+        "level": "channel_top"
+      },
+      {
+        "id": "stoch_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 80.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91100.0,
+      "basis": "above_channel_top"
+    },
+    "take_profit": [
+      {
+        "price": 89200.0,
+        "basis": "channel_bottom",
+        "rr": 1.5
+      },
+      {
+        "price": 88500.0,
+        "basis": "fib_0.236_extension",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Look for short entry if price breaks down with decreasing volume",
+    "Confirm break below BB middle line",
+    "Invalidate if price moves above channel top"
+  ],
+  "improvements": "Monitor for breakdown confirmation with increasing volume; adjust take-profit levels based on Fibonacci extensions",
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "DeepSeek": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.9
+      },
+      "response_times": {
+        "ChatGPT5.1": 67.25266218185425,
+        "DeepSeek": 70.9276020526886
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.7,
+        "elapsed_time": 67.25266218185425,
+        "stop_loss": 91100.0,
+        "take_profits": [
+          {
+            "price": 89200.0,
+            "rr": 1.5
+          },
+          {
+            "price": 88500.0,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      },
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.9,
+        "elapsed_time": 70.9276020526886,
+        "stop_loss": 89000.0,
+        "take_profits": [
+          {
+            "price": 90456.0,
+            "rr": 1.5
+          },
+          {
+            "price": 90844.0,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      }
+    },
+    "errors": {}
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI above 50 indicates bullish momentum.",
+    "Price is above the Fib 0.618 level.",
+    "Secondary checklist supports bullish triangle break."
+  ],
+  "warnings": [
+    "Market conditions can change rapidly on a 1-minute timeframe."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 84950.52,
+    "stop_loss": 84088.3,
+    "take_profits": [
+      {
+        "price": 85436.7,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Position size should be calculated based on stop loss and risk tolerance."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

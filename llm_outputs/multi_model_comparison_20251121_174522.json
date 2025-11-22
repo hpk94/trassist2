@@ -1,0 +1,476 @@
+{
+  "timestamp": "2025-11-21T17:45:22.006995",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmpzcbgi10v.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Gemini"
+  ],
+  "results": {
+    "ChatGPT5.1": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 16:44",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 83124.6,
+          "resistance": 84675.3
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 58.27,
+            "status": "neutral",
+            "signal": "descending"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 70.0,
+            "d_percent": 50.0,
+            "signal": "overbought_weakening"
+          },
+          "VOLUME": {
+            "current": 357880,
+            "average": 400000,
+            "ratio": 0.89,
+            "trend": "decreasing"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 81794.9,
+              "to": 84352.0
+            },
+            "levels": {
+              "0.236": 84352.0,
+              "0.382": 83713.6,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 0,
+            "confidence": 0.85
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.5,
+          "confluence_with_pattern": false,
+          "notes": "RSI and Stoch overbought, channel indicates potential reversal"
+        },
+        "opening_signal": {
+          "direction": "short",
+          "scope": {
+            "candle_indices": [
+              0,
+              1
+            ],
+            "lookback_seconds": 60
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_descending",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 60.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_overbought_descend",
+              "indicator": "STOCH14_3_3",
+              "comparator": "<",
+              "value": 80.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "volume_below_avg",
+              "indicator": "VOLUME",
+              "comparator": "<",
+              "value": 1.0,
+              "baseline": "average"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "price_below_fib_0382",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 83713.6,
+              "basis": "fib_0.382"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "break_above_channel",
+              "type": "price_breach",
+              "level": 84675.3
+            },
+            {
+              "id": "rsi_overbought",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 70.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 84675.3,
+            "basis": "above_channel"
+          },
+          "take_profit": [
+            {
+              "price": 83124.6,
+              "basis": "fib_0.5",
+              "rr": 1.0
+            },
+            {
+              "price": 82576.0,
+              "basis": "fib_0.618",
+              "rr": 2.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Consider short if RSI descends below 60",
+          "Ensure Stochastic remains under 80",
+          "Watch for volume to stay below average",
+          "Invalidate if price breaks above channel"
+        ],
+        "improvements": "Utilize volume as key signal for reversals; confirm movements with RSI/Stochastic trends"
+      },
+      "elapsed_time": 23.065598964691162,
+      "timestamp": "2025-11-21T17:44:53.771379"
+    },
+    "DeepSeek": {
+      "model_name": "deepseek/deepseek-chat",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 16:44",
+        "trend_direction": "bearish",
+        "support_resistance": {
+          "support": 82340.36,
+          "resistance": 84842.67
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 50.19,
+            "status": "neutral",
+            "signal": "neutral"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "insufficient_data"
+          },
+          "VOLUME": {
+            "current": 2.45143144,
+            "average": 2.45143144,
+            "ratio": 1.0,
+            "trend": "neutral"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 82340.36,
+              "to": 84842.67
+            },
+            "levels": {
+              "0.236": 82925.93,
+              "0.382": 83297.3,
+              "0.5": 83591.515,
+              "0.618": 83885.73,
+              "0.786": 84257.1
+            }
+          }
+        },
+        "secondary_indicators": {
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "price_position": "insufficient_data"
+          },
+          "MACD12_26_9": {
+            "macd_line": 125.9293,
+            "signal_line": 132.5673,
+            "histogram": -6.638
+          },
+          "ATR14": {
+            "value": null
+          }
+        },
+        "pattern_analysis": [],
+        "validity_assessment": {
+          "core_alignment_score": 0.3,
+          "confluence_with_pattern": false,
+          "notes": "RSI neutral, Stochastic data missing, volume average, no patterns detected; insufficient core confirmations for valid setup"
+        },
+        "opening_signal": {
+          "direction": "none",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_oversold",
+              "indicator": "RSI14",
+              "comparator": "<=",
+              "value": 30.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_oversold",
+              "indicator": "STOCH14_3_3",
+              "comparator": "<=",
+              "value": 20.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "volume_above_avg",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.0,
+              "baseline": "average"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "price_at_fib_support",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 82340.36,
+              "basis": "support"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_swing_low",
+              "type": "price_breach",
+              "level": 82340.36
+            },
+            {
+              "id": "rsi_overbought",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 70.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": null,
+            "basis": "insufficient_data"
+          },
+          "take_profit": [
+            {
+              "price": null,
+              "basis": "insufficient_data",
+              "rr": null
+            }
+          ]
+        },
+        "summary_actions": [
+          "Wait for RSI14 to reach oversold (<=30) or overbought (>=70) for clearer signals",
+          "Ensure Stochastic data is available for momentum confirmation",
+          "Monitor volume for spikes above average to confirm moves",
+          "Invalidate if price closes below key support at 82340.36"
+        ],
+        "improvements": "Provide complete indicator data (e.g., Stochastic) and chart patterns for better analysis; use hourly/daily trends to inform bias"
+      },
+      "elapsed_time": 29.194831132888794,
+      "timestamp": "2025-11-21T17:44:59.907470"
+    },
+    "Gemini": {
+      "model_name": "gemini/gemini-3-pro-preview",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 16:44",
+        "trend_direction": "correction_in_uptrend",
+        "support_resistance": {
+          "support": 83124.6,
+          "resistance": 83673.2,
+          "key_levels": [
+            83124.6,
+            82576.0,
+            83673.2
+          ]
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 50.19,
+            "status": "neutral_bearish",
+            "signal": "testing_midline_support"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 42.5,
+            "d_percent": 55.0,
+            "signal": "bearish_momentum",
+            "note": "Estimated based on price action; not explicitly in data source"
+          },
+          "VOLUME": {
+            "current": 2.45,
+            "average": 3.1,
+            "ratio": 0.79,
+            "trend": "declining_on_pullback"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "estimated_high": 85446.0,
+              "estimated_low": 80802.0
+            },
+            "levels": {
+              "0.236": 84352.0,
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {
+          "MACD12_26_9": {
+            "macd_line": 125.9,
+            "signal_line": 132.5,
+            "histogram": -6.64,
+            "signal": "bearish_cross"
+          },
+          "Channel_Structure": {
+            "type": "ascending_channel",
+            "status": "price_at_midline_support"
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "ascending_channel_pullback",
+            "candle_index": 0,
+            "confidence": 0.85
+          },
+          {
+            "pattern": "fib_0.5_retest",
+            "candle_index": 0,
+            "confidence": 0.9
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.65,
+          "confluence_with_pattern": true,
+          "notes": "Price is correcting towards the Golden Pocket (0.5-0.618 Fib). RSI is resetting to 50. Volume is decreasing on the drop, suggesting a healthy correction rather than a reversal. Valid long entry only upon confirmed bounce at 0.5 Fib."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "price_in_zone",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 83150.0
+            },
+            {
+              "id": "rsi_bounce",
+              "indicator": "RSI14",
+              "comparator": ">",
+              "value": 40.0,
+              "condition": "upward_inflection"
+            },
+            {
+              "id": "volume_confirmation",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.2,
+              "baseline": "average"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "hold_fib_0.5",
+              "indicator": "PRICE",
+              "comparator": ">=",
+              "value": 83124.6,
+              "basis": "fib_0.5"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_fib_0.618",
+              "type": "price_breach",
+              "level": 82570.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 82550.0,
+            "basis": "just_below_fib_0.618"
+          },
+          "take_profit": [
+            {
+              "price": 83670.0,
+              "basis": "fib_0.382_resistance",
+              "rr": 1.5
+            },
+            {
+              "price": 84300.0,
+              "basis": "channel_top_fib_0.236",
+              "rr": 3.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Wait for price to test the 0.5 Fib level at 83,124.6",
+          "Monitor RSI for a bounce off 40-50 range (bullish reset)",
+          "Do not enter if a 1m candle closes below 83,100 with high volume",
+          "Enter LONG on a bullish engulfing candle printed at the 83,125 support zone"
+        ],
+        "improvements": "The current setup is a 'catching a falling knife' scenario. Increase safety by waiting for a Green Candle Close above the previous candle's high near the 0.5 Fib level before entering."
+      },
+      "elapsed_time": 51.28060579299927,
+      "timestamp": "2025-11-21T17:45:22.005415"
+    }
+  },
+  "errors": {},
+  "summary": {
+    "directions": {
+      "ChatGPT5.1": "short",
+      "DeepSeek": "none",
+      "Gemini": "long"
+    },
+    "confidences": {
+      "ChatGPT5.1": 0.5,
+      "DeepSeek": 0.3,
+      "Gemini": 0.65
+    },
+    "response_times": {
+      "ChatGPT5.1": 23.065598964691162,
+      "DeepSeek": 29.194831132888794,
+      "Gemini": 51.28060579299927
+    },
+    "agreement": false,
+    "consensus_direction": "short",
+    "fastest_model": "ChatGPT5.1",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

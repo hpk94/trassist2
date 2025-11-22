@@ -1,0 +1,165 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-19 08:32",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 91000.0,
+    "resistance": 91987.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 53.43,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 53.0,
+      "d_percent": 51.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 93290,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 89968.5,
+        "to": 91987.2
+      },
+      "levels": {
+        "0.236": 91510.8,
+        "0.382": 91216.1,
+        "0.5": 90977.9,
+        "0.618": 90739.6,
+        "0.786": 90400.5
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "channel_up",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI neutral but recovering, volume stable, within ascending channel."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_near_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 91510.8,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "channel_support_hold",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 91216.1,
+        "basis": "channel_support"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "channel_support"
+      },
+      {
+        "id": "rsi_below_50",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 90977.9,
+      "basis": "below_fib_0.5"
+    },
+    "take_profit": [
+      {
+        "price": 91987.2,
+        "basis": "recent_high",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for RSI14 to maintain above 50",
+    "Ensure price holds above Fib 0.236",
+    "Enter long if volume increases with breakout"
+  ],
+  "improvements": "Monitor channel boundary closely; consider MA cross for additional confirmation",
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "long",
+        "DeepSeek": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.7
+      },
+      "response_times": {
+        "ChatGPT5.1": 25.107288122177124,
+        "DeepSeek": 27.030022859573364
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 25.107288122177124
+      },
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 27.030022859573364
+      }
+    },
+    "errors": {
+      "Qwenv3.1": {
+        "error": "API key missing for Qwen. Add QWEN_API_KEY, DASHSCOPE_API_KEY, or ALIBABA_API_KEY to your .env file.",
+        "error_type": "AnalysisError",
+        "model": "qwen/qwen-vl-max"
+      }
+    }
+  }
+}

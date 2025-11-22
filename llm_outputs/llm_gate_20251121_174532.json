@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "Strong checklist alignment with no invalidations triggered",
+    "Current RSI below 60 supports bearish momentum",
+    "Price below Fib 0.382 level confirms resistance hold"
+  ],
+  "warnings": [
+    "Volume below average may reduce momentum conviction"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 83209.68,
+    "stop_loss": 84675.3,
+    "take_profits": [
+      {
+        "price": 83124.6,
+        "portion": 0.5
+      },
+      {
+        "price": 82576.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

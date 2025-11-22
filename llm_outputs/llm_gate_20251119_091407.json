@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "Price is near channel top with bearish RSI and Stoch cross, supporting short setup",
+    "No invalidations triggered and checklist fully passed",
+    "Current market context aligns with inferred bearish momentum"
+  ],
+  "warnings": [
+    "RSI at 45.6 is not extremely bearish; monitor for confirmation",
+    "Low timeframe (1m) may increase noise and volatility"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91723.46,
+    "stop_loss": 91990.0,
+    "take_profits": [
+      {
+        "price": 91510.8,
+        "portion": 0.5
+      },
+      {
+        "price": 91216.1,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.8,
+    "position_size_note": "Risk per trade should not exceed 1% of capital, adjust based on stop distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

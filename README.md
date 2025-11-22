@@ -10,7 +10,7 @@ An intelligent trading analysis system that combines LLM vision capabilities for
 - **Technical Indicators**: Calculates RSI14, MACD, Stochastic, Bollinger Bands, and ATR
 - **Signal Validation**: Comprehensive checklist and invalidation system for trading signals
 - **LLM Trade Gate**: Final AI decision layer for trade execution approval
-- **iPhone Notifications**: Pushover and email notifications for valid and invalidated trades
+- **Notifications**: Telegram notifications for valid and invalidated trades
 - **Flexible Model Selection**: Easily switch between different LLM providers via environment variable
 
 ## 📋 Requirements
@@ -127,7 +127,7 @@ Or set it permanently in your `.env` file. See [`MIGRATION_GUIDE.md`](MIGRATION_
 - **`app.py`**: Main application with trading analysis logic (uses LiteLLM)
 - **`prompt.py`**: AI prompts for chart analysis and trade decisions
 - **`services/`**: Notification and indicator calculation services
-  - `notification_service.py`: Pushover and email notifications
+  - `notification_service.py`: Telegram notifications
   - `indicator_service.py`: Technical indicator calculations
 
 ### Data & Output

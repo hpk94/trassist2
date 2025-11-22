@@ -1,0 +1,156 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-16 16:02",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 89200.0,
+    "resistance": 91200.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": null,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": null,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": null,
+        "to": null
+      },
+      "levels": {}
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": true,
+    "notes": "Descending wedge may signal a potential breakout, although core indicator confirmations are lacking."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "breakout_signal",
+        "indicator": "PATTERN",
+        "comparator": "==",
+        "value": "descending_wedge_breakout"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "support"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89000.0,
+      "basis": "below_wedge_support"
+    },
+    "take_profit": [
+      {
+        "price": 91000.0,
+        "basis": "resistance",
+        "rr": 1.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for recovery above 30.",
+    "Confirm breakout from descending wedge.",
+    "Enter long on wedge breakout confirmation with volume increase.",
+    "Invalidate if price closes below wedge support."
+  ],
+  "improvements": "Await additional confirmations from core indicators such as RSI and Volume before entry.",
+  "_multi_model_comparison": {
+    "selected_model": "DeepSeek",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "DeepSeek": "long",
+        "ChatGPT5.1": "short"
+      },
+      "confidences": {
+        "DeepSeek": 0.5,
+        "ChatGPT5.1": 0.5
+      },
+      "response_times": {
+        "DeepSeek": 21.78572368621826,
+        "ChatGPT5.1": 42.8224401473999
+      },
+      "agreement": false,
+      "consensus_direction": "long",
+      "fastest_model": "DeepSeek",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.5,
+        "elapsed_time": 21.78572368621826,
+        "stop_loss": 89000.0,
+        "take_profits": [
+          {
+            "price": 91000.0,
+            "rr": 1.0
+          }
+        ],
+        "max_rr": 1.0
+      },
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.5,
+        "elapsed_time": 42.8224401473999,
+        "stop_loss": 92000.0,
+        "take_profits": [
+          {
+            "price": 90000.0,
+            "rr": 1.5
+          }
+        ],
+        "max_rr": 1.5
+      }
+    },
+    "errors": {}
+  }
+}

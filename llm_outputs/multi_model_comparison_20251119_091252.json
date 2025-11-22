@@ -1,0 +1,213 @@
+{
+  "timestamp": "2025-11-19T09:12:52.673376",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmp2ejyz9lf.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Qwenv3.1"
+  ],
+  "results": {
+    "ChatGPT5.1": {
+      "model_name": "gpt-5.1-2025-11-13",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-19 08:06",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 90977.9,
+          "resistance": 91987.2
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 51.7,
+            "status": "neutral",
+            "signal": "rolling_over_from_bullish"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 57.5,
+            "d_percent": 60.0,
+            "signal": "bearish_cross_and_falling"
+          },
+          "VOLUME": {
+            "current": 1.71,
+            "average": 1.3,
+            "ratio": 1.32,
+            "trend": "recently_increasing_then_flat"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 89968.5,
+              "to": 91987.2
+            },
+            "levels": {
+              "0.236": 91510.8,
+              "0.382": 91216.1,
+              "0.5": 90977.9,
+              "0.618": 90739.7,
+              "0.786": 90400.5
+            }
+          }
+        },
+        "secondary_indicators": {
+          "BB20_2": null,
+          "MACD12_26_9": {
+            "macd_line": 4.7851,
+            "signal_line": 31.0873,
+            "histogram": -26.3022
+          },
+          "ATR14": null
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "rising_channel",
+            "candle_index": 1,
+            "confidence": 0.86
+          },
+          {
+            "pattern": "bearish_rsi_divergence",
+            "candle_index": 3,
+            "confidence": 0.83
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.55,
+          "confluence_with_pattern": true,
+          "notes": "Price is in a rising intraday channel near Fib 0% extension resistance, RSI has turned down from >60 with visible bearish divergence vs price, and Stoch shows a fresh bearish cross. Volume on the last swing up was above average but is now flattening, suggesting potential exhaustion rather than strong continuation. Bias favours a short from channel resistance with expectation of mean reversion toward 0.236\u20130.382 Fib."
+        },
+        "opening_signal": {
+          "direction": "short",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "price_near_channel_top",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 0.0015,
+              "basis": "distance_fraction_to_channel_top_relative_to_price",
+              "observed_on_candle": 0
+            },
+            {
+              "id": "rsi_bearish_rollover",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 55.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_bearish_cross",
+              "indicator": "STOCH14_3_3",
+              "comparator": "cross_below",
+              "value": "D_line",
+              "observed_on_candle": 0
+            },
+            {
+              "id": "volume_not_capitulation",
+              "indicator": "VOLUME",
+              "comparator": "<=",
+              "value": 1.8,
+              "baseline": "recent_5_candle_max"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "below_last_minor_high",
+              "indicator": "PRICE",
+              "comparator": "<",
+              "value": "high_of_candle_1",
+              "observed_on_candle": 0
+            },
+            {
+              "id": "targeting_fib_0236_or_lower",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 91510.8,
+              "basis": "fib_0.236"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_above_channel_top",
+              "type": "price_breach",
+              "level": "channel_top"
+            },
+            {
+              "id": "rsi_strong_breakout",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 65.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 91990.0,
+            "basis": "just_above_recent_swing_high_and_channel_top"
+          },
+          "take_profit": [
+            {
+              "price": 91510.8,
+              "basis": "fib_0.236_retest_mid_channel",
+              "rr": 1.3
+            },
+            {
+              "price": 91216.1,
+              "basis": "fib_0.382_and_lower_channel_boundary_touch",
+              "rr": 2.3
+            }
+          ]
+        },
+        "summary_actions": [
+          "Avoid fresh longs at current levels; price is at channel resistance with bearish RSI divergence.",
+          "Look for a short only if a 1m candle rejects the channel top and Stoch confirms a bearish cross while RSI stays below 55.",
+          "Place stop slightly above 91987\u201391990 to protect against a channel breakout.",
+          "Scale profits at 0.236 Fib and leave a runner toward 0.382 Fib if momentum persists down."
+        ],
+        "improvements": "For this 1m scalping setup, tighten confirmation by requiring a clear rejection wick at the channel top plus a close back inside the channel, together with Stoch K<50 and RSI<50 before full position size. Consider partial entries only on the first touch and add on the retest of 0.236 Fib if it flips to resistance."
+      },
+      "elapsed_time": 22.60076379776001,
+      "timestamp": "2025-11-19T09:12:52.673237"
+    }
+  },
+  "errors": {
+    "Qwenv3.1": {
+      "error": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=qwen/qwen3-max\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+      "error_type": "BadRequestError",
+      "model": "qwen/qwen3-max",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    },
+    "DeepSeek": {
+      "error": "litellm.BadRequestError: DeepseekException - {\"error\":{\"message\":\"Failed to deserialize the JSON body into the target type: messages[1]: unknown variant `image_url`, expected `text` at line 1 column 1227325\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+      "error_type": "BadRequestError",
+      "model": "deepseek/deepseek-chat",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    }
+  },
+  "summary": {
+    "directions": {
+      "ChatGPT5.1": "short"
+    },
+    "confidences": {
+      "ChatGPT5.1": 0.55
+    },
+    "response_times": {
+      "ChatGPT5.1": 22.60076379776001
+    },
+    "agreement": true,
+    "consensus_direction": "short",
+    "fastest_model": "ChatGPT5.1",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

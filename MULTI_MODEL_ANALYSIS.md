@@ -10,6 +10,7 @@ The system tests models in parallel:
 
 1. **ChatGPT5.1** - Configured via `MULTI_MODEL_CHATGPT` (default: `gpt-4o`)
 2. **DeepSeek** - Configured via `MULTI_MODEL_DEEPSEEK` (default: `deepseek/deepseek-chat`)
+3. **Gemini** - Configured via `MULTI_MODEL_GEMINI` (default: `gemini/gemini-1.5-pro`)
 
 ## Configuration
 
@@ -19,11 +20,13 @@ Add these environment variables to your `.env` file to customize the models:
 # Multi-model comparison configuration
 MULTI_MODEL_CHATGPT=gpt-4o              # ChatGPT5.1 model
 MULTI_MODEL_DEEPSEEK=deepseek/deepseek-chat  # DeepSeek model
+MULTI_MODEL_GEMINI=gemini/gemini-1.5-pro  # Google Gemini model
 ```
 
 **Note:** Make sure you have the appropriate API keys configured:
 - `OPENAI_API_KEY` for ChatGPT
 - `DEEPSEEK_API_KEY` for DeepSeek
+- `GEMINI_API_KEY` for Gemini
 
 ## How It Works
 
@@ -54,13 +57,19 @@ Each comparison file contains:
   "image_path": "/path/to/image.png",
   "symbol": "BTCUSDT",
   "timeframe": "1m",
-  "models_tested": ["ChatGPT5.1", "DeepSeek"],
+  "models_tested": ["ChatGPT5.1", "DeepSeek", "Gemini"],
   "results": {
     "ChatGPT5.1": {
       "model_name": "gpt-4o",
       "result": { /* full LLM analysis result */ },
       "elapsed_time": 2.5,
       "timestamp": "2025-01-15T10:30:02"
+    },
+    "Gemini": {
+      "model_name": "gemini/gemini-1.5-pro",
+      "result": { /* full LLM analysis result */ },
+      "elapsed_time": 3.1,
+      "timestamp": "2025-01-15T10:30:03"
     },
     // ... other models
   },
@@ -70,15 +79,18 @@ Each comparison file contains:
   "summary": {
     "directions": {
       "ChatGPT5.1": "long",
-      "DeepSeek": "long"
+      "DeepSeek": "long",
+      "Gemini": "long"
     },
     "confidences": {
       "ChatGPT5.1": 0.85,
-      "DeepSeek": 0.72
+      "DeepSeek": 0.72,
+      "Gemini": 0.78
     },
     "response_times": {
       "ChatGPT5.1": 2.5,
-      "DeepSeek": 1.8
+      "DeepSeek": 1.8,
+      "Gemini": 3.1
     },
     "agreement": false,
     "consensus_direction": "long",
@@ -154,6 +166,7 @@ Make sure all required API keys are set in your `.env` file:
 ```bash
 OPENAI_API_KEY=sk-...
 DEEPSEEK_API_KEY=sk-...
+GEMINI_API_KEY=...
 ```
 
 ### Timeout Issues

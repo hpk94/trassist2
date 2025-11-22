@@ -1,9 +1,6 @@
 import os
 import json
-import smtplib
 import requests
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
@@ -12,16 +9,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class NotificationService:
-    """Service for sending trade notifications to iPhone via multiple methods"""
+    """Service for sending trade notifications via Telegram"""
     
     def __init__(self):
-        self.pushover_token = os.getenv("PUSHOVER_TOKEN")
-        self.pushover_user = os.getenv("PUSHOVER_USER")
-        self.email_smtp_server = os.getenv("EMAIL_SMTP_SERVER", "smtp.gmail.com")
-        self.email_smtp_port = int(os.getenv("EMAIL_SMTP_PORT", "587"))
-        self.email_username = os.getenv("EMAIL_USERNAME")
-        self.email_password = os.getenv("EMAIL_PASSWORD")
-        self.email_to = os.getenv("EMAIL_TO")
         self.telegram_bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
         self.telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
         
@@ -37,21 +27,11 @@ class NotificationService:
             Dictionary with success status for each notification method
         """
         results = {
-            "pushover": False,
-            "email": False,
             "telegram": False
         }
         
         # Prepare notification message
         message = self._format_trade_message(trade_data, notification_type)
-        
-        # Try Pushover first (most reliable for iPhone)
-        if self.pushover_token and self.pushover_user:
-            results["pushover"] = self._send_pushover_notification(message, trade_data)
-        
-        # Try email as backup
-        if self.email_username and self.email_password and self.email_to:
-            results["email"] = self._send_email_notification(message, trade_data)
         
         # Try Telegram
         if self.telegram_bot_token and self.telegram_chat_id:
@@ -108,6 +88,99 @@ class NotificationService:
             if risk_reward is not None:
                 message_lines.append(f"📐 Plan R:R: {risk_reward}")
             
+            # Add multi-model comparison section if available
+            multi_model_info = trade_data.get("_multi_model_comparison", {})
+            if multi_model_info:
+                message_lines.extend([
+                    "",
+                    "━━━━━━━━━━━━━━━━━━━━",
+                    "🔬 MULTI-MODEL ANALYSIS",
+                    "━━━━━━━━━━━━━━━━━━━━",
+                    ""
+                ])
+                
+                selected_model = multi_model_info.get("selected_model", "Unknown")
+                selection_reason = multi_model_info.get("selection_reason", "N/A")
+                all_results = multi_model_info.get("all_results", {})
+                comparison_summary = multi_model_info.get("comparison_summary", {})
+                errors = multi_model_info.get("errors", {})
+                
+                message_lines.append(f"Model Used: {selected_model}")
+                message_lines.append(f"Selection: {selection_reason}")
+                message_lines.append("")
+                
+                if all_results:
+                    message_lines.append("All Models Results:")
+                    for model_name, model_data in all_results.items():
+                        model_direction = model_data.get("direction", "unknown").upper()
+                        model_confidence = model_data.get("confidence", 0)
+                        model_time = model_data.get("elapsed_time", 0)
+                        model_stop_loss = model_data.get("stop_loss")
+                        model_take_profits = model_data.get("take_profits", [])
+                        direction_emoji = "🟢" if model_direction == "LONG" else "🔴" if model_direction == "SHORT" else "⚪"
+                        selected_marker = " ⭐" if model_name == selected_model else ""
+                        
+                        message_lines.append(f"  • {direction_emoji} {model_name}{selected_marker}")
+                        message_lines.append(f"    └ Direction: {model_direction}, Confidence: {model_confidence:.0%}, Time: {model_time:.1f}s")
+                        
+                        # Add stop loss if available
+                        if model_stop_loss is not None:
+                            try:
+                                message_lines.append(f"    └ Stop Loss: ${float(model_stop_loss):.2f}")
+                            except (TypeError, ValueError):
+                                message_lines.append(f"    └ Stop Loss: {model_stop_loss}")
+                        
+                        # Add take profits if available
+                        if model_take_profits:
+                            tp_list = []
+                            for idx, tp in enumerate(model_take_profits, 1):
+                                # Handle both dict format (with rr) and simple price format
+                                if isinstance(tp, dict):
+                                    tp_price = tp.get("price")
+                                    tp_rr = tp.get("rr")
+                                else:
+                                    tp_price = tp
+                                    tp_rr = None
+                                
+                                try:
+                                    tp_str = f"TP{idx}: ${float(tp_price):.2f}"
+                                    if tp_rr is not None:
+                                        tp_str += f" (R:R {tp_rr:.2f})"
+                                    tp_list.append(tp_str)
+                                except (TypeError, ValueError):
+                                    tp_list.append(f"TP{idx}: {tp_price}")
+                            if tp_list:
+                                message_lines.append(f"    └ Take Profits: {', '.join(tp_list)}")
+                        
+                        # Add max RR ratio if available
+                        model_max_rr = model_data.get("max_rr")
+                        if model_max_rr is not None:
+                            try:
+                                message_lines.append(f"    └ Max R:R: {float(model_max_rr):.2f}")
+                            except (TypeError, ValueError):
+                                pass
+                
+                if errors:
+                    message_lines.append("")
+                    message_lines.append("Failed Models:")
+                    for model_name, error_info in errors.items():
+                        error_msg = error_info.get("error", "Unknown error")
+                        # Show helpful error messages, but truncate very long ones
+                        if len(error_msg) > 100:
+                            error_msg = error_msg[:97] + "..."
+                        message_lines.append(f"  • ❌ {model_name}: {error_msg}")
+                
+                # Add consensus info
+                consensus = comparison_summary.get("consensus_direction")
+                agreement = comparison_summary.get("agreement", False)
+                if consensus:
+                    agreement_emoji = "✅" if agreement else "⚠️"
+                    consensus_text = f"{agreement_emoji} Consensus: {consensus.upper()}"
+                    if not agreement:
+                        consensus_text += " (models disagree)"
+                    message_lines.append("")
+                    message_lines.append(consensus_text)
+            
             message_lines.extend([
                 "",
                 "✅ Trade approved by AI gate",
@@ -135,6 +208,68 @@ class NotificationService:
 ⏰ Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
             """.strip()
             
+        elif notification_type == "rejected":
+            title = "❌ TRADE REJECTED BY GATE"
+            symbol = trade_data.get("symbol", "Unknown")
+            direction = trade_data.get("direction", "Unknown")
+            price = trade_data.get("current_price", 0)
+            confidence = trade_data.get("confidence", 0.0)
+            reasons = trade_data.get("reasons", [])
+            warnings = trade_data.get("warnings", [])
+            checks = trade_data.get("checks", {})
+            
+            message_lines = [
+                f"<b>{title}</b>",
+                "",
+                f"📊 <b>Symbol:</b> {symbol}",
+                f"📈 <b>Direction:</b> {direction.upper()}",
+                f"💰 <b>Price:</b> ${price:.4f}",
+                f"🎯 <b>Confidence:</b> {confidence:.1%}",
+                ""
+            ]
+            
+            # Add rejection reasons
+            if reasons:
+                message_lines.append("━━━━━━━━━━━━━━━━━━━━")
+                message_lines.append("<b>🚫 REJECTION REASONS</b>")
+                message_lines.append("━━━━━━━━━━━━━━━━━━━━")
+                message_lines.append("")
+                for i, reason in enumerate(reasons, 1):
+                    message_lines.append(f"{i}. {reason}")
+                message_lines.append("")
+            
+            # Add warnings if any
+            if warnings:
+                message_lines.append("━━━━━━━━━━━━━━━━━━━━")
+                message_lines.append("<b>⚠️ WARNINGS</b>")
+                message_lines.append("━━━━━━━━━━━━━━━━━━━━")
+                message_lines.append("")
+                for i, warning in enumerate(warnings, 1):
+                    message_lines.append(f"{i}. {warning}")
+                message_lines.append("")
+            
+            # Add check details
+            if checks:
+                invalidation_triggered = checks.get("invalidation_triggered", False)
+                checklist_score = checks.get("checklist_score", {})
+                context_alignment = checks.get("context_alignment", "unknown")
+                
+                message_lines.append("━━━━━━━━━━━━━━━━━━━━")
+                message_lines.append("<b>📋 VALIDATION CHECKS</b>")
+                message_lines.append("━━━━━━━━━━━━━━━━━━━━")
+                message_lines.append("")
+                message_lines.append(f"• <b>Invalidation Triggered:</b> {'Yes' if invalidation_triggered else 'No'}")
+                if checklist_score:
+                    met = checklist_score.get("met", 0)
+                    total = checklist_score.get("total", 0)
+                    message_lines.append(f"• <b>Checklist Score:</b> {met}/{total}")
+                message_lines.append(f"• <b>Context Alignment:</b> {context_alignment}")
+                message_lines.append("")
+            
+            message_lines.append(f"⏰ <i>Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</i>")
+            
+            message = "\n".join(message_lines)
+            
         else:
             title = "📱 TRADE UPDATE"
             message = f"""
@@ -146,61 +281,6 @@ class NotificationService:
             """.strip()
         
         return message
-    
-    def _send_pushover_notification(self, message: str, trade_data: Dict[str, Any]) -> bool:
-        """Send notification via Pushover (excellent for iPhone)"""
-        try:
-            url = "https://api.pushover.net/1/messages.json"
-            
-            # Determine priority based on notification type
-            priority = 1  # High priority for valid trades
-            if "invalidated" in message:
-                priority = 0  # Normal priority for invalidated trades
-            
-            data = {
-                "token": self.pushover_token,
-                "user": self.pushover_user,
-                "message": message,
-                "title": "Trading Assistant",
-                "priority": priority,
-                "sound": "cashregister" if "VALID TRADE" in message else "pushover"
-            }
-            
-            response = requests.post(url, data=data, timeout=10)
-            response.raise_for_status()
-            
-            print(f"✅ Pushover notification sent successfully")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Pushover notification failed: {e}")
-            return False
-    
-    def _send_email_notification(self, message: str, trade_data: Dict[str, Any]) -> bool:
-        """Send notification via email"""
-        try:
-            msg = MIMEMultipart()
-            msg['From'] = self.email_username
-            msg['To'] = self.email_to
-            msg['Subject'] = "Trading Assistant - Trade Alert"
-            
-            # Add message body
-            msg.attach(MIMEText(message, 'plain'))
-            
-            # Connect to server and send email
-            server = smtplib.SMTP(self.email_smtp_server, self.email_smtp_port)
-            server.starttls()
-            server.login(self.email_username, self.email_password)
-            text = msg.as_string()
-            server.sendmail(self.email_username, self.email_to, text)
-            server.quit()
-            
-            print(f"✅ Email notification sent successfully")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Email notification failed: {e}")
-            return False
     
     def _send_telegram_notification(self, message: str, trade_data: Dict[str, Any]) -> bool:
         """Send notification via Telegram"""
@@ -252,6 +332,10 @@ class NotificationService:
             symbol = llm_output.get("symbol", "Unknown")
             timeframe = llm_output.get("timeframe", "Unknown")
             time_of_screenshot = llm_output.get("time_of_screenshot", "Unknown")
+            
+            # Check if this is a multi-model analysis
+            multi_model_info = llm_output.get("_multi_model_comparison", {})
+            is_multi_model = bool(multi_model_info)
             
             # Get opening signal info
             opening_signal = llm_output.get("opening_signal", {})
@@ -311,6 +395,95 @@ class NotificationService:
 <b>Direction:</b> {'🟢 ' + direction if direction == 'LONG' else '🔴 ' + direction}
 <b>Signal Status:</b> {'✅ MET' if is_met else '⏳ PENDING'}
 """
+            
+            # Add multi-model comparison section if available
+            if is_multi_model:
+                all_results = multi_model_info.get("all_results", {})
+                comparison_summary = multi_model_info.get("comparison_summary", {})
+                selected_model = multi_model_info.get("selected_model", "Unknown")
+                errors = multi_model_info.get("errors", {})
+                
+                selection_reason = multi_model_info.get("selection_reason", "N/A")
+                message += f"""
+━━━━━━━━━━━━━━━━━━━━
+<b>🔬 MULTI-MODEL ANALYSIS</b>
+━━━━━━━━━━━━━━━━━━━━
+
+<b>Model Used for Pipeline:</b> {selected_model}
+<i>Selection: {selection_reason}</i>
+
+<b>All Models Results:</b>
+<i>Review all results to determine which model performs best</i>
+"""
+                for model_name, model_data in all_results.items():
+                    model_direction = model_data.get("direction", "unknown").upper()
+                    model_confidence = model_data.get("confidence", 0)
+                    model_time = model_data.get("elapsed_time", 0)
+                    model_stop_loss = model_data.get("stop_loss")
+                    model_take_profits = model_data.get("take_profits", [])
+                    direction_emoji = "🟢" if model_direction == "LONG" else "🔴" if model_direction == "SHORT" else "⚪"
+                    selected_marker = " ⭐" if model_name == selected_model else ""
+                    
+                    message += f"• {direction_emoji} <b>{model_name}</b>{selected_marker}\n"
+                    message += f"  └ Direction: {model_direction}, Confidence: {model_confidence:.0%}, Time: {model_time:.1f}s\n"
+                    
+                    # Add stop loss if available
+                    if model_stop_loss is not None:
+                        try:
+                            message += f"  └ Stop Loss: ${float(model_stop_loss):,.2f}\n"
+                        except (TypeError, ValueError):
+                            message += f"  └ Stop Loss: {model_stop_loss}\n"
+                    
+                    # Add take profits if available
+                    if model_take_profits:
+                        tp_list = []
+                        for idx, tp in enumerate(model_take_profits, 1):
+                            # Handle both dict format (with rr) and simple price format
+                            if isinstance(tp, dict):
+                                tp_price = tp.get("price")
+                                tp_rr = tp.get("rr")
+                            else:
+                                tp_price = tp
+                                tp_rr = None
+                            
+                            try:
+                                tp_str = f"TP{idx}: ${float(tp_price):,.2f}"
+                                if tp_rr is not None:
+                                    tp_str += f" (R:R {tp_rr:.2f})"
+                                tp_list.append(tp_str)
+                            except (TypeError, ValueError):
+                                tp_list.append(f"TP{idx}: {tp_price}")
+                        if tp_list:
+                            message += f"  └ Take Profits: {', '.join(tp_list)}\n"
+                    
+                    # Add max RR ratio if available
+                    model_max_rr = model_data.get("max_rr")
+                    if model_max_rr is not None:
+                        try:
+                            message += f"  └ Max R:R: {float(model_max_rr):.2f}\n"
+                        except (TypeError, ValueError):
+                            pass
+                
+                if errors:
+                    message += f"\n<b>Failed Models:</b>\n"
+                    for model_name, error_info in errors.items():
+                        error_msg = error_info.get("error", "Unknown error")
+                        # Truncate long error messages
+                        if len(error_msg) > 50:
+                            error_msg = error_msg[:47] + "..."
+                        message += f"• ❌ {model_name}: {error_msg}\n"
+                
+                # Add consensus info
+                consensus = comparison_summary.get("consensus_direction")
+                agreement = comparison_summary.get("agreement", False)
+                if consensus:
+                    agreement_emoji = "✅" if agreement else "⚠️"
+                    message += f"\n<b>Consensus:</b> {agreement_emoji} {consensus.upper()}"
+                    if not agreement:
+                        message += " (models disagree)"
+                    message += "\n"
+                
+                message += "\n"
             
             # Add alignment score
             if alignment_score != "N/A":
@@ -683,8 +856,6 @@ class NotificationService:
         print("🧪 Testing notification system...")
         results = self.send_trade_notification(test_data, "valid_trade")
         
-        print(f"📱 Pushover: {'✅ Success' if results['pushover'] else '❌ Failed'}")
-        print(f"📧 Email: {'✅ Success' if results['email'] else '❌ Failed'}")
         print(f"💬 Telegram: {'✅ Success' if results['telegram'] else '❌ Failed'}")
         
         return results
@@ -699,6 +870,11 @@ def notify_invalidated_trade(trade_data: Dict[str, Any]) -> Dict[str, bool]:
     """Convenience function to send invalidated trade notification"""
     service = NotificationService()
     return service.send_trade_notification(trade_data, "invalidated")
+
+def notify_rejected_trade(trade_data: Dict[str, Any]) -> Dict[str, bool]:
+    """Convenience function to send rejected trade notification"""
+    service = NotificationService()
+    return service.send_trade_notification(trade_data, "rejected")
 
 def send_image_to_telegram(image_path: str, caption: str = "") -> bool:
     """Convenience function to send image to Telegram"""

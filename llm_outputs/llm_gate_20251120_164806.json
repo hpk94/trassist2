@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI below neutral supports bearish momentum",
+    "Stochastic K below D indicates downward pressure",
+    "Price below Bollinger Band middle aligns with short bias",
+    "No invalidations triggered and checklist fully met"
+  ],
+  "warnings": [
+    "No explicit retest of a key level observed; relying on current momentum and indicator alignment"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90427.88,
+    "stop_loss": 91100.0,
+    "take_profits": [
+      {
+        "price": 89200.0,
+        "portion": 0.5
+      },
+      {
+        "price": 88500.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital, adjust size based on stop distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

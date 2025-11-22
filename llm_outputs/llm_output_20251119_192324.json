@@ -1,0 +1,195 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-19 18:22",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 89220.0,
+    "resistance": 89611.6
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 50.94,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "n/a"
+    },
+    "VOLUME": {
+      "current": 121510,
+      "average": null,
+      "ratio": null,
+      "trend": "n/a"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 88840.0,
+        "to": 90427.7
+      },
+      "levels": {
+        "0.236": 89316.7,
+        "0.382": 89611.6,
+        "0.5": 89850.0,
+        "0.618": 90088.4,
+        "0.786": 90427.7
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "n/a"
+    },
+    "MACD12_26_9": {
+      "macd_line": 89.2837,
+      "signal_line": 89.9799,
+      "histogram": null
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, near Fib 0.236, descending channel present"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 89316.7,
+        "basis": "fib_0.236"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "support"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89220.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 89611.6,
+        "basis": "fib_0.382",
+        "rr": 1.5
+      },
+      {
+        "price": 89850.0,
+        "basis": "fib_0.5",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI recovery above 50",
+    "Ensure price holds above Fib 0.236 level",
+    "Enter long position upon confirmation",
+    "Invalidate if price closes below support"
+  ],
+  "improvements": "Consider MACD alignment and volume analysis for stronger confirmation",
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "long",
+        "DeepSeek": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.7
+      },
+      "response_times": {
+        "ChatGPT5.1": 31.052223920822144,
+        "DeepSeek": 36.08115291595459
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 31.052223920822144,
+        "stop_loss": 89220.0,
+        "take_profits": [
+          {
+            "price": 89611.6,
+            "rr": 1.5
+          },
+          {
+            "price": 89850.0,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 36.08115291595459,
+        "stop_loss": 89150.0,
+        "take_profits": [
+          {
+            "price": 89611.6,
+            "rr": 1.5
+          },
+          {
+            "price": 89850.0,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      }
+    },
+    "errors": {
+      "Qwenv3.1": {
+        "error": "API key missing for Qwen. Add DASHSCOPE_API_KEY to your .env file (required for qwen models via DashScope). You can also try QWEN_API_KEY or ALIBABA_API_KEY.",
+        "error_type": "AnalysisError",
+        "model": "qwen/qwen-vl-max"
+      }
+    }
+  }
+}

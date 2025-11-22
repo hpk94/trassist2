@@ -1,0 +1,203 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-21 19:11",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 84708.22,
+    "resistance": 84741.72
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 54.99,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "insufficient_data"
+    },
+    "VOLUME": {
+      "current": 0.02186112,
+      "average": null,
+      "ratio": null,
+      "trend": "insufficient_data"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 84708.22,
+        "to": 84741.72
+      },
+      "levels": {
+        "0.236": 84716.78,
+        "0.382": 84722.45,
+        "0.5": 84724.97,
+        "0.618": 84727.49,
+        "0.786": 84731.16
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "insufficient_data"
+    },
+    "MACD12_26_9": {
+      "macd_line": 57.3406,
+      "signal_line": 61.1875,
+      "histogram": -3.847
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "core_alignment_score": 0.0,
+    "confluence_with_pattern": false,
+    "notes": "Insufficient data for core indicators (Stochastic, Volume average) and no chart image provided; cannot validate setup."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 84722.45,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_swing_low",
+        "type": "price_breach",
+        "level": "swing_low"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "insufficient_data"
+    },
+    "take_profit": [
+      {
+        "price": null,
+        "basis": "insufficient_data",
+        "rr": null
+      }
+    ]
+  },
+  "summary_actions": [
+    "Provide chart image with timestamp and setup details for analysis",
+    "Ensure Stochastic and Volume data are available",
+    "Define entry, stop-loss, and take-profit levels"
+  ],
+  "improvements": "Submit complete data including chart image, entry levels, and indicator values for accurate assessment.",
+  "_multi_model_comparison": {
+    "selected_model": "DeepSeek",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "DeepSeek": "none",
+        "Gemini": "long",
+        "ChatGPT5.1": "long"
+      },
+      "confidences": {
+        "DeepSeek": 0.0,
+        "Gemini": 0.65,
+        "ChatGPT5.1": 0.6
+      },
+      "response_times": {
+        "DeepSeek": 25.917785167694092,
+        "Gemini": 35.32509112358093,
+        "ChatGPT5.1": 59.01968288421631
+      },
+      "agreement": false,
+      "consensus_direction": "long",
+      "fastest_model": "DeepSeek",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "DeepSeek": {
+        "direction": "none",
+        "confidence": 0.0,
+        "elapsed_time": 25.917785167694092,
+        "stop_loss": null,
+        "take_profits": [],
+        "max_rr": null
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.65,
+        "elapsed_time": 35.32509112358093,
+        "stop_loss": 84300.0,
+        "take_profits": [
+          {
+            "price": 85436.0,
+            "rr": 2.0
+          },
+          {
+            "price": 85950.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      },
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.6,
+        "elapsed_time": 59.01968288421631,
+        "stop_loss": 84345.8,
+        "take_profits": [
+          {
+            "price": 84969.8,
+            "rr": 1.5
+          },
+          {
+            "price": 85436.7,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      }
+    },
+    "errors": {}
+  }
+}

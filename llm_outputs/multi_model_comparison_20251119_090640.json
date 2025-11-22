@@ -1,0 +1,240 @@
+{
+  "timestamp": "2025-11-19T09:06:40.203431",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmp6r4ewm0z.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Qwenv3.1"
+  ],
+  "results": {
+    "ChatGPT5.1": {
+      "model_name": "gpt-5.1-2025-11-13",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-19 08:06",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 90977.9,
+          "resistance": 91987.2
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 51.7,
+            "status": "neutral",
+            "signal": "rolling_over_from_overbought_divergence"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 40.0,
+            "d_percent": 50.0,
+            "signal": "bearish_cross_and_falling_from_overbought"
+          },
+          "VOLUME": {
+            "current": 1.2,
+            "average": 1.0,
+            "ratio": 1.2,
+            "trend": "decreasing_after_prior_climax"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 89968.5,
+              "to": 91987.2
+            },
+            "levels": {
+              "0.236": 91510.8,
+              "0.382": 91216.1,
+              "0.5": 90977.9,
+              "0.618": 90739.6,
+              "0.786": 90400.5,
+              "1.0": 89968.5
+            }
+          }
+        },
+        "secondary_indicators": {
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "price_position": "near_upper_channel_not_band"
+          },
+          "MACD12_26_9": {
+            "macd_line": 35.73,
+            "signal_line": 71.54,
+            "histogram": -35.82
+          },
+          "ATR14": {
+            "value": null
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "rising_channel",
+            "candle_index": 0,
+            "confidence": 0.88
+          },
+          {
+            "pattern": "bearish_rsi_divergence",
+            "candle_index": 1,
+            "confidence": 0.9
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.35,
+          "confluence_with_pattern": true,
+          "notes": "Price is in a mature rising channel near the upper boundary and just under the 0% Fib extension. RSI shows multiple bearish divergences and is rolling over; Stoch has a bearish cross and is exiting overbought; volume is fading. This favors an aggressive short from channel resistance rather than a fresh long scalp. A cleaner long requires a pullback toward 0.382\u20130.5 Fib with momentum reset."
+        },
+        "opening_signal": {
+          "direction": "short",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_below_55",
+              "indicator": "RSI14",
+              "comparator": "<=",
+              "value": 55.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_bear_cross",
+              "indicator": "STOCH14_3_3",
+              "comparator": "cross_below",
+              "value": "D_line",
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_below_60",
+              "indicator": "STOCH14_3_3",
+              "comparator": "<=",
+              "value": 60.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "price_near_channel_top",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 0.0015,
+              "basis": "distance_fraction_to_upper_channel_trendline"
+            },
+            {
+              "id": "price_below_prev_high",
+              "indicator": "PRICE",
+              "comparator": "<",
+              "value": 91987.2,
+              "observed_on_candle": 0
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "volume_not_breakout",
+              "indicator": "VOLUME",
+              "comparator": "<=",
+              "value": 1.3,
+              "baseline": "average_ratio_last_20"
+            },
+            {
+              "id": "rsi_divergence_confirmed",
+              "indicator": "RSI14",
+              "comparator": "lower_high_vs_price_higher_high",
+              "value": null,
+              "observed_on_candles": [
+                1,
+                2
+              ]
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_above_channel",
+              "type": "price_breach",
+              "level": "upper_channel_trendline"
+            },
+            {
+              "id": "close_above_recent_swing_high",
+              "type": "price_breach",
+              "level": 91987.2
+            },
+            {
+              "id": "rsi_reclaims_60",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 60.0
+            }
+          ],
+          "is_met": true
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 92020.0,
+            "basis": "above_channel_and_recent_high"
+          },
+          "take_profit": [
+            {
+              "price": 91510.8,
+              "basis": "fib_0.236_retest_mid_channel",
+              "rr": 1.2
+            },
+            {
+              "price": 91216.1,
+              "basis": "fib_0.382_and_channel_midline",
+              "rr": 2.0
+            },
+            {
+              "price": 90977.9,
+              "basis": "fib_0.5_and_channel_lower_third",
+              "rr": 3.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Avoid new longs near 91,900\u201392,000 as RSI and Stoch both roll over from prior divergences.",
+          "For scalping shorts, wait until Stoch K crosses below D and RSI stays below 55 while price trades within 0.15% of the rising channel top.",
+          "Place stop-loss slightly above 92,020 to invalidate the channel-rejection idea.",
+          "Scale out profits at the 0.236, 0.382, and 0.5 Fibonacci retracements, moving stop to breakeven once the first target is hit."
+        ],
+        "improvements": "For higher-probability 1m longs, wait for a pullback to the 0.382\u20130.5 Fib zone (91,216\u201390,978) with RSI <= 35 and Stoch oversold then turning up, plus a clear bounce candle and volume pick-up. Treat the rising channel as a guide: only buy near the lower boundary, short near the upper boundary, and skip trades in the middle unless there is very strong momentum and volume breakout."
+      },
+      "elapsed_time": 26.839604139328003,
+      "timestamp": "2025-11-19T09:06:40.203247"
+    }
+  },
+  "errors": {
+    "Qwenv3.1": {
+      "error": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=qwen/qwen3-max\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+      "error_type": "BadRequestError",
+      "model": "qwen/qwen3-max",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    },
+    "DeepSeek": {
+      "error": "litellm.BadRequestError: DeepseekException - {\"error\":{\"message\":\"Failed to deserialize the JSON body into the target type: messages[1]: unknown variant `image_url`, expected `text` at line 1 column 1227323\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+      "error_type": "BadRequestError",
+      "model": "deepseek/deepseek-chat",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    }
+  },
+  "summary": {
+    "directions": {
+      "ChatGPT5.1": "short"
+    },
+    "confidences": {
+      "ChatGPT5.1": 0.35
+    },
+    "response_times": {
+      "ChatGPT5.1": 26.839604139328003
+    },
+    "agreement": true,
+    "consensus_direction": "short",
+    "fastest_model": "ChatGPT5.1",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI recovery above 40 supports momentum",
+    "Price above Fibonacci 0.236 level confirms bullish structure",
+    "Volume above average indicates buying interest"
+  ],
+  "warnings": [
+    "No retest of ascending channel support observed; entry is at current price"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91716.32,
+    "stop_loss": 91200.0,
+    "take_profits": [
+      {
+        "price": 91900.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

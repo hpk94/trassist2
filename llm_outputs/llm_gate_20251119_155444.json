@@ -1,0 +1,27 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price is above all take profit levels, making the trade setup irrelevant."
+  ],
+  "warnings": [
+    "Trade signal is outdated; price has moved significantly beyond planned targets."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 0.0,
+    "stop_loss": 0.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "No position due to rejection."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

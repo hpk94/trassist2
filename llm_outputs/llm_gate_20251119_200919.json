@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI neutral and above 50 supports long bias",
+    "Price above Fibonacci 0.236 level",
+    "No invalidations triggered and checklist fully met"
+  ],
+  "warnings": [
+    "No explicit retest of support level observed"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 89234.22,
+    "stop_loss": 88840.0,
+    "take_profits": [
+      {
+        "price": 89611.6,
+        "portion": 0.5
+      },
+      {
+        "price": 89850.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.75,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

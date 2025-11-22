@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI above 50 indicates bullish momentum",
+    "Price is above the 0.236 Fibonacci level, supporting the long setup",
+    "No invalidations triggered and checklist alignment is strong"
+  ],
+  "warnings": [
+    "Current price is above the initial entry assumption; consider if this affects risk/reward"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91772.55,
+    "stop_loss": 91216.1,
+    "take_profits": [
+      {
+        "price": 91987.2,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

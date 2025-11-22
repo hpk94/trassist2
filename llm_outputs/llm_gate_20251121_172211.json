@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "Price is above golden pocket fib level, confirming bullish bias",
+    "RSI is in bullish zone above 50, supporting upward momentum",
+    "Checklist fully passed with no invalidations triggered"
+  ],
+  "warnings": [
+    "No retest of entry level observed; entry is at breakout level",
+    "RSI is moderately high, watch for potential overbought reversal"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 83167.81,
+    "stop_loss": 82450.0,
+    "take_profits": [
+      {
+        "price": 83124.0,
+        "portion": 0.5
+      },
+      {
+        "price": 83673.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.15,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

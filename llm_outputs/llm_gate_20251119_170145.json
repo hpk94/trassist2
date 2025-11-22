@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.7,
+  "reasons": [
+    "Checklist fully passed with no invalidations triggered",
+    "RSI and Stoch rebound conditions met, indicating momentum shift",
+    "Price above key Fibonacci level supports bullish setup"
+  ],
+  "warnings": [
+    "No clear retest of support level observed; entry is on momentum",
+    "RSI at 37.3 is above rebound threshold but not strongly oversold"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90137.19,
+    "stop_loss": 89000.0,
+    "take_profits": [
+      {
+        "price": 90464.0,
+        "portion": 0.5
+      },
+      {
+        "price": 90852.9,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.75,
+    "position_size_note": "Risk per trade should not exceed 1% of capital based on stop distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "medium"
+  }
+}

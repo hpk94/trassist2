@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI above 50 confirms recovery momentum",
+    "Price holds above channel support and fib level",
+    "No invalidations triggered and checklist fully passed"
+  ],
+  "warnings": [
+    "Current price is above fib 0.236 level; consider limit entry for better risk/reward"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 91510.8,
+    "stop_loss": 90977.9,
+    "take_profits": [
+      {
+        "price": 91987.2,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

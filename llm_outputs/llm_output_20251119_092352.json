@@ -1,0 +1,177 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-19 08:23",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 91300.0,
+    "resistance": 91987.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 46.13,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 46.77,
+      "d_percent": 46.13,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 14060,
+      "average": 13000,
+      "ratio": 1.08,
+      "trend": "slightly increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 89968.5,
+        "to": 91987.2
+      },
+      "levels": {
+        "0.236": 91510.8,
+        "0.382": 91216.1,
+        "0.5": 90797.9,
+        "0.618": 90739.6,
+        "0.786": 90400.5
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 91800.0,
+      "middle": 91300.0,
+      "lower": 90800.0,
+      "price_position": "middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": -23.5981,
+      "signal_line": -15.6675,
+      "histogram": -7.9306
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Ascending channel support, volume slightly above average, RSI recovering."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      },
+      {
+        "id": "price_above_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 91510.8,
+        "basis": "fib_0.236"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "ascending_channel_support"
+      },
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91200.0,
+      "basis": "below_channel"
+    },
+    "take_profit": [
+      {
+        "price": 91900.0,
+        "basis": "recent_high",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI recovery above 40 for entry.",
+    "Ensure volume remains above average.",
+    "Enter long if price stays above Fib 0.236 level.",
+    "Invalidate if price closes below ascending channel support."
+  ],
+  "improvements": "Use MACD as background confirmation; adjust stop-loss closer to channel for tighter risk.",
+  "_multi_model_comparison": {
+    "selected_model": "DeepSeek",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "DeepSeek": "long",
+        "ChatGPT5.1": "long"
+      },
+      "confidences": {
+        "DeepSeek": 0.7,
+        "ChatGPT5.1": 0.65
+      },
+      "response_times": {
+        "DeepSeek": 29.75461483001709,
+        "ChatGPT5.1": 36.128628969192505
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "DeepSeek",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 29.75461483001709
+      },
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.65,
+        "elapsed_time": 36.128628969192505
+      }
+    },
+    "errors": {
+      "Qwenv3.1": {
+        "error": "API key missing for Qwen. Add QWEN_API_KEY, DASHSCOPE_API_KEY, or ALIBABA_API_KEY to your .env file.",
+        "error_type": "AnalysisError",
+        "model": "qwen/qwen-vl-max"
+      }
+    }
+  }
+}

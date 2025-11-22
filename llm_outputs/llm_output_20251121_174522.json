@@ -1,0 +1,206 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-21 16:44",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 83124.6,
+    "resistance": 84675.3
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 58.27,
+      "status": "neutral",
+      "signal": "descending"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 70.0,
+      "d_percent": 50.0,
+      "signal": "overbought_weakening"
+    },
+    "VOLUME": {
+      "current": 357880,
+      "average": 400000,
+      "ratio": 0.89,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 81794.9,
+        "to": 84352.0
+      },
+      "levels": {
+        "0.236": 84352.0,
+        "0.382": 83713.6,
+        "0.5": 83124.6,
+        "0.618": 82576.0,
+        "0.786": 81794.9
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": false,
+    "notes": "RSI and Stoch overbought, channel indicates potential reversal"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_descending",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_overbought_descend",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 80.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 83713.6,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_above_channel",
+        "type": "price_breach",
+        "level": 84675.3
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 84675.3,
+      "basis": "above_channel"
+    },
+    "take_profit": [
+      {
+        "price": 83124.6,
+        "basis": "fib_0.5",
+        "rr": 1.0
+      },
+      {
+        "price": 82576.0,
+        "basis": "fib_0.618",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Consider short if RSI descends below 60",
+    "Ensure Stochastic remains under 80",
+    "Watch for volume to stay below average",
+    "Invalidate if price breaks above channel"
+  ],
+  "improvements": "Utilize volume as key signal for reversals; confirm movements with RSI/Stochastic trends",
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "DeepSeek": "none",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.5,
+        "DeepSeek": 0.3,
+        "Gemini": 0.65
+      },
+      "response_times": {
+        "ChatGPT5.1": 23.065598964691162,
+        "DeepSeek": 29.194831132888794,
+        "Gemini": 51.28060579299927
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.5,
+        "elapsed_time": 23.065598964691162,
+        "stop_loss": 84675.3,
+        "take_profits": [
+          {
+            "price": 83124.6,
+            "rr": 1.0
+          },
+          {
+            "price": 82576.0,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "DeepSeek": {
+        "direction": "none",
+        "confidence": 0.3,
+        "elapsed_time": 29.194831132888794,
+        "stop_loss": null,
+        "take_profits": [],
+        "max_rr": null
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.65,
+        "elapsed_time": 51.28060579299927,
+        "stop_loss": 82550.0,
+        "take_profits": [
+          {
+            "price": 83670.0,
+            "rr": 1.5
+          },
+          {
+            "price": 84300.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      }
+    },
+    "errors": {}
+  }
+}

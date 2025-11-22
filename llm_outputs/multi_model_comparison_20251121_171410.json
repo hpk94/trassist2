@@ -1,0 +1,460 @@
+{
+  "timestamp": "2025-11-21T17:14:10.877767",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmpv0g7qdpt.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Gemini"
+  ],
+  "results": {
+    "Gemini": {
+      "model_name": "gemini/gemini-3-pro-preview",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 16:12",
+        "trend_direction": "bearish_correction",
+        "support_resistance": {
+          "support": 82576.0,
+          "resistance": 83124.6
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 42.58,
+            "status": "neutral",
+            "signal": "bullish_divergence_recovery"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "data_not_provided_use_macd_context"
+          },
+          "VOLUME": {
+            "current": 0.002,
+            "average": 214.3,
+            "ratio": 0.0,
+            "trend": "low_consolidation"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "description": "Swing High to Swing Low implied by levels",
+              "key_level": "0.618"
+            },
+            "levels": {
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {
+          "MACD12_26_9": {
+            "macd_line": -122.39,
+            "signal_line": -147.24,
+            "histogram": 24.85,
+            "signal": "bullish_crossover"
+          },
+          "Pattern_Context": {
+            "type": "Falling Wedge",
+            "implication": "bullish_reversal"
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "falling_wedge",
+            "candle_index": 0,
+            "confidence": 0.85
+          },
+          {
+            "pattern": "bullish_divergence",
+            "candle_index": 1,
+            "confidence": 0.9
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.85,
+          "confluence_with_pattern": true,
+          "notes": "Strong confluence: Price holding 0.618 Fib (82,576) + Falling Wedge pattern + MACD Histogram flipping positive + RSI Bullish Divergence."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "price_above_fib_0618",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 82576.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "macd_hist_positive",
+              "indicator": "MACD_HIST",
+              "comparator": ">",
+              "value": 0.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "wedge_breakout",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 82850.0,
+              "note": "Break upper trendline of wedge"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "rsi_uptrend",
+              "indicator": "RSI14",
+              "comparator": ">",
+              "value": 50.0
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_fib_0618",
+              "type": "price_breach",
+              "level": 82500.0,
+              "note": "Loss of 0.618 support zone"
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 82450.0,
+            "basis": "below_fib_0618_and_recent_wick"
+          },
+          "take_profit": [
+            {
+              "price": 83124.0,
+              "basis": "fib_0.5_resistance",
+              "rr": 2.2
+            },
+            {
+              "price": 83673.0,
+              "basis": "fib_0.382_resistance",
+              "rr": 4.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Monitor 0.618 Fib level (82,576) as critical support floor.",
+          "Confirm entry on breakout of Falling Wedge upper trendline (~82,850).",
+          "Ensure MACD histogram remains positive to support reversal momentum.",
+          "Invalidate immediately if price closes below 82,500."
+        ],
+        "improvements": "Volume is currently low; wait for a volume spike to confirm the wedge breakout before entering. The RSI bullish divergence is a strong lead indicator here, trust the setup if 0.618 holds."
+      },
+      "elapsed_time": 37.06607222557068,
+      "timestamp": "2025-11-21T17:13:39.015866"
+    },
+    "DeepSeek": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 16:12",
+        "trend_direction": "bearish",
+        "support_resistance": {
+          "support": 81794.9,
+          "resistance": 83673.2
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 39.31,
+            "status": "neutral",
+            "signal": "potential_reversal"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 40.0,
+            "d_percent": 35.0,
+            "signal": "neutral"
+          },
+          "VOLUME": {
+            "current": 475.98,
+            "average": 500.0,
+            "ratio": 0.95,
+            "trend": "decreasing"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 85700.0,
+              "to": 81794.9
+            },
+            "levels": {
+              "0.236": 84352.0,
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "falling_wedge",
+            "candle_index": 0,
+            "confidence": 0.7
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.6,
+          "confluence_with_pattern": true,
+          "notes": "Falling wedge pattern, RSI showing potential reversal"
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_reversal",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 30.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_cross",
+              "indicator": "STOCH14_3_3",
+              "comparator": ">",
+              "value": "D_percent",
+              "observed_on_candle": 0
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "wedge_break",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 82600.0,
+              "basis": "descending_trendline"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_support",
+              "type": "price_breach",
+              "level": "83000.0"
+            },
+            {
+              "id": "rsi_overbought",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 70.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 81750.0,
+            "basis": "below_recent_swing_low"
+          },
+          "take_profit": [
+            {
+              "price": 83125.0,
+              "basis": "fib_0.5",
+              "rr": 1.5
+            },
+            {
+              "price": 83673.2,
+              "basis": "fib_0.382",
+              "rr": 2.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Look for RSI reversal above 30",
+          "Wait for price to break the wedge",
+          "Enter long if volume confirms upward momentum",
+          "Invalidate if price closes below recent swing low"
+        ],
+        "improvements": "Confirm volume increase on breakout; monitor for RSI divergence"
+      },
+      "elapsed_time": 58.76494288444519,
+      "timestamp": "2025-11-21T17:14:00.714691"
+    },
+    "ChatGPT5.1": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 16:12",
+        "trend_direction": "bearish",
+        "support_resistance": {
+          "support": 81794.9,
+          "resistance": 83124.6
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 39.31,
+            "status": "oversold",
+            "signal": "recovering"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 25.0,
+            "d_percent": 20.0,
+            "signal": "oversold_recovery"
+          },
+          "VOLUME": {
+            "current": 475980,
+            "average": 400000,
+            "ratio": 1.19,
+            "trend": "increasing"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 85400.0,
+              "to": 81794.9
+            },
+            "levels": {
+              "0.236": 84352.0,
+              "0.382": 83673.2,
+              "0.5": 83124.6,
+              "0.618": 82576.0,
+              "0.786": 81794.9
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "descending_wedge",
+            "candle_index": 0,
+            "confidence": 0.75
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.8,
+          "confluence_with_pattern": true,
+          "notes": "RSI and Stochastic showing recovery signals, volume increasing, approaching Fib 0.618."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_recover",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 30.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "stoch_cross_up",
+              "indicator": "STOCH14_3_3",
+              "comparator": ">=",
+              "value": 20.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "volume_above_avg",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.0,
+              "baseline": "average"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "price_near_fib_0.618",
+              "indicator": "PRICE",
+              "comparator": ">=",
+              "value": 82576.0,
+              "basis": "fib_0.618"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_support",
+              "type": "price_breach",
+              "level": "support"
+            },
+            {
+              "id": "rsi_overbought",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 70.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 81500.0,
+            "basis": "below_swing_low"
+          },
+          "take_profit": [
+            {
+              "price": 83300.0,
+              "basis": "fib_0.5",
+              "rr": 1.5
+            },
+            {
+              "price": 84000.0,
+              "basis": "fib_0.382_extension",
+              "rr": 2.5
+            }
+          ]
+        },
+        "summary_actions": [
+          "Wait for RSI14 recovery above 30 and Stochastic crossover",
+          "Confirm price holds above Fib 0.618",
+          "Enter long if volume confirms breakout",
+          "Invalidate if price closes below support"
+        ],
+        "improvements": "Monitor RSI and Stochastic closely after recovery; consider potential bounce from wedge."
+      },
+      "elapsed_time": 68.92673182487488,
+      "timestamp": "2025-11-21T17:14:10.876391"
+    }
+  },
+  "errors": {},
+  "summary": {
+    "directions": {
+      "Gemini": "long",
+      "DeepSeek": "long",
+      "ChatGPT5.1": "long"
+    },
+    "confidences": {
+      "Gemini": 0.85,
+      "DeepSeek": 0.6,
+      "ChatGPT5.1": 0.8
+    },
+    "response_times": {
+      "Gemini": 37.06607222557068,
+      "DeepSeek": 58.76494288444519,
+      "ChatGPT5.1": 68.92673182487488
+    },
+    "agreement": true,
+    "consensus_direction": "long",
+    "fastest_model": "Gemini",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

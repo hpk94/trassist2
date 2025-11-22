@@ -1,0 +1,42 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "Strong checklist alignment with RSI below 55, stochastic bear cross, and price near channel top",
+    "No invalidations triggered, with clear stop-loss and take-profit levels defined",
+    "Current market context supports the short setup with RSI at 45.5 and price below recent high"
+  ],
+  "warnings": [
+    "Ensure position size is managed to limit risk, as this is a 1-minute timeframe trade"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91736.21,
+    "stop_loss": 92020.0,
+    "take_profits": [
+      {
+        "price": 91510.8,
+        "portion": 0.5
+      },
+      {
+        "price": 91216.1,
+        "portion": 0.3
+      },
+      {
+        "price": 90977.9,
+        "portion": 0.2
+      }
+    ],
+    "risk_reward": 1.2,
+    "position_size_note": "Risk per trade should not exceed 1% of capital, with stop-loss at 92020.0"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-11-18T21:36:44.296490",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmpyqo6_ffa.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Qwenv3.1"
+  ],
+  "results": {},
+  "errors": {
+    "ChatGPT5.1": {
+      "error": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=gpt-5.1-2025-11-13\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+      "error_type": "BadRequestError",
+      "model": "gpt-5.1-2025-11-13",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    },
+    "Qwenv3.1": {
+      "error": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=qwen/qwen3-max\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+      "error_type": "BadRequestError",
+      "model": "qwen/qwen3-max",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    },
+    "DeepSeek": {
+      "error": "litellm.BadRequestError: DeepseekException - {\"error\":{\"message\":\"Failed to deserialize the JSON body into the target type: messages[1]: unknown variant `image_url`, expected `text` at line 1 column 1428141\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+      "error_type": "BadRequestError",
+      "model": "deepseek/deepseek-chat",
+      "symbol": "BTCUSDT",
+      "timeframe": "1m"
+    }
+  },
+  "summary": {}
+}

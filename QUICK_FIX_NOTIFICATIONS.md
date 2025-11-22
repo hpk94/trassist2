@@ -122,12 +122,9 @@ MEXC_ENABLE_ORDERS=false  # Set to true to enable live trading
 MEXC_DEFAULT_VOL=0.001
 MEXC_OPEN_TYPE=2
 
-# Optional: Other notifications
-PUSHOVER_TOKEN=your_pushover_token
-PUSHOVER_USER=your_pushover_user
-EMAIL_USERNAME=your_email@gmail.com
-EMAIL_PASSWORD=your_app_password
-EMAIL_TO=recipient@email.com
+# Optional: Telegram notifications
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
 ```
 
 ## Summary
@@ -138,6 +135,7 @@ EMAIL_TO=recipient@email.com
 **Test:** Run `python diagnose_analysis.py` to verify all systems are working
 
 Once fixed, you'll receive proper Telegram notifications for all analysis results! 🎉
+
 
 
 

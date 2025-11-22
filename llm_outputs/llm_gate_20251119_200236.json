@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.2,
+  "reasons": [
+    "Setup intended for short based on overbought conditions and price below resistance, but current RSI is neutral, not overbought"
+  ],
+  "warnings": [
+    "Original setup required RSI >= 70 and STOCH >= 80, but current RSI is 58.59, indicating no overbought momentum",
+    "Market context does not align with inferred setup; missing critical confluence for short entry"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 89242.29,
+    "stop_loss": 89350.0,
+    "take_profits": [
+      {
+        "price": 88840.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Not recommended due to low confidence"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 1,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

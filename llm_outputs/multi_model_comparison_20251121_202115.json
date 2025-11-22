@@ -1,0 +1,448 @@
+{
+  "timestamp": "2025-11-21T20:21:15.212011",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmp_93xnm72.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Gemini"
+  ],
+  "results": {
+    "DeepSeek": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 19:19",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 83254.9,
+          "resistance": 85436.7
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 52.15,
+            "status": "neutral",
+            "signal": "rising"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "unavailable"
+          },
+          "VOLUME": {
+            "current": 329770,
+            "average": null,
+            "ratio": null,
+            "trend": "stable"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 83254.9,
+              "to": 85436.7
+            },
+            "levels": {
+              "0.236": 83769.8,
+              "0.382": 84088.3,
+              "0.5": 84345.8,
+              "0.618": 84603.3,
+              "0.786": 84969.8
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.75
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.7,
+          "confluence_with_pattern": true,
+          "notes": "Rising RSI with Fibonacci level holding, volume stable, triangle pattern forming"
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_rising",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 50.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "price_near_fib_0618",
+              "indicator": "PRICE",
+              "comparator": ">=",
+              "value": 84603.3,
+              "basis": "fib_0.618"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "triangle_break",
+              "pattern": "symmetrical_triangle",
+              "direction": "bullish"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_fib_0382",
+              "type": "price_breach",
+              "level": "fib_0.382"
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 84088.3,
+            "basis": "below_fib_0.382"
+          },
+          "take_profit": [
+            {
+              "price": 85436.7,
+              "basis": "fib_1_extension",
+              "rr": 2.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Wait for RSI14 >= 50 and triangle breakout",
+          "Ensure price holds above Fib 0.618",
+          "Invalidation if close below Fib 0.382"
+        ],
+        "improvements": "Monitor for stronger volume confirmation and additional RSI strength"
+      },
+      "elapsed_time": 21.40264129638672,
+      "timestamp": "2025-11-21T20:21:01.870448"
+    },
+    "ChatGPT5.1": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 19:19",
+        "trend_direction": "neutral",
+        "support_resistance": {
+          "support": 83254.9,
+          "resistance": 85436.7
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 52.15,
+            "status": "neutral",
+            "signal": "increasing"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 55.0,
+            "d_percent": 50.5,
+            "signal": "neutral"
+          },
+          "VOLUME": {
+            "current": 329770,
+            "average": 300000,
+            "ratio": 1.1,
+            "trend": "increasing"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 83254.9,
+              "to": 85436.7
+            },
+            "levels": {
+              "0.236": 83769.8,
+              "0.382": 84088.3,
+              "0.5": 84345.8,
+              "0.618": 84603.3,
+              "0.786": 84969.8
+            }
+          }
+        },
+        "secondary_indicators": {},
+        "pattern_analysis": [
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.75
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.7,
+          "confluence_with_pattern": true,
+          "notes": "Neutral RSI, volume above average, triangle pattern present"
+        },
+        "opening_signal": {
+          "direction": "bullish",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_above_50",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 50.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "volume_above_avg",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.0,
+              "baseline": "average"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "price_above_fib_0618",
+              "indicator": "PRICE",
+              "comparator": ">=",
+              "value": 84603.3,
+              "basis": "fib_0.618"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_triangle",
+              "type": "pattern_breach",
+              "level": "triangle_support"
+            },
+            {
+              "id": "rsi_below_45",
+              "indicator": "RSI14",
+              "comparator": "<=",
+              "value": 45.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 84088.3,
+            "basis": "below_fib_0382"
+          },
+          "take_profit": [
+            {
+              "price": 84969.8,
+              "basis": "fib_0.786_extension",
+              "rr": 2.0
+            },
+            {
+              "price": 85436.7,
+              "basis": "recent_high",
+              "rr": 3.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Monitor for RSI stability above 50",
+          "Confirm volume sustains above average",
+          "Enter long if price sustains above Fib 0.618",
+          "Invalidate if price closes below triangle support"
+        ],
+        "improvements": "Wait for strong breakout signal; consider adding MACD confirmation for stronger trend detection"
+      },
+      "elapsed_time": 22.403170108795166,
+      "timestamp": "2025-11-21T20:21:02.870900"
+    },
+    "Gemini": {
+      "model_name": "gemini/gemini-3-pro-preview",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-21 19:19",
+        "trend_direction": "bullish_consolidation",
+        "support_resistance": {
+          "support": 84603.3,
+          "resistance": 84969.8,
+          "key_level_fib_0618": 84603.3
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 59.71,
+            "status": "neutral_bullish",
+            "signal": "rising_momentum"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "data_not_provided"
+          },
+          "VOLUME": {
+            "current": 1.456,
+            "average": 2.5,
+            "ratio": 0.58,
+            "trend": "consolidation_low"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 85436.7,
+              "to": 83254.9
+            },
+            "levels": {
+              "0.0": 83254.9,
+              "0.382": 84088.3,
+              "0.5": 84345.8,
+              "0.618": 84603.3,
+              "0.786": 84969.8,
+              "1.0": 85436.7
+            }
+          }
+        },
+        "secondary_indicators": {
+          "MACD12_26_9": {
+            "macd_line": 40.74,
+            "signal_line": 32.23,
+            "histogram": 8.5,
+            "status": "bullish_crossover"
+          },
+          "EMA_Context": {
+            "status": "price_above_recent_consolidation"
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "bull_pennant",
+            "candle_index": 0,
+            "confidence": 0.85,
+            "notes": "Consolidation occurring directly above the 0.618 Golden Pocket"
+          },
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.8
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.85,
+          "confluence_with_pattern": true,
+          "notes": "Strong confluence: Price holding 0.618 Fib support + MACD bullish crossover + RSI holding above 50. Waiting for volume expansion on breakout."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "price_above_fib_0618",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 84603.3,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "rsi_bullish_zone",
+              "indicator": "RSI14",
+              "comparator": ">",
+              "value": 50.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "macd_positive",
+              "indicator": "MACD_HIST",
+              "comparator": ">",
+              "value": 0.0,
+              "observed_on_candle": 0
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "breakout_triangle_resistance",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 84800.0,
+              "basis": "visual_trendline"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_below_fib_05",
+              "type": "price_breach",
+              "level": 84345.8
+            },
+            {
+              "id": "rsi_breakdown",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 45.0
+            }
+          ],
+          "is_met": true
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 84300.0,
+            "basis": "below_0.5_fib_level"
+          },
+          "take_profit": [
+            {
+              "price": 84969.0,
+              "basis": "fib_0.786",
+              "rr": 1.5
+            },
+            {
+              "price": 85436.0,
+              "basis": "swing_high_fib_1.0",
+              "rr": 2.5
+            }
+          ]
+        },
+        "summary_actions": [
+          "Setup is active: Price holding Golden Pocket (0.618 Fib).",
+          "Monitor for volume spike to confirm breakout of the pennant.",
+          "Long entry valid above 84,650 with target at 84,969.",
+          "Strict invalidation if price closes below 84,345 (0.5 Fib)."
+        ],
+        "improvements": "Volume is currently low during consolidation (typical for flags), but ensure volume expansion accompanies the price move above 84,800 to avoid a fake-out."
+      },
+      "elapsed_time": 34.74262881278992,
+      "timestamp": "2025-11-21T20:21:15.210569"
+    }
+  },
+  "errors": {},
+  "summary": {
+    "directions": {
+      "DeepSeek": "long",
+      "ChatGPT5.1": "bullish",
+      "Gemini": "long"
+    },
+    "confidences": {
+      "DeepSeek": 0.7,
+      "ChatGPT5.1": 0.7,
+      "Gemini": 0.85
+    },
+    "response_times": {
+      "DeepSeek": 21.40264129638672,
+      "ChatGPT5.1": 22.403170108795166,
+      "Gemini": 34.74262881278992
+    },
+    "agreement": false,
+    "consensus_direction": "long",
+    "fastest_model": "DeepSeek",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

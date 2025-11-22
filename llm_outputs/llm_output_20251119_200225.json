@@ -1,0 +1,188 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-19 19:01",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 88840.0,
+    "resistance": 89316.7
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 61.08,
+      "status": "neutral",
+      "signal": "overbought"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 88.25,
+      "d_percent": 82.18,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 147220,
+      "average": "not provided",
+      "ratio": "not calculable",
+      "trend": "normal"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 90088.4,
+        "to": 88840.0
+      },
+      "levels": {
+        "0.236": 89316.7,
+        "0.382": 89611.6,
+        "0.5": 89850.0,
+        "0.618": 90088.4,
+        "0.786": 90427.7
+      }
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": 33.96,
+      "signal_line": 8.56,
+      "histogram": 25.4
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": [
+        0,
+        20
+      ],
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": false,
+    "notes": "RSI and Stoch indicate overbought. Fibonacci resistance at 0.236 level."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 80.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_below_fib_0236",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 89316.7,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": 89316.7
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89350.0,
+      "basis": "above_recent_high"
+    },
+    "take_profit": [
+      {
+        "price": 88840.0,
+        "basis": "fib_0",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI and Stoch for overbought conditions",
+    "Look for price rejection at Fib 0.236",
+    "Enter short if conditions align",
+    "Invalidate if price breaks above Fib 0.236"
+  ],
+  "improvements": "Utilize volume analysis for stronger confirmation; consider MACD context for trend validation.",
+  "_multi_model_comparison": {
+    "selected_model": "DeepSeek",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "DeepSeek": "short",
+        "ChatGPT5.1": "long"
+      },
+      "confidences": {
+        "DeepSeek": 0.5,
+        "ChatGPT5.1": 0.9
+      },
+      "response_times": {
+        "DeepSeek": 28.043721199035645,
+        "ChatGPT5.1": 40.287779808044434
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "DeepSeek",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.5,
+        "elapsed_time": 28.043721199035645,
+        "stop_loss": 89350.0,
+        "take_profits": [
+          {
+            "price": 88840.0,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.9,
+        "elapsed_time": 40.287779808044434,
+        "stop_loss": 88900.0,
+        "take_profits": [
+          {
+            "price": 89850.0,
+            "rr": 1.5
+          },
+          {
+            "price": 90088.4,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      }
+    },
+    "errors": {
+      "Qwenv3.1": {
+        "error": "API key missing for Qwen. Add DASHSCOPE_API_KEY to your .env file (required for qwen models via DashScope). You can also try QWEN_API_KEY or ALIBABA_API_KEY.",
+        "error_type": "AnalysisError",
+        "model": "qwen/qwen-vl-max"
+      }
+    }
+  }
+}

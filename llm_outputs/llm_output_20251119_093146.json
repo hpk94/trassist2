@@ -1,0 +1,153 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-19 08:31",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 91216.1,
+    "resistance": 91987.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 57.14,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 52.57,
+      "d_percent": 50.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 708,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 89968.5,
+        "to": 91987.2
+      },
+      "levels": {
+        "0.236": 91510.8,
+        "0.382": 91216.1,
+        "0.5": 90977.9,
+        "0.618": 90739.6,
+        "0.786": 90400.5
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, channel pattern provides support, volume stable"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 91216.1,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "channel_support"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91200.0,
+      "basis": "below_channel_support"
+    },
+    "take_profit": [
+      {
+        "price": 91900.0,
+        "basis": "channel_resistance",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for continued strength above 50",
+    "Ensure price remains above Fib 0.382 support",
+    "Enter long if upward momentum persists",
+    "Invalidate if price breaks below channel"
+  ],
+  "improvements": "Look for stronger volume increase for higher entry conviction",
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "long",
+        "DeepSeek": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.7
+      },
+      "response_times": {
+        "ChatGPT5.1": 24.248194217681885,
+        "DeepSeek": 29.81418514251709
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 24.248194217681885
+      },
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 29.81418514251709
+      }
+    },
+    "errors": {
+      "Qwenv3.1": {
+        "error": "API key missing for Qwen. Add QWEN_API_KEY, DASHSCOPE_API_KEY, or ALIBABA_API_KEY to your .env file.",
+        "error_type": "AnalysisError",
+        "model": "qwen/qwen-vl-max"
+      }
+    }
+  }
+}

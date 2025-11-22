@@ -1,0 +1,107 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-18 21:37",
+  "trend_direction": "unknown",
+  "support_resistance": {
+    "support": null,
+    "resistance": null
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": null,
+      "status": "unknown",
+      "signal": "none"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "none"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "none"
+    },
+    "VOLUME": {
+      "current": null,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "alignment_score": 0.0,
+    "notes": "Analysis unavailable due to LLM refusal. Manual review required."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [],
+      "lookback_seconds": 0
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "manual_review_required",
+      "distance_ticks": null
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Manual chart analysis required due to AI refusal",
+    "Review chart patterns and technical indicators manually",
+    "Consider alternative analysis methods"
+  ],
+  "improvements": "LLM analysis unavailable - requires manual review or alternative AI model",
+  "fallback_reason": "LLM refused to analyze the chart image",
+  "requires_manual_review": true,
+  "_multi_model_comparison": {
+    "selected_model": "fallback",
+    "selection_reason": "fallback (no models succeeded)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {},
+    "all_results": {},
+    "errors": {
+      "Qwenv3.1": {
+        "error": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=qwen/qwen3-max\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+        "error_type": "BadRequestError",
+        "model": "qwen/qwen3-max",
+        "symbol": "BTCUSDT",
+        "timeframe": "1m"
+      },
+      "ChatGPT5.1": {
+        "error": "litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you are trying to call. You passed model=gpt-5.1-2025-11-13\n Pass model as E.g. For 'Huggingface' inference endpoints pass in `completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers",
+        "error_type": "BadRequestError",
+        "model": "gpt-5.1-2025-11-13",
+        "symbol": "BTCUSDT",
+        "timeframe": "1m"
+      },
+      "DeepSeek": {
+        "error": "litellm.BadRequestError: DeepseekException - {\"error\":{\"message\":\"Failed to deserialize the JSON body into the target type: messages[1]: unknown variant `image_url`, expected `text` at line 1 column 1428143\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+        "error_type": "BadRequestError",
+        "model": "deepseek/deepseek-chat",
+        "symbol": "BTCUSDT",
+        "timeframe": "1m"
+      }
+    }
+  }
+}
