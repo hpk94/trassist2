@@ -1,0 +1,282 @@
+{
+  "trend_continuation_patterns": [
+    {
+      "name": "ascending_triangle",
+      "type": "continuation",
+      "look": "Flat resistance on top, rising lows (higher lows) below.",
+      "typical_context": "Forms during an uptrend as a consolidation.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Breakout is usually above the horizontal resistance; volume expansion helps confirm."
+    },
+    {
+      "name": "descending_triangle",
+      "type": "continuation",
+      "look": "Flat support below, falling highs (lower highs) above.",
+      "typical_context": "Forms during a downtrend as a consolidation.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Breakout is usually below the horizontal support; watch for increased selling volume."
+    },
+    {
+      "name": "symmetrical_triangle",
+      "type": "continuation",
+      "look": "Converging trendlines with lower highs and higher lows.",
+      "typical_context": "Consolidation after a prior trend (up or down).",
+      "usual_breakout_direction": "in_direction_of_prior_trend",
+      "direction": "neutral",
+      "notes": "Can break either way; prior trend bias plus volume and momentum help gauge direction."
+    },
+    {
+      "name": "bull_flag",
+      "type": "continuation",
+      "look": "Strong vertical up move (flagpole), followed by a small downward or sideways channel.",
+      "typical_context": "Occurs after a sharp rally in an uptrend.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Breakout typically resumes the prior sharp move; shallow pullbacks are common."
+    },
+    {
+      "name": "bear_flag",
+      "type": "continuation",
+      "look": "Strong vertical down move, followed by a small upward or sideways channel.",
+      "typical_context": "Occurs after a sharp selloff in a downtrend.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Breakdown usually resumes the prior sharp decline."
+    },
+    {
+      "name": "bullish_pennant",
+      "type": "continuation",
+      "look": "Sharp up move followed by a small, converging triangle-like consolidation.",
+      "typical_context": "Appears after a strong bullish impulse.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Similar to a bull flag but with converging trendlines."
+    },
+    {
+      "name": "bearish_pennant",
+      "type": "continuation",
+      "look": "Sharp down move followed by a small, converging consolidation.",
+      "typical_context": "Appears after a strong bearish impulse.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Similar to a bear flag but with converging trendlines."
+    },
+    {
+      "name": "rectangle_range_in_trend",
+      "type": "continuation",
+      "look": "Horizontal support and resistance; price oscillates between them.",
+      "typical_context": "Consolidation during an existing trend.",
+      "usual_breakout_direction": "often_in_direction_of_prior_trend",
+      "direction": "neutral",
+      "notes": "Breaks can occur either way; prior trend gives a bias."
+    }
+  ],
+  "reversal_patterns": [
+    {
+      "name": "head_and_shoulders_top",
+      "type": "reversal",
+      "look": "Three peaks: the middle (head) higher than the two shoulders; neckline connects the swing lows.",
+      "typical_context": "Forms after an uptrend, signaling potential top.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Breakdown below neckline is the trigger; volume often increases on the breakdown."
+    },
+    {
+      "name": "inverse_head_and_shoulders_bottom",
+      "type": "reversal",
+      "look": "Three troughs: the middle (head) lower than the two shoulders; neckline connects the swing highs.",
+      "typical_context": "Forms after a downtrend, signaling potential bottom.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Breakout above neckline is the trigger; often used to project upside targets."
+    },
+    {
+      "name": "double_top",
+      "type": "reversal",
+      "look": "Two peaks at a similar price level with a pullback in between.",
+      "typical_context": "Appears after an uptrend.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Confirmation usually comes when price breaks below the support between the peaks."
+    },
+    {
+      "name": "double_bottom",
+      "type": "reversal",
+      "look": "Two troughs at a similar price level with a bounce in between.",
+      "typical_context": "Appears after a downtrend.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Confirmation usually comes when price breaks above the resistance between the lows."
+    },
+    {
+      "name": "triple_top",
+      "type": "reversal",
+      "look": "Three peaks at a similar price level.",
+      "typical_context": "Appears after a sustained uptrend.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Breakdown below the common support level confirms the pattern."
+    },
+    {
+      "name": "triple_bottom",
+      "type": "reversal",
+      "look": "Three troughs at a similar price level.",
+      "typical_context": "Appears after a sustained downtrend.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Breakout above the common resistance level confirms the pattern."
+    },
+    {
+      "name": "rising_wedge",
+      "type": "reversal_or_continuation",
+      "look": "Price rises within converging, upward-sloping trendlines.",
+      "typical_context": "Can appear in uptrends or as a corrective move in downtrends.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Often a bearish pattern even though price is rising; breakdown below lower trendline is watched."
+    },
+    {
+      "name": "falling_wedge",
+      "type": "reversal_or_continuation",
+      "look": "Price falls within converging, downward-sloping trendlines.",
+      "typical_context": "Can appear in downtrends or as a corrective move in uptrends.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Often a bullish pattern even though price is falling; breakout above upper trendline is watched."
+    }
+  ],
+  "candlestick_reversal_patterns": [
+    {
+      "name": "bullish_engulfing",
+      "type": "candlestick_reversal",
+      "look": "A small bearish (down) candle followed by a larger bullish (up) candle that fully engulfs the prior body.",
+      "typical_context": "After a decline or at support.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Signals potential upside reversal; strength increases with higher volume and strong close."
+    },
+    {
+      "name": "bearish_engulfing",
+      "type": "candlestick_reversal",
+      "look": "A small bullish (up) candle followed by a larger bearish (down) candle that fully engulfs the prior body.",
+      "typical_context": "After a rally or at resistance.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Signals potential downside reversal; stronger when near resistance or after extended up move."
+    },
+    {
+      "name": "hammer",
+      "type": "candlestick_reversal",
+      "look": "Small real body near the top of the range, long lower shadow, little to no upper shadow.",
+      "typical_context": "After a decline, often at or near support.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Shows intraday rejection of lower prices; confirmation often requires a bullish candle afterward."
+    },
+    {
+      "name": "shooting_star",
+      "type": "candlestick_reversal",
+      "look": "Small real body near the bottom of the range, long upper shadow, little to no lower shadow.",
+      "typical_context": "After a rally, often near resistance.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Shows rejection of higher prices; confirmation usually with a subsequent bearish candle."
+    },
+    {
+      "name": "morning_star",
+      "type": "candlestick_reversal",
+      "look": "Three-candle pattern: large down candle, small indecisive candle (doji/spinning top), then large up candle.",
+      "typical_context": "After a downtrend.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Classic bullish reversal; third candle closing well into the first candle’s body adds strength."
+    },
+    {
+      "name": "evening_star",
+      "type": "candlestick_reversal",
+      "look": "Three-candle pattern: large up candle, small indecisive candle, then large down candle.",
+      "typical_context": "After an uptrend.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Classic bearish reversal; third candle closing well into the first candle’s body adds strength."
+    }
+  ],
+  "channel_patterns": [
+    {
+      "name": "ascending_channel",
+      "type": "trend_channel",
+      "look": "Price oscillates between two roughly parallel upward-sloping trendlines (higher highs and higher lows).",
+      "typical_context": "Established uptrend with orderly pullbacks.",
+      "usual_breakout_direction": "often_bearish_down_through_lower_boundary",
+      "direction": "short",
+      "notes": "As long as price stays within the channel, trend is intact. A decisive break above can signal acceleration, a break below often signals trend weakening or reversal."
+    },
+    {
+      "name": "descending_channel",
+      "type": "trend_channel",
+      "look": "Price oscillates between two roughly parallel downward-sloping trendlines (lower highs and lower lows).",
+      "typical_context": "Established downtrend with orderly bounces.",
+      "usual_breakout_direction": "often_bullish_up_through_upper_boundary",
+      "direction": "long",
+      "notes": "Staying within the channel confirms the downtrend. A strong breakout above the upper boundary can signal a trend reversal or major short-covering rally."
+    },
+    {
+      "name": "horizontal_channel_range",
+      "type": "range_channel",
+      "look": "Price trades between nearly flat parallel support and resistance lines.",
+      "typical_context": "Sideways markets, accumulation or distribution phases.",
+      "usual_breakout_direction": "can_break_either_way",
+      "direction": "neutral",
+      "notes": "Direction often depends on prior trend (range after an uptrend often breaks up; after a downtrend often breaks down). Volume and false breaks give additional clues."
+    },
+    {
+      "name": "channel_breakout_above",
+      "type": "channel_breakout",
+      "look": "Price closes above the upper boundary of an ascending, descending, or horizontal channel.",
+      "typical_context": "End of consolidation in a channel or acceleration of an existing uptrend.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "In an ascending channel, this may signal acceleration; in a descending or sideways channel, it often signals trend reversal. Confirmation via volume and follow-through is important."
+    },
+    {
+      "name": "channel_breakdown_below",
+      "type": "channel_breakout",
+      "look": "Price closes below the lower boundary of an ascending, descending, or horizontal channel.",
+      "typical_context": "End of consolidation or exhaustion of an uptrend.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "In an ascending or sideways channel this often signals trend reversal or deeper correction; in a descending channel it can signal acceleration of the downtrend."
+    }
+  ],
+  "support_resistance_breakout_patterns": [
+    {
+      "name": "breakout_above_resistance",
+      "type": "level_breakout",
+      "look": "Price moves and closes above a previously established resistance level.",
+      "typical_context": "After consolidation or at the end of a base.",
+      "usual_breakout_direction": "bullish_up",
+      "direction": "long",
+      "notes": "Higher volume and strong close above the level increase reliability; watch for retests of the breakout level."
+    },
+    {
+      "name": "breakdown_below_support",
+      "type": "level_breakout",
+      "look": "Price moves and closes below a previously established support level.",
+      "typical_context": "After sideways trading or at end of a topping structure.",
+      "usual_breakout_direction": "bearish_down",
+      "direction": "short",
+      "notes": "Increased selling volume often confirms; failed retests can accelerate the move."
+    },
+    {
+      "name": "false_breakout_fakeout",
+      "type": "failed_breakout",
+      "look": "Price briefly breaks support or resistance then quickly reverses back into the prior range.",
+      "typical_context": "Around key levels after extended trends or crowded setups.",
+      "usual_breakout_direction": "reversal_back_into_range",
+      "direction": "neutral",
+      "notes": "Often traps late traders; can lead to strong moves in the opposite direction of the initial break."
+    }
+  ]
+}

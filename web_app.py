@@ -5,7 +5,7 @@ import tempfile
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 import litellm
-from prompt import OPENAI_VISION_PROMPT, TRADE_GATE_PROMPT
+from prompt import OPENAI_VISION_PROMPT, TRADE_GATE_PROMPT, VISION_EXTRACTION_PROMPT, MARKET_DATA_ANALYSIS_PROMPT
 import pandas as pd
 from datetime import datetime
 import time
@@ -25,7 +25,8 @@ from services.notification_service import (
     send_image_to_telegram,
     send_initial_analysis_to_telegram,
     send_polling_start_to_telegram,
-    send_analysis_to_telegram
+    send_analysis_to_telegram,
+    send_extraction_complete_to_telegram
 )
 
 # Import Telegram bot for command control
@@ -42,17 +43,30 @@ from telegram_bot import (
 load_dotenv()
 
 
-# Configure LiteLLM models (can be changed via environment variable)
-# Vision model for chart analysis (must support vision)
+# ============================================================================
+# MAIN PIPELINE MODEL CONFIGURATION
+# ============================================================================
+# These models are used for the main trading pipeline (chart analysis + trade gate)
+# Vision model for chart analysis Stage 1: Image extraction (must support vision)
 LITELLM_VISION_MODEL = os.getenv("LITELLM_VISION_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
-# Text model for trade gate decisions (can be any model, including non-vision models like DeepSeek)
-LITELLM_TEXT_MODEL = os.getenv("LITELLM_TEXT_MODEL", os.getenv("LITELLM_MODEL", "gpt-4o"))
 
-# Multi-model comparison configuration
-# Models to test for trading decisions (can be configured via environment variables)
-MULTI_MODEL_CHATGPT = os.getenv("MULTI_MODEL_CHATGPT", "gpt-4o")  # ChatGPT5.1 - using gpt-4o as default
-MULTI_MODEL_DEEPSEEK = os.getenv("MULTI_MODEL_DEEPSEEK", "deepseek/deepseek-chat")  # deepseek-chat
-MULTI_MODEL_GEMINI = os.getenv("MULTI_MODEL_GEMINI", "gemini/gemini-1.5-pro")  # Google Gemini
+# Reasoning model for chart analysis Stage 2 and trade gate decisions
+# Recommended: Use DeepSeek Reason for cost-effective reasoning tasks
+LITELLM_REASONING_MODEL = os.getenv("LITELLM_REASONING_MODEL", os.getenv("LITELLM_TEXT_MODEL", os.getenv("LITELLM_MODEL", "deepseek/deepseek-reason")))
+
+# Legacy support: LITELLM_TEXT_MODEL (for backward compatibility)
+# If LITELLM_REASONING_MODEL is not set, falls back to LITELLM_TEXT_MODEL
+LITELLM_TEXT_MODEL = os.getenv("LITELLM_TEXT_MODEL", LITELLM_REASONING_MODEL)
+
+# ============================================================================
+# MULTI-MODEL COMPARISON CONFIGURATION
+# ============================================================================
+# These models are used ONLY for multi-model comparison/testing
+# They run in parallel to compare performance - separate from main pipeline
+# NOTE: All models used here MUST support vision/image analysis for chart processing
+MULTI_MODEL_CHATGPT = os.getenv("MULTI_MODEL_CHATGPT", "gpt-5.1-2025-11-13")  # ChatGPT 5.1 (supports vision)
+MULTI_MODEL_DEEPSEEK = os.getenv("MULTI_MODEL_DEEPSEEK", "deepseek/deepseek-reason")  # DeepSeek Reason (for reasoning comparison)
+MULTI_MODEL_GEMINI = os.getenv("MULTI_MODEL_GEMINI", "gemini/gemini-1.5-pro")  # Google Gemini (supports vision)
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -66,6 +80,66 @@ progress_queue = queue.Queue()
 # Track Telegram bot initialization to avoid duplicate starts (e.g., Flask reloader)
 _telegram_bot_started = False
 _telegram_bot_lock = threading.Lock()
+
+# Load pattern definitions
+_pattern_data = None
+def load_pattern_data():
+    """Load pattern.json and return pattern definitions"""
+    global _pattern_data
+    if _pattern_data is None:
+        pattern_file = os.path.join(os.path.dirname(__file__), 'pattern.json')
+        try:
+            with open(pattern_file, 'r') as f:
+                _pattern_data = json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not load pattern.json: {e}")
+            _pattern_data = {}
+    return _pattern_data
+
+def get_pattern_info(pattern_name: str) -> dict:
+    """Get pattern information (name, direction, type) from pattern.json
+    
+    Args:
+        pattern_name: Name of the pattern (e.g., 'ascending_channel', 'bull_flag')
+    
+    Returns:
+        dict with 'name', 'direction', 'type', 'usual_breakout_direction', 'notes' or None if not found
+    """
+    pattern_data = load_pattern_data()
+    if not pattern_data:
+        return None
+    
+    # Search all pattern categories
+    for category in ['trend_continuation_patterns', 'reversal_patterns', 'candlestick_reversal_patterns', 
+                     'channel_patterns', 'support_resistance_breakout_patterns']:
+        patterns = pattern_data.get(category, [])
+        for pattern in patterns:
+            if pattern.get('name') == pattern_name:
+                return {
+                    'name': pattern.get('name'),
+                    'direction': pattern.get('direction'),
+                    'type': pattern.get('type'),
+                    'usual_breakout_direction': pattern.get('usual_breakout_direction'),
+                    'notes': pattern.get('notes'),
+                    'look': pattern.get('look'),
+                    'typical_context': pattern.get('typical_context')
+                }
+    
+    return None
+
+def get_all_pattern_names() -> list:
+    """Get all pattern names from pattern.json for reference"""
+    pattern_data = load_pattern_data()
+    if not pattern_data:
+        return []
+    
+    pattern_names = []
+    for category in ['trend_continuation_patterns', 'reversal_patterns', 'candlestick_reversal_patterns', 
+                     'channel_patterns', 'support_resistance_breakout_patterns']:
+        patterns = pattern_data.get(category, [])
+        for pattern in patterns:
+            pattern_names.append(pattern.get('name'))
+    return pattern_names
 
 
 def start_telegram_bot_once():
@@ -515,7 +589,7 @@ def close_trade_with_hyperliquid(symbol: str, current_price: Optional[float] = N
 
 def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
     # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
-    """Analyze trading chart using LLM Vision API with optional market data"""
+    """Analyze trading chart using two-stage LLM approach: image extraction + market data analysis"""
     emit_progress("Chart: Reading image file...")
     
     try:
@@ -533,8 +607,124 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
         emit_progress(f"Chart: Error reading image file: {str(e)}")
         raise
     
-    # Prepare the prompt based on whether we have market data
-    # df can be a dict with 'minute', 'hourly', 'daily' keys or a single DataFrame
+    # ============================================
+    # STAGE 1: Extract data from image (vision-only)
+    # ============================================
+    emit_progress("Chart Stage 1: Extracting data from image...")
+    
+    # Load pattern reference for vision extraction
+    pattern_data = load_pattern_data()
+    pattern_names = get_all_pattern_names()
+    pattern_reference_text = ""
+    if pattern_data and pattern_names:
+        pattern_reference_text = f"""
+
+## PATTERN REFERENCE
+Use these EXACT pattern names when identifying patterns. Match the visual pattern to the closest name:
+
+Available patterns: {', '.join(pattern_names)}
+
+For each pattern category, here are the key patterns:
+- Trend Continuation: ascending_triangle, descending_triangle, symmetrical_triangle, bull_flag, bear_flag, bullish_pennant, bearish_pennant
+- Reversal: head_and_shoulders_top, inverse_head_and_shoulders_bottom, double_top, double_bottom, triple_top, triple_bottom, rising_wedge, falling_wedge
+- Candlestick: bullish_engulfing, bearish_engulfing, hammer, shooting_star, morning_star, evening_star
+- Channels: ascending_channel, descending_channel, horizontal_channel_range, channel_breakout_above, channel_breakdown_below
+- Support/Resistance: breakout_above_resistance, breakdown_below_support, false_breakout_fakeout
+
+IMPORTANT: Use the EXACT pattern name from this list. Do not use variations or synonyms.
+"""
+    
+    vision_prompt = VISION_EXTRACTION_PROMPT + pattern_reference_text
+    
+    try:
+        vision_response = litellm.completion(
+            model=LITELLM_VISION_MODEL,
+            messages=[
+                {"role": "system", "content": vision_prompt},
+                {"role": "user", "content": [{"type": "text", "text": "Extract data from this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+            ],
+            response_format={"type": "json_object"},
+            timeout=60
+        )
+        emit_progress("Chart Stage 1: Received response from vision model")
+        
+        if not vision_response.choices or not vision_response.choices[0].message.content:
+            # Retry without response_format
+            emit_progress("Chart Stage 1: Retrying without response_format constraint...")
+            vision_response = litellm.completion(
+                model=LITELLM_VISION_MODEL,
+                messages=[
+                    {"role": "system", "content": vision_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
+                    {"role": "user", "content": [{"type": "text", "text": "Extract data from this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                ],
+                timeout=60
+            )
+        
+        vision_content = vision_response.choices[0].message.content if vision_response.choices and vision_response.choices[0].message.content else None
+        if not vision_content:
+            raise ValueError("Vision model returned empty content")
+        
+        # Clean markdown formatting if present
+        if vision_content.strip().startswith('```json'):
+            vision_content = vision_content.strip()
+            if vision_content.startswith('```json'):
+                vision_content = vision_content[7:]
+            if vision_content.endswith('```'):
+                vision_content = vision_content[:-3]
+            vision_content = vision_content.strip()
+        
+        extracted_data = json.loads(vision_content)
+        emit_progress("Chart Stage 1: Successfully extracted chart data")
+        
+        # Match detected patterns to pattern.json to get direction information
+        detected_patterns = extracted_data.get('patterns', [])
+        pattern_info_list = []
+        for pattern_item in detected_patterns:
+            pattern_name = pattern_item.get('pattern', '')
+            if pattern_name:
+                pattern_info = get_pattern_info(pattern_name)
+                if pattern_info:
+                    pattern_item['pattern_name'] = pattern_info['name']
+                    pattern_item['pattern_direction'] = pattern_info['direction']
+                    pattern_item['pattern_type'] = pattern_info['type']
+                    pattern_item['usual_breakout_direction'] = pattern_info.get('usual_breakout_direction', '')
+                    pattern_info_list.append(pattern_info)
+                    emit_progress(f"Chart Stage 1: Matched pattern '{pattern_name}' -> direction: {pattern_info['direction']}")
+                else:
+                    emit_progress(f"Chart Stage 1: Pattern '{pattern_name}' not found in pattern.json")
+        
+        # Store pattern info in extracted_data for Stage 2
+        if pattern_info_list:
+            extracted_data['_pattern_info'] = pattern_info_list
+        
+        # Send Telegram notification about extraction completion
+        try:
+            send_extraction_complete_to_telegram(extracted_data, LITELLM_VISION_MODEL)
+        except Exception as notify_error:
+            emit_progress(f"Chart Stage 1: Failed to send extraction notification: {str(notify_error)}")
+        
+    except Exception as e:
+        emit_progress(f"Chart Stage 1: Error extracting chart data: {str(e)}")
+        # Fallback: create minimal extracted data structure
+        extracted_data = {
+            "symbol": symbol or "BTCUSDT",
+            "timeframe": timeframe or "1m",
+            "time_of_screenshot": None,
+            "visual_indicators": {},
+            "fibonacci": {},
+            "patterns": [],
+            "support_resistance": {},
+            "visual_trend": "neutral"
+        }
+        emit_progress("Chart Stage 1: Using fallback extracted data")
+    
+    # ============================================
+    # STAGE 2: Combine extracted data + market data for analysis
+    # ============================================
+    emit_progress("Chart Stage 2: Analyzing with market data...")
+    
+    # Prepare market data summary
+    market_data_summary = ""
     if df is not None:
         if isinstance(df, dict):
             df_minute = df.get('minute')
@@ -546,8 +736,7 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
             df_daily = None
         
         if df_minute is not None and not df_minute.empty:
-            emit_progress("Chart: Preparing enhanced prompt with market data...")
-            # Create a summary of the market data for the LLM
+            emit_progress("Chart Stage 2: Preparing market data summary...")
             market_data_summary = create_market_data_summary(
                 df=df_minute, 
                 df_hourly=df_hourly, 
@@ -555,105 +744,109 @@ def analyze_trading_chart(image_path: str, symbol: str = None, timeframe: str = 
                 symbol=symbol, 
                 timeframe=timeframe
             )
-            enhanced_prompt = OPENAI_VISION_PROMPT + f"\n\n## MARKET DATA CONTEXT\n{symbol} {timeframe} - Latest market data:\n{market_data_summary}\n\nUse this market data to enhance your analysis and provide more accurate technical indicator values. Pay special attention to the hourly and daily timeframes for trend context."
         else:
-            emit_progress("Chart: Using standard prompt without market data...")
-            enhanced_prompt = OPENAI_VISION_PROMPT
+            emit_progress("Chart Stage 2: No market data available, using extracted chart data only")
     else:
-        emit_progress("Chart: Using standard prompt without market data...")
-        enhanced_prompt = OPENAI_VISION_PROMPT
+        emit_progress("Chart Stage 2: No market data provided, using extracted chart data only")
     
-    emit_progress(f"Chart: Sending request to LLM Vision API (model: {LITELLM_VISION_MODEL})...")
+    # Prepare pattern context for Stage 2
+    pattern_context = ""
+    pattern_info_list = extracted_data.get('_pattern_info', [])
+    if pattern_info_list:
+        pattern_context = "\n## DETECTED PATTERN INFORMATION\n"
+        for pattern_info in pattern_info_list:
+            pattern_context += f"""
+Pattern: {pattern_info['name']}
+- Type: {pattern_info['type']}
+- Direction: {pattern_info['direction']} (CRITICAL: This indicates the typical trade direction for this pattern)
+- Usual Breakout Direction: {pattern_info.get('usual_breakout_direction', 'N/A')}
+- Context: {pattern_info.get('typical_context', 'N/A')}
+- Notes: {pattern_info.get('notes', 'N/A')}
+
+"""
+        pattern_context += "\n**IMPORTANT**: The pattern direction (long/short) is a STRONG signal. Your opening signal direction MUST align with the pattern direction unless there is STRONG conflicting evidence from indicators.\n"
+    
+    # Prepare context for second stage
+    context = f"""## EXTRACTED CHART DATA
+{json.dumps(extracted_data, indent=2)}
+{pattern_context}
+## REAL-TIME MARKET DATA
+{market_data_summary if market_data_summary else "No market data provided - using extracted chart data only"}
+
+## SYMBOL & TIMEFRAME
+Symbol: {symbol or extracted_data.get('symbol', 'BTCUSDT')}
+Timeframe: {timeframe or extracted_data.get('timeframe', '1m')}
+"""
+    
+    # Use reasoning model for second stage (DeepSeek Reason recommended for cost-effective reasoning)
+    decision_model = LITELLM_REASONING_MODEL
+    emit_progress(f"Chart Stage 2: Sending to decision model ({decision_model})...")
+    
     try:
-        response = litellm.completion(
-            model=LITELLM_VISION_MODEL,
+        decision_response = litellm.completion(
+            model=decision_model,
             messages=[
-                {"role": "system", "content": enhanced_prompt},
-                {"role": "user", "content": [{"type": "text", "text": "Analyze this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                {"role": "system", "content": MARKET_DATA_ANALYSIS_PROMPT},
+                {"role": "user", "content": context}
             ],
             response_format={"type": "json_object"},
-            timeout=60  # Add 60 second timeout
+            timeout=60
         )
-        emit_progress("Chart: Received response from LLM Vision API")
-        emit_progress(f"Chart: Response has {len(response.choices)} choices")
-        if response.choices:
-            emit_progress(f"Chart: First choice finish_reason: {response.choices[0].finish_reason}")
-    except Exception as e:
-        emit_progress(f"Chart: Error calling LLM API: {str(e)}")
-        raise
-    
-    emit_progress("Chart: Parsing JSON response...")
-    try:
-        # Check if response content exists
-        if not response.choices or not response.choices[0].message.content:
-            emit_progress("Chart: Error - No content in API response")
-            emit_progress(f"Chart: Response structure: {response}")
-            
-            # Check if this is a refusal response
-            if (response.choices and 
-                response.choices[0].message and 
-                hasattr(response.choices[0].message, 'refusal') and 
-                response.choices[0].message.refusal):
-                emit_progress(f"Chart: LLM refused request: {response.choices[0].message.refusal}")
-                emit_progress("Chart: Creating fallback response structure...")
-                return create_fallback_llm_response(symbol, timeframe)
-            
-            emit_progress("Chart: Attempting retry with different parameters...")
-            
-            # Retry without response_format to see if that's the issue
-            emit_progress("Chart: Retrying without response_format constraint...")
-            retry_response = litellm.completion(
-                model=LITELLM_VISION_MODEL,
+        emit_progress("Chart Stage 2: Received response from decision model")
+        
+        if not decision_response.choices or not decision_response.choices[0].message.content:
+            # Retry without response_format
+            emit_progress("Chart Stage 2: Retrying without response_format constraint...")
+            decision_response = litellm.completion(
+                model=decision_model,
                 messages=[
-                    {"role": "system", "content": enhanced_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
-                    {"role": "user", "content": [{"type": "text", "text": "Analyze this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                    {"role": "system", "content": MARKET_DATA_ANALYSIS_PROMPT + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
+                    {"role": "user", "content": context}
                 ],
                 timeout=60
             )
-            
-            if not retry_response.choices or not retry_response.choices[0].message.content:
-                # Check if retry also resulted in refusal
-                if (retry_response.choices and 
-                    retry_response.choices[0].message and 
-                    hasattr(retry_response.choices[0].message, 'refusal') and 
-                    retry_response.choices[0].message.refusal):
-                    emit_progress(f"Chart: Retry also refused: {retry_response.choices[0].message.refusal}")
-                    emit_progress("Chart: Creating fallback response structure...")
-                    return create_fallback_llm_response(symbol, timeframe)
-                else:
-                    raise ValueError("OpenAI API returned empty content on retry")
-            
-            content = retry_response.choices[0].message.content
-            emit_progress(f"Chart: Retry successful, content length: {len(content)} characters")
-        else:
-            content = response.choices[0].message.content
-            emit_progress(f"Chart: Content length: {len(content)} characters")
         
-        # Try to clean the content if it has markdown formatting
-        if content.strip().startswith('```json'):
-            # Remove markdown code block formatting
-            content = content.strip()
-            if content.startswith('```json'):
-                content = content[7:]  # Remove ```json
-            if content.endswith('```'):
-                content = content[:-3]  # Remove ```
-            content = content.strip()
-            emit_progress("Chart: Cleaned markdown formatting from response")
+        decision_content = decision_response.choices[0].message.content if decision_response.choices and decision_response.choices[0].message.content else None
+        if not decision_content:
+            raise ValueError("Decision model returned empty content")
         
-        result = json.loads(content)
-        emit_progress("Chart: JSON parsing successful")
+        # Clean markdown formatting if present
+        if decision_content.strip().startswith('```json'):
+            decision_content = decision_content.strip()
+            if decision_content.startswith('```json'):
+                decision_content = decision_content[7:]
+            if decision_content.endswith('```'):
+                decision_content = decision_content[:-3]
+            decision_content = decision_content.strip()
+        
+        result = json.loads(decision_content)
+        emit_progress("Chart Stage 2: Successfully parsed analysis result")
+        
+        # Add metadata about the two-stage process
+        result["_analysis_metadata"] = {
+            "extraction_stage": {
+                "model": LITELLM_VISION_MODEL,
+                "extracted_data": extracted_data
+            },
+            "decision_stage": {
+                "model": decision_model,
+                "had_market_data": bool(market_data_summary)
+            }
+        }
+        
         return result
+        
     except Exception as e:
-        emit_progress(f"Chart: Error parsing JSON response: {str(e)}")
-        if 'content' in locals() and content:
-            emit_progress(f"Chart: Raw response: {content[:200]}...")
-        else:
-            emit_progress(f"Chart: No content available in response")
-        raise
+        emit_progress(f"Chart Stage 2: Error in decision stage: {str(e)}")
+        # Fallback: return extracted data with minimal structure
+        if 'decision_content' in locals() and decision_content:
+            emit_progress(f"Chart Stage 2: Raw response: {decision_content[:200]}...")
+        emit_progress("Chart Stage 2: Creating fallback response...")
+        return create_fallback_llm_response(symbol or extracted_data.get('symbol'), timeframe or extracted_data.get('timeframe'))
 
 def analyze_trading_chart_with_model(image_path: str, model_name: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
     # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
-    """Analyze trading chart using a specific LLM Vision API model"""
+    """Analyze trading chart using two-stage approach with a specific vision model"""
     try:
         with open(image_path, "rb") as image_file:
             image_bytes = image_file.read()
@@ -662,8 +855,115 @@ def analyze_trading_chart_with_model(image_path: str, model_name: str, symbol: s
         if not image_data:
             raise ValueError("Image file appears to be empty")
         
-        # Prepare the prompt based on whether we have market data
-        # df can be a dict with 'minute', 'hourly', 'daily' keys or a single DataFrame
+        # ============================================
+        # STAGE 1: Extract data from image (vision-only)
+        # ============================================
+        # Load pattern reference for vision extraction
+        pattern_data = load_pattern_data()
+        pattern_names = get_all_pattern_names()
+        pattern_reference_text = ""
+        if pattern_data and pattern_names:
+            pattern_reference_text = f"""
+
+## PATTERN REFERENCE
+Use these EXACT pattern names when identifying patterns. Match the visual pattern to the closest name:
+
+Available patterns: {', '.join(pattern_names)}
+
+For each pattern category, here are the key patterns:
+- Trend Continuation: ascending_triangle, descending_triangle, symmetrical_triangle, bull_flag, bear_flag, bullish_pennant, bearish_pennant
+- Reversal: head_and_shoulders_top, inverse_head_and_shoulders_bottom, double_top, double_bottom, triple_top, triple_bottom, rising_wedge, falling_wedge
+- Candlestick: bullish_engulfing, bearish_engulfing, hammer, shooting_star, morning_star, evening_star
+- Channels: ascending_channel, descending_channel, horizontal_channel_range, channel_breakout_above, channel_breakdown_below
+- Support/Resistance: breakout_above_resistance, breakdown_below_support, false_breakout_fakeout
+
+IMPORTANT: Use the EXACT pattern name from this list. Do not use variations or synonyms.
+"""
+        
+        vision_prompt = VISION_EXTRACTION_PROMPT + pattern_reference_text
+        
+        try:
+            vision_response = litellm.completion(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": vision_prompt},
+                    {"role": "user", "content": [{"type": "text", "text": "Extract data from this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                ],
+                response_format={"type": "json_object"},
+                timeout=120
+            )
+            
+            if not vision_response.choices or not vision_response.choices[0].message.content:
+                # Retry without response_format
+                vision_response = litellm.completion(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": vision_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
+                        {"role": "user", "content": [{"type": "text", "text": "Extract data from this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                    ],
+                    timeout=120
+                )
+            
+            vision_content = vision_response.choices[0].message.content if vision_response.choices and vision_response.choices[0].message.content else None
+            if not vision_content:
+                raise ValueError(f"{model_name} returned empty content in extraction stage")
+            
+            # Clean markdown formatting if present
+            if vision_content.strip().startswith('```json'):
+                vision_content = vision_content.strip()
+                if vision_content.startswith('```json'):
+                    vision_content = vision_content[7:]
+                if vision_content.endswith('```'):
+                    vision_content = vision_content[:-3]
+                vision_content = vision_content.strip()
+            
+            extracted_data = json.loads(vision_content)
+            
+            # Match detected patterns to pattern.json to get direction information
+            detected_patterns = extracted_data.get('patterns', [])
+            pattern_info_list = []
+            for pattern_item in detected_patterns:
+                pattern_name = pattern_item.get('pattern', '')
+                if pattern_name:
+                    pattern_info = get_pattern_info(pattern_name)
+                    if pattern_info:
+                        pattern_item['pattern_name'] = pattern_info['name']
+                        pattern_item['pattern_direction'] = pattern_info['direction']
+                        pattern_item['pattern_type'] = pattern_info['type']
+                        pattern_item['usual_breakout_direction'] = pattern_info.get('usual_breakout_direction', '')
+                        pattern_info_list.append(pattern_info)
+                        print(f"Matched pattern '{pattern_name}' -> direction: {pattern_info['direction']}")
+                    else:
+                        print(f"Pattern '{pattern_name}' not found in pattern.json")
+            
+            # Store pattern info in extracted_data for Stage 2
+            if pattern_info_list:
+                extracted_data['_pattern_info'] = pattern_info_list
+            
+            # Send Telegram notification about extraction completion
+            try:
+                send_extraction_complete_to_telegram(extracted_data, model_name)
+            except Exception as notify_error:
+                print(f"Failed to send extraction notification: {str(notify_error)}")
+            
+        except Exception as e:
+            # Fallback: create minimal extracted data structure
+            extracted_data = {
+                "symbol": symbol or "BTCUSDT",
+                "timeframe": timeframe or "1m",
+                "time_of_screenshot": None,
+                "visual_indicators": {},
+                "fibonacci": {},
+                "patterns": [],
+                "support_resistance": {},
+                "visual_trend": "neutral"
+            }
+        
+        # ============================================
+        # STAGE 2: Combine extracted data + market data for analysis
+        # ============================================
+        # Prepare market data summary
+        market_data_summary = ""
         if df is not None:
             if isinstance(df, dict):
                 df_minute = df.get('minute')
@@ -682,47 +982,88 @@ def analyze_trading_chart_with_model(image_path: str, model_name: str, symbol: s
                     symbol=symbol, 
                     timeframe=timeframe
                 )
-                enhanced_prompt = OPENAI_VISION_PROMPT + f"\n\n## MARKET DATA CONTEXT\n{symbol} {timeframe} - Latest market data:\n{market_data_summary}\n\nUse this market data to enhance your analysis and provide more accurate technical indicator values. Pay special attention to the hourly and daily timeframes for trend context."
-            else:
-                enhanced_prompt = OPENAI_VISION_PROMPT
-        else:
-            enhanced_prompt = OPENAI_VISION_PROMPT
         
-        response = litellm.completion(
-            model=model_name,
+        # Prepare pattern context for Stage 2
+        pattern_context = ""
+        pattern_info_list = extracted_data.get('_pattern_info', [])
+        if pattern_info_list:
+            pattern_context = "\n## DETECTED PATTERN INFORMATION\n"
+            for pattern_info in pattern_info_list:
+                pattern_context += f"""
+Pattern: {pattern_info['name']}
+- Type: {pattern_info['type']}
+- Direction: {pattern_info['direction']} (CRITICAL: This indicates the typical trade direction for this pattern)
+- Usual Breakout Direction: {pattern_info.get('usual_breakout_direction', 'N/A')}
+- Context: {pattern_info.get('typical_context', 'N/A')}
+- Notes: {pattern_info.get('notes', 'N/A')}
+
+"""
+            pattern_context += "\n**IMPORTANT**: The pattern direction (long/short) is a STRONG signal. Your opening signal direction MUST align with the pattern direction unless there is STRONG conflicting evidence from indicators.\n"
+        
+        # Prepare context for second stage
+        context = f"""## EXTRACTED CHART DATA
+{json.dumps(extracted_data, indent=2)}
+{pattern_context}
+## REAL-TIME MARKET DATA
+{market_data_summary if market_data_summary else "No market data provided - using extracted chart data only"}
+
+## SYMBOL & TIMEFRAME
+Symbol: {symbol or extracted_data.get('symbol', 'BTCUSDT')}
+Timeframe: {timeframe or extracted_data.get('timeframe', '1m')}
+"""
+        
+        # Use text model for second stage (can use same model or different one)
+        # For multi-model comparison, use the same model for both stages
+        decision_model = model_name if "vision" not in model_name.lower() or "gpt" in model_name.lower() else LITELLM_TEXT_MODEL
+        
+        decision_response = litellm.completion(
+            model=decision_model,
             messages=[
-                {"role": "system", "content": enhanced_prompt},
-                {"role": "user", "content": [{"type": "text", "text": "Analyze this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                {"role": "system", "content": MARKET_DATA_ANALYSIS_PROMPT},
+                {"role": "user", "content": context}
             ],
             response_format={"type": "json_object"},
-            timeout=120  # Longer timeout for multi-model analysis
+            timeout=120
         )
         
-        if not response.choices or not response.choices[0].message.content:
-            # Try retry without response_format
-            response = litellm.completion(
-                model=model_name,
+        if not decision_response.choices or not decision_response.choices[0].message.content:
+            # Retry without response_format
+            decision_response = litellm.completion(
+                model=decision_model,
                 messages=[
-                    {"role": "system", "content": enhanced_prompt + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
-                    {"role": "user", "content": [{"type": "text", "text": "Analyze this trading chart."}, {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_data}"}}]}
+                    {"role": "system", "content": MARKET_DATA_ANALYSIS_PROMPT + "\n\nIMPORTANT: Respond with ONLY valid JSON. No additional text or formatting."},
+                    {"role": "user", "content": context}
                 ],
                 timeout=120
             )
         
-        content = response.choices[0].message.content if response.choices and response.choices[0].message.content else None
-        if not content:
-            raise ValueError(f"{model_name} returned empty content")
+        decision_content = decision_response.choices[0].message.content if decision_response.choices and decision_response.choices[0].message.content else None
+        if not decision_content:
+            raise ValueError(f"{decision_model} returned empty content in decision stage")
         
         # Clean markdown formatting if present
-        if content.strip().startswith('```json'):
-            content = content.strip()
-            if content.startswith('```json'):
-                content = content[7:]
-            if content.endswith('```'):
-                content = content[:-3]
-            content = content.strip()
+        if decision_content.strip().startswith('```json'):
+            decision_content = decision_content.strip()
+            if decision_content.startswith('```json'):
+                decision_content = decision_content[7:]
+            if decision_content.endswith('```'):
+                decision_content = decision_content[:-3]
+            decision_content = decision_content.strip()
         
-        result = json.loads(content)
+        result = json.loads(decision_content)
+        
+        # Add metadata about the two-stage process
+        result["_analysis_metadata"] = {
+            "extraction_stage": {
+                "model": model_name,
+                "extracted_data": extracted_data
+            },
+            "decision_stage": {
+                "model": decision_model,
+                "had_market_data": bool(market_data_summary)
+            }
+        }
+        
         return result
     except Exception as e:
         # Return error information instead of raising
@@ -1117,7 +1458,8 @@ def llm_trade_gate_decision(
     market_values: Dict[str, Any],
     checklist_passed: bool,
     invalidation_triggered: bool,
-    triggered_conditions: list
+    triggered_conditions: list,
+    recent_candles: list = None
 ) -> Dict[str, Any]:
     """Make trade gate decision using LLM"""
     emit_progress("Gate: Initializing LLM trade gate decision...")
@@ -1136,6 +1478,7 @@ def llm_trade_gate_decision(
             "current_rsi": float(market_values.get("current_rsi", 0) or 0),
             "current_time": str(market_values.get("current_time")),
         },
+        "recent_price_action": recent_candles or [],
         "program_checks": {
             "checklist_passed": bool(checklist_passed),
             "invalidation_triggered": bool(invalidation_triggered),
@@ -1146,10 +1489,10 @@ def llm_trade_gate_decision(
     emit_progress(f"Gate: Context prepared - Symbol: {gate_context['llm_snapshot']['symbol']}, Price: ${gate_context['market_values']['current_price']:.2f}, RSI: {gate_context['market_values']['current_rsi']:.2f}")
     emit_progress(f"Gate: Checklist passed: {checklist_passed}, Invalidation triggered: {invalidation_triggered}")
 
-    emit_progress(f"Gate: Sending request to LLM for trade gate decision (model: {LITELLM_TEXT_MODEL})...")
+    emit_progress(f"Gate: Sending request to LLM for trade gate decision (model: {LITELLM_REASONING_MODEL})...")
     try:
         response = litellm.completion(
-            model=LITELLM_TEXT_MODEL,
+            model=LITELLM_REASONING_MODEL,
             messages=[
                 {"role": "system", "content": TRADE_GATE_PROMPT},
                 {"role": "user", "content": json.dumps(gate_context)},
@@ -2215,6 +2558,25 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
             emit_progress("Step 11 Complete: Trade gate skipped (fallback mode)", 11, 14)
         elif signal_valid and signal_status == "valid":
             emit_progress("Step 11 Complete: Signal is valid, proceeding to trade gate", 11, 14)
+            
+            # Fetch recent price action for gate context
+            emit_progress("Step 11.5: Fetching recent price action for gate context...", 11, 14)
+            recent_candles = []
+            try:
+                # Use global fetch_market_dataframe to get fresh data
+                recent_df = fetch_market_dataframe(symbol, timeframe, limit=10)
+                if not recent_df.empty:
+                    # Get last 5 candles
+                    recent_records = recent_df.tail(5).to_dict('records')
+                    # Serialize timestamps
+                    for c in recent_records:
+                        if 'Open_time' in c: c['Open_time'] = str(c['Open_time'])
+                        if 'Close_time' in c: c['Close_time'] = str(c['Close_time'])
+                    recent_candles = recent_records
+                    emit_progress(f"Step 11.5: Fetched {len(recent_candles)} recent candles for context")
+            except Exception as e:
+                emit_progress(f"Step 11.5 Warning: Failed to fetch recent candles: {str(e)}")
+
             emit_progress("Step 12: Running LLM trade gate decision...", 12, 14)
             
             checklist_passed = True
@@ -2228,6 +2590,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 checklist_passed=checklist_passed,
                 invalidation_triggered=invalidation_triggered_recent,
                 triggered_conditions=triggered_conditions,
+                recent_candles=recent_candles
             )
             emit_progress("Step 12 Complete: LLM trade gate decision finished", 12, 14)
             

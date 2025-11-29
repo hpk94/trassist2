@@ -247,3 +247,5 @@ make a trading decision with checklist and invalidations.
 3. **Long-term:** Choose best approach based on testing results
 
 
+
+

@@ -1,5 +1,6 @@
 import os
 import json
+import html
 import requests
 from datetime import datetime
 from typing import Dict, Any, Optional
@@ -329,9 +330,9 @@ class NotificationService:
     def send_telegram_initial_analysis(self, llm_output: Dict[str, Any]) -> bool:
         """Send initial LLM analysis results to Telegram (text message with comprehensive conditions)"""
         try:
-            symbol = llm_output.get("symbol", "Unknown")
-            timeframe = llm_output.get("timeframe", "Unknown")
-            time_of_screenshot = llm_output.get("time_of_screenshot", "Unknown")
+            symbol = html.escape(str(llm_output.get("symbol", "Unknown")))
+            timeframe = html.escape(str(llm_output.get("timeframe", "Unknown")))
+            time_of_screenshot = html.escape(str(llm_output.get("time_of_screenshot", "Unknown")))
             
             # Check if this is a multi-model analysis
             multi_model_info = llm_output.get("_multi_model_comparison", {})
@@ -339,7 +340,7 @@ class NotificationService:
             
             # Get opening signal info
             opening_signal = llm_output.get("opening_signal", {})
-            direction = opening_signal.get("direction", "Unknown").upper()
+            direction = html.escape(str(opening_signal.get("direction", "Unknown")).upper())
             is_met = opening_signal.get("is_met", False)
             
             # Get risk management
@@ -358,18 +359,18 @@ class NotificationService:
             tech_indicators = llm_output.get("technical_indicators", {}) or llm_output.get("core_indicators", {})
             rsi_info = tech_indicators.get("RSI14", {})
             rsi = rsi_info.get("value", "N/A")
-            rsi_signal = rsi_info.get("signal", "N/A")
+            rsi_signal = html.escape(str(rsi_info.get("signal", "N/A")))
             
             macd = tech_indicators.get("MACD12_26_9", {})
             macd_histogram = macd.get("histogram", "N/A") if isinstance(macd, dict) else "N/A"
             
             stoch = tech_indicators.get("STOCH14_3_3", {})
             stoch_k = stoch.get("k_percent", "N/A")
-            stoch_signal = stoch.get("signal", "N/A")
+            stoch_signal = html.escape(str(stoch.get("signal", "N/A")))
             
             volume_info = tech_indicators.get("VOLUME", {})
             volume_ratio = volume_info.get("ratio", "N/A")
-            volume_trend = volume_info.get("trend", "N/A")
+            volume_trend = html.escape(str(volume_info.get("trend", "N/A")))
             
             # Get support/resistance
             sup_res = llm_output.get("support_resistance", {})
@@ -379,7 +380,7 @@ class NotificationService:
             # Get validity assessment
             validity = llm_output.get("validity_assessment", {})
             alignment_score = validity.get("alignment_score", validity.get("core_alignment_score", "N/A"))
-            validity_notes = validity.get("notes", "")
+            validity_notes = html.escape(str(validity.get("notes", "")))
             
             # Format message - Part 1: Overview
             message = f"""
@@ -400,10 +401,10 @@ class NotificationService:
             if is_multi_model:
                 all_results = multi_model_info.get("all_results", {})
                 comparison_summary = multi_model_info.get("comparison_summary", {})
-                selected_model = multi_model_info.get("selected_model", "Unknown")
+                selected_model = html.escape(str(multi_model_info.get("selected_model", "Unknown")))
                 errors = multi_model_info.get("errors", {})
                 
-                selection_reason = multi_model_info.get("selection_reason", "N/A")
+                selection_reason = html.escape(str(multi_model_info.get("selection_reason", "N/A")))
                 message += f"""
 ━━━━━━━━━━━━━━━━━━━━
 <b>🔬 MULTI-MODEL ANALYSIS</b>
@@ -416,23 +417,29 @@ class NotificationService:
 <i>Review all results to determine which model performs best</i>
 """
                 for model_name, model_data in all_results.items():
-                    model_direction = model_data.get("direction", "unknown").upper()
+                    model_name_esc = html.escape(str(model_name))
+                    model_direction = html.escape(str(model_data.get("direction", "unknown")).upper())
                     model_confidence = model_data.get("confidence", 0)
                     model_time = model_data.get("elapsed_time", 0)
                     model_stop_loss = model_data.get("stop_loss")
                     model_take_profits = model_data.get("take_profits", [])
                     direction_emoji = "🟢" if model_direction == "LONG" else "🔴" if model_direction == "SHORT" else "⚪"
-                    selected_marker = " ⭐" if model_name == selected_model else ""
+                    selected_marker = " ⭐" if model_name == multi_model_info.get("selected_model") else ""
                     
-                    message += f"• {direction_emoji} <b>{model_name}</b>{selected_marker}\n"
-                    message += f"  └ Direction: {model_direction}, Confidence: {model_confidence:.0%}, Time: {model_time:.1f}s\n"
+                    # Safe formatting for confidence and time
+                    conf_str = f"{model_confidence:.0%}" if isinstance(model_confidence, (int, float)) else "N/A"
+                    time_str = f"{model_time:.1f}s" if isinstance(model_time, (int, float)) else "N/A"
+                    
+                    message += f"• {direction_emoji} <b>{model_name_esc}</b>{selected_marker}\n"
+                    message += f"  └ Direction: {model_direction}, Confidence: {conf_str}, Time: {time_str}\n"
                     
                     # Add stop loss if available
                     if model_stop_loss is not None:
                         try:
                             message += f"  └ Stop Loss: ${float(model_stop_loss):,.2f}\n"
                         except (TypeError, ValueError):
-                            message += f"  └ Stop Loss: {model_stop_loss}\n"
+                            # Escape if it's a string
+                            message += f"  └ Stop Loss: {html.escape(str(model_stop_loss))}\n"
                     
                     # Add take profits if available
                     if model_take_profits:
@@ -449,10 +456,13 @@ class NotificationService:
                             try:
                                 tp_str = f"TP{idx}: ${float(tp_price):,.2f}"
                                 if tp_rr is not None:
-                                    tp_str += f" (R:R {tp_rr:.2f})"
+                                    try:
+                                        tp_str += f" (R:R {float(tp_rr):.2f})"
+                                    except (TypeError, ValueError):
+                                        pass
                                 tp_list.append(tp_str)
                             except (TypeError, ValueError):
-                                tp_list.append(f"TP{idx}: {tp_price}")
+                                tp_list.append(f"TP{idx}: {html.escape(str(tp_price))}")
                         if tp_list:
                             message += f"  └ Take Profits: {', '.join(tp_list)}\n"
                     
@@ -467,18 +477,19 @@ class NotificationService:
                 if errors:
                     message += f"\n<b>Failed Models:</b>\n"
                     for model_name, error_info in errors.items():
-                        error_msg = error_info.get("error", "Unknown error")
+                        model_name_esc = html.escape(str(model_name))
+                        error_msg = html.escape(str(error_info.get("error", "Unknown error")))
                         # Truncate long error messages
                         if len(error_msg) > 50:
                             error_msg = error_msg[:47] + "..."
-                        message += f"• ❌ {model_name}: {error_msg}\n"
+                        message += f"• ❌ {model_name_esc}: {error_msg}\n"
                 
                 # Add consensus info
                 consensus = comparison_summary.get("consensus_direction")
                 agreement = comparison_summary.get("agreement", False)
                 if consensus:
                     agreement_emoji = "✅" if agreement else "⚠️"
-                    message += f"\n<b>Consensus:</b> {agreement_emoji} {consensus.upper()}"
+                    message += f"\n<b>Consensus:</b> {agreement_emoji} {html.escape(str(consensus).upper())}"
                     if not agreement:
                         message += " (models disagree)"
                     message += "\n"
@@ -486,13 +497,35 @@ class NotificationService:
                 message += "\n"
             
             # Add alignment score
-            if alignment_score != "N/A":
-                alignment_pct = float(alignment_score) * 100 if isinstance(alignment_score, (int, float)) else alignment_score
-                message += f"<b>Alignment Score:</b> {alignment_pct:.0f}%\n"
+            if alignment_score != "N/A" and alignment_score is not None:
+                try:
+                    alignment_val = float(alignment_score)
+                    message += f"<b>Alignment Score:</b> {alignment_val * 100:.0f}%\n"
+                except (ValueError, TypeError):
+                    # If conversion fails, print as is
+                    message += f"<b>Alignment Score:</b> {alignment_score}\n"
             
             message += "\n"
             
             # Part 2: Technical Indicators
+            
+            # Safe formatting for support/resistance
+            try:
+                if isinstance(support, (int, float)):
+                    supp_str = f"${support:,.2f}"
+                else:
+                    supp_str = f"${html.escape(str(support))}"
+            except Exception:
+                supp_str = "N/A"
+                
+            try:
+                if isinstance(resistance, (int, float)):
+                    res_str = f"${resistance:,.2f}"
+                else:
+                    res_str = f"${html.escape(str(resistance))}"
+            except Exception:
+                res_str = "N/A"
+
             message += f"""━━━━━━━━━━━━━━━━━━━━
 <b>📈 TECHNICAL INDICATORS</b>
 ━━━━━━━━━━━━━━━━━━━━
@@ -508,20 +541,29 @@ class NotificationService:
 <b>Volume Ratio:</b> {volume_ratio}
   └ Trend: {volume_trend}
 
-<b>Support:</b> ${support if isinstance(support, str) else f'{support:,.2f}'}
-<b>Resistance:</b> ${resistance if isinstance(resistance, str) else f'{resistance:,.2f}'}
+<b>Support:</b> {supp_str}
+<b>Resistance:</b> {res_str}
 
 """
             
             # Part 3: Risk Management
             sl_price = stop_loss_info.get("price", 0)
-            sl_basis = stop_loss_info.get("basis", "N/A")
+            sl_basis = html.escape(str(stop_loss_info.get("basis", "N/A")))
+            
+            # Safe formatting for SL
+            try:
+                if isinstance(sl_price, (int, float)):
+                    sl_str = f"${sl_price:,.2f}"
+                else:
+                    sl_str = f"${html.escape(str(sl_price))}" if sl_price is not None else "N/A"
+            except Exception:
+                sl_str = "N/A"
             
             message += f"""━━━━━━━━━━━━━━━━━━━━
 <b>🛡️ RISK MANAGEMENT</b>
 ━━━━━━━━━━━━━━━━━━━━
 
-<b>Stop Loss:</b> ${sl_price:,.2f}
+<b>Stop Loss:</b> {sl_str}
   └ Basis: {sl_basis}
 
 """
@@ -531,9 +573,18 @@ class NotificationService:
                 message += "<b>Take Profit Targets:</b>\n"
                 for i, tp in enumerate(take_profits, 1):
                     tp_price = tp.get("price", 0)
-                    tp_basis = tp.get("basis", "N/A")
+                    tp_basis = html.escape(str(tp.get("basis", "N/A")))
                     tp_rr = tp.get("rr", "N/A")
-                    message += f"  TP{i}: ${tp_price:,.2f} (R:R {tp_rr})\n"
+                    
+                    try:
+                        if isinstance(tp_price, (int, float)):
+                            tp_p_str = f"${tp_price:,.2f}"
+                        else:
+                            tp_p_str = f"${html.escape(str(tp_price))}" if tp_price is not None else "N/A"
+                    except Exception:
+                        tp_p_str = "N/A"
+                        
+                    message += f"  TP{i}: {tp_p_str} (R:R {tp_rr})\n"
                     message += f"    └ {tp_basis}\n"
             else:
                 message += "<b>Take Profit:</b> To be determined\n"
@@ -550,20 +601,20 @@ class NotificationService:
 """
                 # Group by category if available
                 for i, condition in enumerate(checklist[:8], 1):  # Limit to 8 to avoid message length issues
-                    cond_id = condition.get("id", f"condition_{i}")
-                    indicator = condition.get("indicator", "")
-                    comparator = condition.get("comparator", "")
-                    value = condition.get("value", "")
+                    cond_id = html.escape(str(condition.get("id", f"condition_{i}")))
+                    indicator = html.escape(str(condition.get("indicator", "")))
+                    comparator = html.escape(str(condition.get("comparator", "")))
+                    value = html.escape(str(condition.get("value", "")))
                     cond_type = condition.get("type", "")
                     
                     # Format condition nicely
                     if indicator:
                         message += f"{i}. {indicator} {comparator} {value}\n"
                     elif cond_type == "candle_pattern":
-                        pattern_name = condition.get("pattern", cond_id)
+                        pattern_name = html.escape(str(condition.get("pattern", cond_id)))
                         message += f"{i}. Pattern: {pattern_name}\n"
                     elif cond_type == "price_retest":
-                        level = condition.get("level", "key level")
+                        level = html.escape(str(condition.get("level", "key level")))
                         message += f"{i}. Retest of {level}\n"
                     else:
                         message += f"{i}. {cond_id.replace('_', ' ').title()}\n"
@@ -584,12 +635,12 @@ class NotificationService:
 
 """
                 for i, invalid in enumerate(invalidation[:5], 1):  # Limit to 5
-                    inv_id = invalid.get("id", f"rule_{i}")
+                    inv_id = html.escape(str(invalid.get("id", f"rule_{i}")))
                     inv_type = invalid.get("type", "")
-                    level = invalid.get("level", "")
-                    indicator = invalid.get("indicator", "")
-                    comparator = invalid.get("comparator", "")
-                    value = invalid.get("value", "")
+                    level = html.escape(str(invalid.get("level", "")))
+                    indicator = html.escape(str(invalid.get("indicator", "")))
+                    comparator = html.escape(str(invalid.get("comparator", "")))
+                    value = html.escape(str(invalid.get("value", "")))
                     
                     if inv_type == "price_breach":
                         message += f"{i}. Price closes {comparator} {level}\n"
@@ -611,9 +662,15 @@ class NotificationService:
 
 """
                 for i, pattern in enumerate(top_patterns, 1):
-                    pattern_name = pattern.get("pattern", "Unknown")
+                    pattern_name = html.escape(str(pattern.get("pattern", "Unknown")))
                     confidence = pattern.get("confidence", 0)
-                    message += f"{i}. {pattern_name.replace('_', ' ').title()} ({confidence:.0%})\n"
+                    
+                    try:
+                        conf_str = f"({confidence:.0%})" if isinstance(confidence, (int, float)) else ""
+                    except Exception:
+                        conf_str = ""
+                        
+                    message += f"{i}. {pattern_name.replace('_', ' ').title()} {conf_str}\n"
                 message += "\n"
             
             # Part 7: Validity Notes
@@ -636,7 +693,7 @@ class NotificationService:
             
             if summary_actions:
                 for action in summary_actions[:4]:  # Top 4 actions
-                    message += f"• {action}\n"
+                    message += f"• {html.escape(str(action))}\n"
                 message += "\n"
             else:
                 message += """• Fetching real-time market data...
@@ -673,9 +730,9 @@ class NotificationService:
     def send_telegram_polling_start(self, llm_output: Dict[str, Any], timeframe: str, wait_seconds: int) -> bool:
         """Send notification when polling starts, showing what we're waiting for"""
         try:
-            symbol = llm_output.get("symbol", "Unknown")
+            symbol = html.escape(str(llm_output.get("symbol", "Unknown")))
             opening_signal = llm_output.get("opening_signal", {})
-            direction = opening_signal.get("direction", "Unknown").upper()
+            direction = html.escape(str(opening_signal.get("direction", "Unknown")).upper())
             
             # Get checklist conditions we're waiting for
             checklist = opening_signal.get("checklist", []) or opening_signal.get("core_checklist", [])
@@ -704,7 +761,7 @@ class NotificationService:
 ━━━━━━━━━━━━━━━━━━━━
 
 <b>Symbol:</b> {symbol}
-<b>Timeframe:</b> {timeframe}
+<b>Timeframe:</b> {html.escape(str(timeframe))}
 <b>Direction:</b> {'🟢 ' + direction if direction == 'LONG' else '🔴 ' + direction if direction == 'SHORT' else direction}
 
 ━━━━━━━━━━━━━━━━━━━━
@@ -726,20 +783,20 @@ class NotificationService:
 
 """
                 for i, condition in enumerate(all_checklist[:6], 1):  # Limit to 6 to keep message concise
-                    cond_id = condition.get("id", f"condition_{i}")
-                    indicator = condition.get("indicator", "")
-                    comparator = condition.get("comparator", "")
-                    value = condition.get("value", "")
+                    cond_id = html.escape(str(condition.get("id", f"condition_{i}")))
+                    indicator = html.escape(str(condition.get("indicator", "")))
+                    comparator = html.escape(str(condition.get("comparator", "")))
+                    value = html.escape(str(condition.get("value", "")))
                     cond_type = condition.get("type", "")
                     
                     # Format condition nicely
                     if indicator:
                         message += f"{i}. {indicator} {comparator} {value}\n"
                     elif cond_type == "candle_pattern":
-                        pattern_name = condition.get("pattern", cond_id)
+                        pattern_name = html.escape(str(condition.get("pattern", cond_id)))
                         message += f"{i}. Pattern: {pattern_name}\n"
                     elif cond_type == "price_retest":
-                        level = condition.get("level", "key level")
+                        level = html.escape(str(condition.get("level", "key level")))
                         message += f"{i}. Retest of {level}\n"
                     else:
                         message += f"{i}. {cond_id.replace('_', ' ').title()}\n"
@@ -767,12 +824,12 @@ class NotificationService:
 
 """
                 for i, invalid in enumerate(invalidation[:4], 1):  # Limit to 4
-                    inv_id = invalid.get("id", f"rule_{i}")
+                    inv_id = html.escape(str(invalid.get("id", f"rule_{i}")))
                     inv_type = invalid.get("type", "")
-                    level = invalid.get("level", "")
-                    indicator = invalid.get("indicator", "")
-                    comparator = invalid.get("comparator", "")
-                    value = invalid.get("value", "")
+                    level = html.escape(str(invalid.get("level", "")))
+                    indicator = html.escape(str(invalid.get("indicator", "")))
+                    comparator = html.escape(str(invalid.get("comparator", "")))
+                    value = html.escape(str(invalid.get("value", "")))
                     
                     if inv_type == "price_breach":
                         message += f"{i}. Price closes {comparator} {level}\n"
@@ -815,13 +872,64 @@ class NotificationService:
             traceback.print_exc()
             return False
     
+    def send_telegram_extraction_complete(self, extracted_data: Dict[str, Any], model_name: str = None) -> bool:
+        """Send notification when image extraction is complete, showing patterns and extracted data"""
+        try:
+            symbol = html.escape(str(extracted_data.get("symbol", "Unknown")))
+            timeframe = html.escape(str(extracted_data.get("timeframe", "Unknown")))
+            patterns = extracted_data.get("patterns", [])
+            
+            # Build very short message
+            message = f"<b>✅ Extraction Complete</b>\n\n"
+            if model_name:
+                # Extract display name from model name (e.g., "gpt-4o" -> "GPT-4o", "deepseek/deepseek-chat" -> "DeepSeek")
+                display_name = model_name
+                if "gpt" in model_name.lower() or "openai" in model_name.lower():
+                    display_name = "ChatGPT"
+                elif "deepseek" in model_name.lower():
+                    display_name = "DeepSeek"
+                elif "gemini" in model_name.lower():
+                    display_name = "Gemini"
+                message += f"<b>Model:</b> {html.escape(display_name)}\n"
+            message += f"<b>{symbol}</b> {timeframe}\n\n"
+            
+            if patterns:
+                message += "<b>Patterns:</b>\n"
+                for pattern in patterns[:3]:  # Max 3 patterns
+                    pattern_name = html.escape(str(pattern.get("pattern", "Unknown")))
+                    confidence = pattern.get("confidence", 0)
+                    confidence_pct = f"{confidence:.0%}" if isinstance(confidence, (int, float)) else "N/A"
+                    message += f"• {pattern_name.replace('_', ' ').title()} ({confidence_pct})\n"
+            else:
+                message += "<i>No patterns detected</i>\n"
+            
+            url = f"https://api.telegram.org/bot{self.telegram_bot_token}/sendMessage"
+            
+            data = {
+                "chat_id": self.telegram_chat_id,
+                "text": message,
+                "parse_mode": "HTML"
+            }
+            
+            response = requests.post(url, data=data, timeout=10)
+            response.raise_for_status()
+            
+            print(f"✅ Extraction complete notification sent to Telegram successfully")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Telegram extraction notification failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
     def send_telegram_analysis(self, image_path: str, analysis_data: Dict[str, Any]) -> bool:
         """Send trading chart image with analysis to Telegram"""
         try:
             # Format analysis data into readable caption
-            symbol = analysis_data.get("symbol", "Unknown")
-            timeframe = analysis_data.get("timeframe", "Unknown")
-            direction = analysis_data.get("direction", "Unknown")
+            symbol = html.escape(str(analysis_data.get("symbol", "Unknown")))
+            timeframe = html.escape(str(analysis_data.get("timeframe", "Unknown")))
+            direction = html.escape(str(analysis_data.get("direction", "Unknown")))
             confidence = analysis_data.get("confidence", 0)
             
             caption = f"""
@@ -895,6 +1003,11 @@ def send_analysis_to_telegram(image_path: str, analysis_data: Dict[str, Any]) ->
     """Convenience function to send trading analysis to Telegram"""
     service = NotificationService()
     return service.send_telegram_analysis(image_path, analysis_data)
+
+def send_extraction_complete_to_telegram(extracted_data: Dict[str, Any], model_name: str = None) -> bool:
+    """Convenience function to send extraction completion notification to Telegram"""
+    service = NotificationService()
+    return service.send_telegram_extraction_complete(extracted_data, model_name)
 
 def test_notification_system() -> Dict[str, bool]:
     """Test the notification system"""
