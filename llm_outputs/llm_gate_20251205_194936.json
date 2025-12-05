@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI has recovered above the specified threshold, indicating supportive momentum.",
+    "Current price is above the Fib 0.236 level, maintaining trend support.",
+    "MACD is showing convergence, supporting continuation potential."
+  ],
+  "warnings": [
+    "Volume in the last candle is low; be cautious of potential reversals."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 89144.92,
+    "stop_loss": 88500.0,
+    "take_profits": [
+      {
+        "price": 89668.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Use 30x leverage wisely, ensure adequate account balance to handle potential volatility."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

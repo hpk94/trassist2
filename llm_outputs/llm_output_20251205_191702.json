@@ -1,0 +1,310 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-10 19:15",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 88000.0,
+    "resistance": 91357.5
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 60.34,
+      "status": "neutral",
+      "signal": "recovering from correction"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "no data"
+    },
+    "VOLUME": {
+      "current": 0.9334467,
+      "average": 0.9334467,
+      "ratio": 1.0,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 88000.0,
+        "to": 91357.5
+      },
+      "levels": {
+        "0.236": 88787.5,
+        "0.382": 89274.7,
+        "0.5": 89668.5,
+        "0.618": 90662.3,
+        "0.786": 90622.9
+      }
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": 125.7187,
+      "signal_line": 135.2066,
+      "histogram": -9.4879
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle"
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Ascending channel pattern detected with high confidence. Indicators do not strongly oppose the bearish pattern direction."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_neutral",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "pattern_confirmation",
+        "indicator": "PATTERN",
+        "comparator": "==",
+        "value": "ascending_channel",
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "break_above_channel",
+        "type": "price_breach",
+        "level": "channel_upper_boundary"
+      },
+      {
+        "id": "macd_crossover",
+        "indicator": "MACD12_26_9",
+        "comparator": ">",
+        "value": 0.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89700.0,
+      "basis": "above_current_high"
+    },
+    "take_profit": [
+      {
+        "price": 89274.7,
+        "basis": "fib_0.382_retracement",
+        "rr": 1.5
+      },
+      {
+        "price": 88787.5,
+        "basis": "fib_0.236_retracement",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI14 for neutrality",
+    "Look for bearish break below channel lower boundary",
+    "Enter short if pattern holds and RSI stays neutral",
+    "Invalidate if price breaks above channel upper boundary"
+  ],
+  "improvements": "Monitor volume for increased activity during pattern breakout; consider additional bearish confirmation like a MACD crossover for improved entry timing.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSD",
+        "timeframe": "1m",
+        "time_of_screenshot": "2023-10-10 19:15",
+        "visual_indicators": {
+          "RSI14": {
+            "value": null,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": "average",
+            "visible": true
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 88000.0,
+            "to": 91357.5
+          },
+          "levels": {
+            "0.236": 88787.5,
+            "0.382": 89274.7,
+            "0.5": 89668.5,
+            "0.618": 90662.3,
+            "0.786": 90622.9
+          },
+          "timeframe_hints": {
+            "yellow": "1m",
+            "blue": null,
+            "white": null
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 0,
+            "confidence": 0.9,
+            "pattern_name": "ascending_channel",
+            "pattern_direction": "short",
+            "pattern_type": "trend_channel",
+            "usual_breakout_direction": "often_bearish_down_through_lower_boundary"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            88000.0
+          ],
+          "resistance": [
+            91357.5
+          ]
+        },
+        "visual_trend": "bullish",
+        "_pattern_info": [
+          {
+            "name": "ascending_channel",
+            "direction": "short",
+            "type": "trend_channel",
+            "usual_breakout_direction": "often_bearish_down_through_lower_boundary",
+            "notes": "As long as price stays within the channel, trend is intact. A decisive break above can signal acceleration, a break below often signals trend weakening or reversal.",
+            "look": "Price oscillates between two roughly parallel upward-sloping trendlines (higher highs and higher lows).",
+            "typical_context": "Established uptrend with orderly pullbacks."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on short)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "DeepSeek": "short",
+        "Gemini": "short"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.6,
+        "DeepSeek": 0.6,
+        "Gemini": 0.85
+      },
+      "response_times": {
+        "ChatGPT5.1": 35.71676230430603,
+        "DeepSeek": 37.54321503639221,
+        "Gemini": 92.08346509933472
+      },
+      "agreement": true,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.6,
+        "elapsed_time": 35.71676230430603,
+        "stop_loss": 89700.0,
+        "take_profits": [
+          {
+            "price": 89274.7,
+            "rr": 1.5
+          },
+          {
+            "price": 88787.5,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      },
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.6,
+        "elapsed_time": 37.54321503639221,
+        "stop_loss": 90668.5,
+        "take_profits": [
+          {
+            "price": 88787.5,
+            "rr": 1.5
+          },
+          {
+            "price": 88000.0,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      },
+      "Gemini": {
+        "direction": "short",
+        "confidence": 0.85,
+        "elapsed_time": 92.08346509933472,
+        "stop_loss": 89750.0,
+        "take_profits": [
+          {
+            "price": 89275.0,
+            "rr": 2.4
+          },
+          {
+            "price": 88800.0,
+            "rr": 5.8
+          }
+        ],
+        "max_rr": 5.8
+      }
+    },
+    "errors": {}
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI is currently below neutral, aligning with short signal.",
+    "Current price is below Fib 0.5 level, supporting bearish outlook.",
+    "Invalidations are not triggered; current conditions still valid for short entry."
+  ],
+  "warnings": [
+    "Price has exhibited some volatility in recent candles."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 86012.48,
+    "stop_loss": 86289.7,
+    "take_profits": [
+      {
+        "price": 85747.1,
+        "portion": 0.5
+      },
+      {
+        "price": 85508.4,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Apply leverage cautiously based on volatility."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

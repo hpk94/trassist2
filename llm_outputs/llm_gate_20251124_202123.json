@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "RSI is below 50, violating directional momentum criteria.",
+    "Price has moved significantly beyond the setup range (current price versus target entry conditions), indicating missing retest."
+  ],
+  "warnings": [
+    "Potentially overstretched conditions as current price exceeds planned technical levels."
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 86323.0,
+    "stop_loss": 85750.0,
+    "take_profits": [
+      {
+        "price": 87002.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Due to misalignment with current market price, it's advisable to wait for a pullback to the planned entry level."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 1,
+      "total": 1
+    },
+    "context_alignment": "weak"
+  }
+}

@@ -8,11 +8,22 @@ from prompt import OPENAI_VISION_PROMPT, TRADE_GATE_PROMPT
 import pandas as pd
 from datetime import datetime
 import time
+import uuid
 
 from pymexc import spot, futures
 
 # Import notification service
 from services.notification_service import notify_valid_trade, notify_invalidated_trade
+
+# Import Hyperliquid trading service
+from services.hyperliquid_service import (
+    execute_trade_from_gate,
+    get_position_monitor,
+    get_price_difference,
+    check_and_set_leverage,
+    status as hyperliquid_status,
+    HyperliquidConfig
+)
 
 # Import Telegram bot for command control
 from telegram_bot import (
@@ -21,6 +32,7 @@ from telegram_bot import (
     set_analysis_running, 
     set_analysis_info,
     send_telegram_status,
+    send_trade_with_buttons,
     start_bot
 )
 
@@ -258,8 +270,78 @@ def _convert_symbol_to_mexc_futures(symbol: str) -> str:
     # If already in correct format or different quote
     return cleaned.replace("/", "_")
 
+
+def open_trade_with_hyperliquid_and_notify(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Execute a trade on Hyperliquid with limit orders and send Telegram notification with buttons.
+    
+    This function:
+    1. Checks price difference between MEXC (USDT) and Hyperliquid (USDC)
+    2. Verifies and sets leverage
+    3. Opens position with limit order (lower fees)
+    4. Sends Telegram notification with trade management buttons
+    5. Starts position monitoring
+    
+    Args:
+        symbol: Trading symbol (e.g., "BTCUSDT.P")
+        gate_result: Gate decision with direction, execution params, etc.
+    
+    Returns:
+        Dict with trade execution result
+    """
+    # Check if orders are enabled
+    if not HyperliquidConfig.orders_enabled():
+        print("⚠️ Hyperliquid orders not enabled (HYPERLIQUID_ENABLE_ORDERS=false)")
+        return {"ok": False, "error": "Orders not enabled", "paper_trade": True}
+    
+    # Execute the trade
+    result = execute_trade_from_gate(symbol, gate_result)
+    
+    if result.get("ok"):
+        # Generate unique trade ID for button callbacks
+        trade_id = str(uuid.uuid4())[:8]
+        
+        # Prepare trade data for notification
+        trade_data = {
+            "symbol": symbol,
+            "coin": result.get("coin", "BTC"),
+            "direction": gate_result.get("direction", "unknown").upper(),
+            "entry_price": result.get("order_details", {}).get("limit_price", 0),
+            "size": result.get("order_details", {}).get("size", 0),
+            "leverage": result.get("leverage", {}).get("target_leverage", 1)
+        }
+        
+        # Send Telegram notification with trade buttons
+        send_trade_with_buttons(trade_data, trade_id)
+        
+        # Start position monitoring if not already running
+        monitor = get_position_monitor()
+        execution = gate_result.get("execution", {})
+        monitor.track_position(
+            coin=result.get("coin", "BTC"),
+            entry_price=trade_data["entry_price"],
+            stop_loss=execution.get("stop_loss"),
+            take_profit=execution.get("take_profits", [{}])[0].get("price") if execution.get("take_profits") else None
+        )
+        monitor.start()
+        
+        result["trade_id"] = trade_id
+        result["notification_sent"] = True
+        
+        # Log price comparison
+        price_comp = result.get("price_comparison", {})
+        if price_comp.get("significant"):
+            print(f"⚠️ Price difference detected: {price_comp['difference_pct']:.3f}%")
+            print(f"   Hyperliquid (USDC): ${price_comp['hyperliquid_price']:,.2f}")
+            print(f"   MEXC (USDT): ${price_comp['mexc_price']:,.2f}")
+    
+    return result
+
+
 def open_trade_with_mexc(symbol: str, gate_result: Dict[str, Any]) -> Dict[str, Any]:
     """Place a futures order on MEXC based on the gate result.
+    
+    NOTE: This function is deprecated. Use open_trade_with_hyperliquid_and_notify instead.
 
     Environment overrides:
     - MEXC_DEFAULT_VOL: float volume in contracts/base units (default 0.001)
@@ -815,7 +897,7 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
         if gate_result.get("should_open") is True:
             print("Step 14 Complete: Trade approved for opening")
         
-            # Send iPhone notification for valid trade
+            # Send basic trade signal notification
             try:
                 trade_data = {
                     "symbol": llm_output.get("symbol", "Unknown"),
@@ -832,22 +914,44 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
             except Exception as e:
                 print(f"⚠️ Notification failed: {str(e)}")
         
-            # Place order on MEXC Futures
-            print("Step 15: Placing MEXC futures order...")
-            order_outcome = open_trade_with_mexc(llm_output.get("symbol", ""), gate_result)
+            # Check price difference between MEXC (USDT) and Hyperliquid (USDC)
+            symbol = llm_output.get("symbol", "")
+            from services.hyperliquid_service import convert_symbol_to_hyperliquid
+            coin = convert_symbol_to_hyperliquid(symbol)
+            
+            print(f"Step 15: Checking price difference (MEXC USDT vs Hyperliquid USDC)...")
+            price_diff = get_price_difference(coin)
+            if price_diff.get("hyperliquid_price") and price_diff.get("mexc_price"):
+                print(f"   Hyperliquid (USDC): ${price_diff['hyperliquid_price']:,.2f}")
+                print(f"   MEXC (USDT): ${price_diff['mexc_price']:,.2f}")
+                print(f"   Difference: {price_diff['difference_pct']:.4f}%")
+                if price_diff.get("significant"):
+                    print(f"   ⚠️ Significant price difference detected!")
+            
+            # Place order on Hyperliquid with LIMIT orders (lower fees)
+            print("Step 16: Placing Hyperliquid LIMIT order...")
+            order_outcome = open_trade_with_hyperliquid_and_notify(symbol, gate_result)
+            
             if order_outcome.get("ok"):
-                print("Step 15 Complete: Order placed successfully")
+                print("Step 16 Complete: Order placed successfully")
+                print(f"   Coin: {order_outcome.get('coin')}")
+                print(f"   Trade ID: {order_outcome.get('trade_id')}")
+                print(f"   Limit Price: ${order_outcome.get('order_details', {}).get('limit_price', 0):,.2f}")
+                
                 # Save order response
                 try:
-                    order_filename = f"mexc_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+                    order_filename = f"hyperliquid_order_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
                     order_path = os.path.join(output_dir, order_filename)
                     with open(order_path, 'w') as f:
-                        json.dump(order_outcome.get("response"), f, indent=2, default=str)
-                    print(f"Saved order response to {order_path}")
+                        json.dump(order_outcome, f, indent=2, default=str)
+                    print(f"   Saved order response to {order_path}")
                 except Exception as e:
-                    print(f"⚠️ Failed to save order response: {str(e)}")
+                    print(f"   ⚠️ Failed to save order response: {str(e)}")
+            elif order_outcome.get("paper_trade"):
+                print("Step 16 Complete: Paper trade mode (orders not enabled)")
+                print(f"   Set HYPERLIQUID_ENABLE_ORDERS=true to enable live trading")
             else:
-                print(f"Step 15 Failed: Order placement error - {order_outcome.get('error')}")
+                print(f"Step 16 Failed: Order placement error - {order_outcome.get('error')}")
         else:
             print("Step 14 Complete: Trade not approved by gate")
     else:

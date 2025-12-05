@@ -1,0 +1,270 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-24 19:41",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 85225.9,
+    "resistance": 88820.1
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 39.31,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 0,
+      "d_percent": 0,
+      "signal": "data_missing"
+    },
+    "VOLUME": {
+      "current": 4.55065153,
+      "average": 4.55,
+      "ratio": 1.0,
+      "trend": "steady"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 85225.9,
+        "to": 88820.1
+      },
+      "levels": {
+        "0.236": 86904.8,
+        "0.382": 86238.8,
+        "0.5": 87002.2,
+        "0.618": 87002.2,
+        "0.786": 87435.5
+      }
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": 0.4071,
+      "signal_line": 9.333,
+      "histogram": -8.9259
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 1.0
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, ascending channel present, volume steady"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_fib_0382_support",
+        "indicator": "PRICE",
+        "comparator": ">",
+        "value": 86238.8,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": 85225.9
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 85000.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 87002.2,
+        "basis": "fib_0.618",
+        "rr": 1.5
+      },
+      {
+        "price": 87435.5,
+        "basis": "fib_0.786",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI14 for upward movement",
+    "Include ascending channel breakout as confirmation",
+    "Validate price respect for fib 0.382 support",
+    "Avoid entry on MACD divergence"
+  ],
+  "improvements": "Stochastic data needed for momentum confirmation; Consider volume increase for stronger signal",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-24 19:41",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 52.68,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": 0,
+            "d_percent": 0,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": 0,
+            "signal_line": 0,
+            "histogram": 0,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": "average",
+            "visible": true
+          },
+          "BB20_2": {
+            "upper": 0,
+            "middle": 0,
+            "lower": 0,
+            "visible": false
+          },
+          "ATR14": {
+            "value": 0,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 85225.9,
+            "to": 88820.1
+          },
+          "levels": {
+            "0.236": 86904.8,
+            "0.382": 86238.8,
+            "0.5": 86663.5,
+            "0.618": 87002.2,
+            "0.786": 87435.5,
+            "1": 88820.1,
+            "1.618": 89876.4
+          },
+          "timeframe_hints": {
+            "yellow": "1m",
+            "blue": "1h",
+            "white": "1d"
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 0,
+            "confidence": 1.0
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            85225.9,
+            86904.8
+          ],
+          "resistance": [
+            88820.1,
+            89876.4
+          ]
+        },
+        "visual_trend": "bullish"
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "OpenAI",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "OpenAI": "long",
+        "DeepSeek": "short"
+      },
+      "confidences": {
+        "OpenAI": 0.5,
+        "DeepSeek": 0.5
+      },
+      "response_times": {
+        "OpenAI": 21.669597148895264,
+        "DeepSeek": 22.416972160339355
+      },
+      "agreement": false,
+      "consensus_direction": "long",
+      "fastest_model": "OpenAI",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "OpenAI": {
+        "direction": "long",
+        "confidence": 0.5,
+        "elapsed_time": 21.669597148895264,
+        "stop_loss": 85000.0,
+        "take_profits": [
+          {
+            "price": 87002.2,
+            "rr": 1.5
+          },
+          {
+            "price": 87435.5,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.5,
+        "elapsed_time": 22.416972160339355,
+        "stop_loss": 87080.0,
+        "take_profits": [
+          {
+            "price": 86233.8,
+            "rr": 1.5
+          },
+          {
+            "price": 86063.6,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      }
+    },
+    "errors": {
+      "Gemini": {
+        "error": "litellm.NotFoundError: GeminiException - {\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"models/gemini-1.5-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.\",\n    \"status\": \"NOT_FOUND\"\n  }\n}\n",
+        "error_type": "AnalysisError",
+        "model": "gemini/gemini-1.5-pro"
+      }
+    }
+  }
+}

@@ -1,0 +1,316 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-28 16:30",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 91012.2,
+    "resistance": 92944.9
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 23.51,
+      "status": "oversold",
+      "signal": "downtrend"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_visible"
+    },
+    "VOLUME": {
+      "current": 3.07750444,
+      "average": "not_provided",
+      "ratio": "above_average",
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91012.2,
+        "to": 92944.9
+      },
+      "levels": {
+        "0.236": 92488.1,
+        "0.382": 92206.1,
+        "0.5": 91978.1,
+        "0.618": 91750.1,
+        "0.786": 91425.6,
+        "1.618": 89818.3
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible"
+    },
+    "MACD12_26_9": {
+      "macd_line": -249.6674,
+      "signal_line": -213.0241,
+      "histogram": -36.6432
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 10,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI is oversold, volume is above average, and there is a bearish pattern suggesting a short entry."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": "above_average",
+        "value": null
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "bearish_pattern_confirmed",
+        "indicator": "PATTERN",
+        "comparator": "confirmed",
+        "value": "ascending_channel"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_channel_top",
+        "type": "price_breach",
+        "level": "channel_top"
+      },
+      {
+        "id": "rsi_recover_above_30",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 30.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91425.6,
+      "basis": "above_recent_high"
+    },
+    "take_profit": [
+      {
+        "price": 90992.48,
+        "basis": "recent_low",
+        "rr": 1.5
+      },
+      {
+        "price": 89818.3,
+        "basis": "fib_1.618_extension",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for continued oversold status.",
+    "Confirm volume remains above average for downward strength.",
+    "Entry short on confirmation of channel breakdown.",
+    "Invalidation if price breaks and closes above the channel top."
+  ],
+  "improvements": "Consider MACD histogram momentum for additional trend validation; monitor volume consistency.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTC/USDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-11-28 16:30",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 25.96,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": "above_average",
+            "visible": true
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 91012.2,
+            "to": 92944.9
+          },
+          "levels": {
+            "0.236": 92488.1,
+            "0.382": 92206.1,
+            "0.5": 91978.1,
+            "0.618": 91750.1,
+            "0.786": 91425.6,
+            "1.618": 89818.3
+          },
+          "timeframe_hints": {
+            "yellow": "1m"
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 10,
+            "confidence": 0.9,
+            "pattern_name": "ascending_channel",
+            "pattern_direction": "short",
+            "pattern_type": "trend_channel",
+            "usual_breakout_direction": "often_bearish_down_through_lower_boundary"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            91012.2
+          ],
+          "resistance": [
+            92944.9
+          ]
+        },
+        "visual_trend": "bearish",
+        "_pattern_info": [
+          {
+            "name": "ascending_channel",
+            "direction": "short",
+            "type": "trend_channel",
+            "usual_breakout_direction": "often_bearish_down_through_lower_boundary",
+            "notes": "As long as price stays within the channel, trend is intact. A decisive break above can signal acceleration, a break below often signals trend weakening or reversal.",
+            "look": "Price oscillates between two roughly parallel upward-sloping trendlines (higher highs and higher lows).",
+            "typical_context": "Established uptrend with orderly pullbacks."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "DeepSeek": "short",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.9,
+        "Gemini": 0.75
+      },
+      "response_times": {
+        "ChatGPT5.1": 29.257976055145264,
+        "DeepSeek": 29.383409023284912,
+        "Gemini": 79.94379186630249
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.7,
+        "elapsed_time": 29.257976055145264,
+        "stop_loss": 91425.6,
+        "take_profits": [
+          {
+            "price": 90992.48,
+            "rr": 1.5
+          },
+          {
+            "price": 89818.3,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      },
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.9,
+        "elapsed_time": 29.383409023284912,
+        "stop_loss": 92006.1,
+        "take_profits": [
+          {
+            "price": 91425.6,
+            "rr": 1.5
+          },
+          {
+            "price": 91012.2,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.75,
+        "elapsed_time": 79.94379186630249,
+        "stop_loss": 90950.0,
+        "take_profits": [
+          {
+            "price": 91400.0,
+            "rr": 1.8
+          },
+          {
+            "price": 91650.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      }
+    },
+    "errors": {}
+  }
+}

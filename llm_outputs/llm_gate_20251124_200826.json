@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.0,
+  "reasons": [
+    "RSI is slightly overbought but not extreme, suggesting weak bearish momentum.",
+    "Current price near potential invalidation zone above resistance level."
+  ],
+  "warnings": [
+    "Potential risk of reversal if price breaches resistance."
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 88750.0,
+    "stop_loss": 89000.0,
+    "take_profits": [
+      {
+        "price": 87000.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.3,
+    "position_size_note": "Reduce position size due to proximity to invalidation level."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 1,
+      "total": 2
+    },
+    "context_alignment": "medium"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price at 88555.84 significantly exceeds target take profit levels, skewing risk/reward.",
+    "Checklist criteria are not strongly met given the above-fib levels are already surpassed.",
+    "Market context indicates a stretched condition away from planned entry and take profit targets."
+  ],
+  "warnings": [
+    "Potential for volatility and unfavorable reversal as price has moved past key levels without retest."
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 85904.0,
+    "stop_loss": 85904.0,
+    "take_profits": [
+      {
+        "price": 86663.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.1,
+    "position_size_note": "Position size should be limited due to risk of pullback from current elevated levels."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

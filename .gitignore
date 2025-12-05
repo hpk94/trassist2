@@ -68,3 +68,4 @@ config.json
 
 # Uploaded images
 uploads/
+.env.backup

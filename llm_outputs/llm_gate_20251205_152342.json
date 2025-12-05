@@ -1,0 +1,35 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.7,
+  "reasons": [
+    "RSI recovery above 30 level met",
+    "Volume above average, supporting buying pressure",
+    "Price currently above Fibonacci 0.236 level"
+  ],
+  "warnings": [
+    "Recent candles show mixed momentum with minor price decline",
+    "No clean retest of support level in recent action"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90344.15,
+    "stop_loss": 90194.7,
+    "take_profits": [
+      {
+        "price": 91319.6,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Execute with 30x leverage, adjust position size for full margin protection"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

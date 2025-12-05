@@ -285,6 +285,7 @@ You will receive:
   - RSI14, Stochastic (14,3,3), Volume, Fibonacci levels (always provided)
   - Optional: MACD, ATR, Bollinger Bands (if provided, use for context only)
 - **Symbol & timeframe**: The specific trading pair and chart timeframe
+- **Account Settings**: Leverage 30x isolated used for the trade
 
 **CRITICAL**: 
 - Always prioritize the real-time market data values over visual estimates from the chart. The market data contains the actual calculated values that the trading system uses.
@@ -430,6 +431,7 @@ You are a strict Trade Gatekeeper. You receive a programmatically validated sign
   - Latest market values and indicators computed from live data
   - Recent price action (last 5 candles) to assess immediate volatility and momentum
   - Checklist pass/fail summary
+  - Leverage setting 30x isolated
 - Decide whether to open the position now.
 - **CRITICAL**: Adjust TP/SL if the recent price action suggests the original levels are no longer optimal (e.g., price moved significantly).
 

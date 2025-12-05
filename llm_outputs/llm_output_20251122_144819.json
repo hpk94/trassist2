@@ -1,0 +1,221 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-10 14:46",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": [],
+    "resistance": []
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 59.15,
+      "status": "neutral",
+      "signal": "stable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "insufficient data"
+    },
+    "VOLUME": {
+      "current": 1.45219956,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": null,
+        "to": null
+      },
+      "levels": {
+        "0.382": 83715.3
+      }
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": -3.4177,
+      "signal_line": -21.4927,
+      "histogram": 18.075
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "core_alignment_score": 0.3,
+    "confluence_with_pattern": false,
+    "notes": "No significant pattern or Fibonacci retracement confirmed. RSI in neutral zone."
+  },
+  "opening_signal": {
+    "direction": "neutral",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_stable",
+        "indicator": "RSI14",
+        "comparator": "between",
+        "value_range": [
+          30,
+          70
+        ],
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "unexpected_rsi_spike",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "no_entry"
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Monitor for any significant RSI or pattern changes.",
+    "Evaluate volume trends for potential entry signals."
+  ],
+  "improvements": "Consider obtaining more data for missing STOK and volume trend. Ensure adequate pattern detection.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2023-10-10 14:46",
+        "visual_indicators": {
+          "RSI14": {
+            "value": null,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": true
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": null,
+            "to": null
+          },
+          "levels": {
+            "0.382": 83715.3
+          },
+          "timeframe_hints": {}
+        },
+        "patterns": [],
+        "support_resistance": {
+          "support": [],
+          "resistance": []
+        },
+        "visual_trend": "neutral"
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "neutral",
+        "DeepSeek": "long",
+        "Gemini": "short"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.3,
+        "DeepSeek": 0.3,
+        "Gemini": 0.4
+      },
+      "response_times": {
+        "ChatGPT5.1": 13.166901111602783,
+        "DeepSeek": 14.99564003944397,
+        "Gemini": 95.28726887702942
+      },
+      "agreement": false,
+      "consensus_direction": "neutral",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "neutral",
+        "confidence": 0.3,
+        "elapsed_time": 13.166901111602783,
+        "stop_loss": null,
+        "take_profits": [],
+        "max_rr": null
+      },
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.3,
+        "elapsed_time": 14.99564003944397,
+        "stop_loss": 83600.0,
+        "take_profits": [
+          {
+            "price": 84150.0,
+            "rr": 1.2
+          }
+        ],
+        "max_rr": 1.2
+      },
+      "Gemini": {
+        "direction": "short",
+        "confidence": 0.4,
+        "elapsed_time": 95.28726887702942,
+        "stop_loss": 84100.0,
+        "take_profits": [
+          {
+            "price": 83715.0,
+            "rr": 1.5
+          },
+          {
+            "price": 83500.0,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      }
+    },
+    "errors": {}
+  }
+}

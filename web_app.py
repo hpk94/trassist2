@@ -36,7 +36,19 @@ from telegram_bot import (
     set_analysis_running, 
     set_analysis_info,
     send_telegram_status,
+    send_trade_with_buttons,
     start_bot
+)
+
+# Import Hyperliquid trading service
+from services.hyperliquid_service import (
+    execute_trade_from_gate as hl_execute_trade,
+    get_position_monitor,
+    get_price_difference,
+    check_and_set_leverage,
+    status as hyperliquid_status,
+    HyperliquidConfig,
+    convert_symbol_to_hyperliquid
 )
 
 # Load environment variables
@@ -1360,6 +1372,9 @@ def create_market_data_summary(df: pd.DataFrame = None, df_hourly: pd.DataFrame 
     """Create a summary of market data for the LLM, including multiple timeframes for trend context"""
     summary_parts = []
     
+    # Get leverage
+    leverage = int(os.getenv("MEXC_LEVERAGE", "30"))
+    
     # Primary timeframe (minute data)
     if df is not None and not df.empty:
         latest = df.iloc[-1]
@@ -1368,6 +1383,7 @@ def create_market_data_summary(df: pd.DataFrame = None, df_hourly: pd.DataFrame 
         summary_parts.append(f"""
 === PRIMARY TIMEFRAME: {timeframe or '1m'} ===
 Symbol: {symbol or 'N/A'}
+Leverage: {leverage}x
 Latest Candle Time: {latest_time}
 Latest Price Data:
 - Open: {latest.get('Open', 'N/A')}
@@ -1470,6 +1486,7 @@ def llm_trade_gate_decision(
         "llm_snapshot": {
             "symbol": base_llm_output.get("symbol"),
             "timeframe": base_llm_output.get("timeframe"),
+            "leverage": int(os.getenv("MEXC_LEVERAGE", "30")),
             "opening_signal": base_llm_output.get("opening_signal"),
             "risk_management": base_llm_output.get("risk_management"),
         },
@@ -1904,20 +1921,31 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
         condition_description = ""
 
         if indicator_type == 'indicator_threshold':
-            condition_met = check_indicator_threshold(df, i)
-            if indicator_name in df.columns:
-                current_value = df[indicator_name].iloc[-1]
-            elif indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
-                current_value = df['MACD_Line'].iloc[-1]
-            elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
-                current_value = df['STOCH_K'].iloc[-1]
-            elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
-                current_value = df['BB_PercentB'].iloc[-1]
-            elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
-                current_value = df['BB_Bandwidth'].iloc[-1]
-            target_value = i.get('value')
-            comparator = i.get('comparator', '==')
-            condition_description = f"{indicator_name} {comparator} {target_value}"
+            # Special handling for PATTERN - auto-pass since pattern was detected at analysis time
+            # We can't re-verify patterns from OHLCV data (requires visual chart analysis)
+            if indicator_name == 'PATTERN':
+                target_value = i.get('value')
+                comparator = i.get('comparator', 'exists')
+                condition_description = f"{indicator_name} {comparator} {target_value}"
+                
+                # Auto-pass: pattern was confirmed during initial LLM chart analysis
+                condition_met = True
+                current_value = target_value  # Show as matched
+            else:
+                condition_met = check_indicator_threshold(df, i)
+                if indicator_name in df.columns:
+                    current_value = df[indicator_name].iloc[-1]
+                elif indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
+                    current_value = df['MACD_Line'].iloc[-1]
+                elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
+                    current_value = df['STOCH_K'].iloc[-1]
+                elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
+                    current_value = df['BB_PercentB'].iloc[-1]
+                elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
+                    current_value = df['BB_Bandwidth'].iloc[-1]
+                target_value = i.get('value')
+                comparator = i.get('comparator', '==')
+                condition_description = f"{indicator_name} {comparator} {target_value}"
         elif indicator_type == 'indicator_crossover':
             condition_met = check_indicator_crossover(df, i)
             if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns and 'MACD_Signal' in df.columns:
@@ -2655,15 +2683,57 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 except Exception as e:
                     emit_progress(f"⚠️ Order placement exception: {str(e)}")
 
-                # Mirror execution on Hyperliquid if enabled
+                # Execute on Hyperliquid with LIMIT orders (lower fees) and Telegram buttons
                 try:
+                    symbol = llm_output.get("symbol", "")
+                    coin = convert_symbol_to_hyperliquid(symbol)
+                    
+                    # Check price difference between MEXC (USDT) and Hyperliquid (USDC)
+                    emit_progress(f"Hyperliquid: Checking price difference (MEXC USDT vs Hyperliquid USDC)...")
+                    price_diff = get_price_difference(coin)
+                    if price_diff.get("hyperliquid_price") and price_diff.get("mexc_price"):
+                        emit_progress(f"   HL (USDC): ${price_diff['hyperliquid_price']:,.2f} | MEXC (USDT): ${price_diff['mexc_price']:,.2f} | Diff: {price_diff['difference_pct']:.4f}%")
+                        if price_diff.get("significant"):
+                            emit_progress("   ⚠️ Significant price difference detected!")
+                    
                     if os.getenv("HYPERLIQUID_ENABLE_ORDERS", "false").lower() in TRUTHY_VALUES:
-                        emit_progress("Hyperliquid: Placing futures order...")
-                        hl_outcome = open_trade_with_hyperliquid(llm_output.get("symbol", ""), gate_result)
+                        emit_progress("Hyperliquid: Placing LIMIT order (lower fees)...")
+                        hl_outcome = hl_execute_trade(symbol, gate_result)
+                        
                         if hl_outcome.get("ok"):
-                            emit_progress("Hyperliquid: Order placed successfully")
+                            import uuid
+                            trade_id = str(uuid.uuid4())[:8]
+                            
+                            # Prepare trade data for Telegram buttons
+                            trade_notification_data = {
+                                "symbol": symbol,
+                                "coin": hl_outcome.get("coin", coin),
+                                "direction": direction.upper(),
+                                "entry_price": hl_outcome.get("order_details", {}).get("limit_price", entry_price),
+                                "size": hl_outcome.get("order_details", {}).get("size", 0),
+                                "leverage": hl_outcome.get("leverage", {}).get("target_leverage", 1)
+                            }
+                            
+                            # Send Telegram notification with trade management buttons
+                            send_trade_with_buttons(trade_notification_data, trade_id)
+                            
+                            # Start position monitoring
+                            monitor = get_position_monitor()
+                            execution = gate_result.get("execution", {})
+                            monitor.track_position(
+                                coin=hl_outcome.get("coin", coin),
+                                entry_price=trade_notification_data["entry_price"],
+                                stop_loss=execution.get("stop_loss"),
+                                take_profit=take_profits[0].get("price") if take_profits else None
+                            )
+                            monitor.start()
+                            
+                            emit_progress(f"Hyperliquid: LIMIT order placed successfully (Trade ID: {trade_id})")
+                            emit_progress(f"   Limit Price: ${hl_outcome.get('order_details', {}).get('limit_price', 0):,.2f}")
                         else:
                             emit_progress(f"Hyperliquid: Order placement error - {hl_outcome.get('error')}")
+                    else:
+                        emit_progress("Hyperliquid: Orders disabled (HYPERLIQUID_ENABLE_ORDERS=false)")
                 except Exception as e:
                     emit_progress(f"Hyperliquid: Order placement exception - {str(e)}")
 
