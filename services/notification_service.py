@@ -923,6 +923,131 @@ class NotificationService:
             traceback.print_exc()
             return False
     
+    def send_telegram_multi_model_extraction(self, all_extractions: Dict[str, Dict[str, Any]], symbol: str = None, timeframe: str = None) -> bool:
+        """Send a single notification combining extraction data from all models"""
+        try:
+            symbol_esc = html.escape(str(symbol or "Unknown"))
+            timeframe_esc = html.escape(str(timeframe or "Unknown"))
+            
+            message = f"<b>✅ Multi-Model Extraction Complete</b>\n\n"
+            message += f"<b>{symbol_esc}</b> {timeframe_esc}\n\n"
+            message += "━━━━━━━━━━━━━━━━━━━━\n"
+            
+            for model_display_name, extraction_data in all_extractions.items():
+                model_name_esc = html.escape(str(model_display_name))
+                
+                # Check if this model had an error
+                if extraction_data.get("error"):
+                    error_msg = html.escape(str(extraction_data.get("error", "Unknown error")))
+                    if len(error_msg) > 50:
+                        error_msg = error_msg[:47] + "..."
+                    message += f"\n❌ <b>{model_name_esc}</b>\n"
+                    message += f"   Error: {error_msg}\n"
+                    continue
+                
+                # Get the result data
+                result = extraction_data.get("result", {})
+                patterns = result.get("patterns", []) or result.get("pattern_analysis", [])
+                direction = result.get("opening_signal", {}).get("direction", "unknown")
+                confidence = result.get("validity_assessment", {}).get("core_alignment_score", 0)
+                elapsed_time = extraction_data.get("elapsed_time", 0)
+                
+                # Direction emoji
+                direction_upper = str(direction).upper()
+                direction_emoji = "🟢" if direction_upper == "LONG" else "🔴" if direction_upper == "SHORT" else "⚪"
+                
+                # Format confidence
+                if isinstance(confidence, (int, float)):
+                    conf_str = f"{confidence:.0%}"
+                else:
+                    conf_str = "N/A"
+                
+                # Format time
+                if isinstance(elapsed_time, (int, float)):
+                    time_str = f"{elapsed_time:.1f}s"
+                else:
+                    time_str = "N/A"
+                
+                message += f"\n{direction_emoji} <b>{model_name_esc}</b>\n"
+                message += f"   └ Direction: {html.escape(direction_upper)}, Confidence: {conf_str}, Time: {time_str}\n"
+                
+                # Add patterns
+                if patterns:
+                    pattern_strs = []
+                    for pattern in patterns[:3]:  # Max 3 patterns
+                        if isinstance(pattern, dict):
+                            pattern_name = pattern.get("pattern", "Unknown")
+                            pattern_conf = pattern.get("confidence", 0)
+                            if isinstance(pattern_conf, (int, float)):
+                                pattern_strs.append(f"{pattern_name} ({pattern_conf:.0%})")
+                            else:
+                                pattern_strs.append(pattern_name)
+                        else:
+                            pattern_strs.append(str(pattern))
+                    if pattern_strs:
+                        message += f"   └ Patterns: {', '.join(pattern_strs)}\n"
+                else:
+                    message += f"   └ Patterns: None detected\n"
+                
+                # Add stop loss and take profits if available
+                risk_mgmt = result.get("risk_management", {})
+                stop_loss = risk_mgmt.get("stop_loss", {})
+                take_profits = risk_mgmt.get("take_profit", [])
+                
+                if stop_loss:
+                    sl_price = stop_loss.get("price") if isinstance(stop_loss, dict) else stop_loss
+                    if sl_price is not None:
+                        try:
+                            message += f"   └ Stop Loss: ${float(sl_price):,.2f}\n"
+                        except (TypeError, ValueError):
+                            message += f"   └ Stop Loss: {html.escape(str(sl_price))}\n"
+                
+                if take_profits:
+                    tp_strs = []
+                    for idx, tp in enumerate(take_profits[:3], 1):  # Max 3 TPs
+                        if isinstance(tp, dict):
+                            tp_price = tp.get("price")
+                            tp_rr = tp.get("rr")
+                        else:
+                            tp_price = tp
+                            tp_rr = None
+                        
+                        try:
+                            if tp_price is not None:
+                                tp_str = f"TP{idx}: ${float(tp_price):,.2f}"
+                                if tp_rr is not None:
+                                    tp_str += f" (R:R {float(tp_rr):.2f})"
+                                tp_strs.append(tp_str)
+                        except (TypeError, ValueError):
+                            if tp_price is not None:
+                                tp_strs.append(f"TP{idx}: {tp_price}")
+                    
+                    if tp_strs:
+                        message += f"   └ Take Profits: {', '.join(tp_strs)}\n"
+            
+            message += "\n━━━━━━━━━━━━━━━━━━━━\n"
+            message += "<i>📱 Full analysis will follow...</i>\n"
+            
+            url = f"https://api.telegram.org/bot{self.telegram_bot_token}/sendMessage"
+            
+            data = {
+                "chat_id": self.telegram_chat_id,
+                "text": message,
+                "parse_mode": "HTML"
+            }
+            
+            response = requests.post(url, data=data, timeout=10)
+            response.raise_for_status()
+            
+            print(f"✅ Multi-model extraction notification sent to Telegram successfully")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Telegram multi-model extraction notification failed: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
     def send_telegram_analysis(self, image_path: str, analysis_data: Dict[str, Any]) -> bool:
         """Send trading chart image with analysis to Telegram"""
         try:
@@ -1008,6 +1133,33 @@ def send_extraction_complete_to_telegram(extracted_data: Dict[str, Any], model_n
     """Convenience function to send extraction completion notification to Telegram"""
     service = NotificationService()
     return service.send_telegram_extraction_complete(extracted_data, model_name)
+
+def send_multi_model_extraction_to_telegram(all_extractions: Dict[str, Dict[str, Any]], symbol: str = None, timeframe: str = None) -> bool:
+    """Convenience function to send combined multi-model extraction notification to Telegram"""
+    service = NotificationService()
+    return service.send_telegram_multi_model_extraction(all_extractions, symbol, timeframe)
+
+def send_telegram_message(message: str) -> bool:
+    """
+    Convenience function to send a simple HTML message to Telegram.
+    Used by position monitor for SL/TP notifications.
+    """
+    service = NotificationService()
+    if not service.telegram_enabled:
+        return False
+    try:
+        import requests
+        url = f"https://api.telegram.org/bot{service.telegram_bot_token}/sendMessage"
+        data = {
+            "chat_id": service.telegram_chat_id,
+            "text": message,
+            "parse_mode": "HTML"
+        }
+        response = requests.post(url, data=data, timeout=10)
+        return response.status_code == 200
+    except Exception as e:
+        print(f"❌ Telegram message failed: {e}")
+        return False
 
 def test_notification_system() -> Dict[str, bool]:
     """Test the notification system"""

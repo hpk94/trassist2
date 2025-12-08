@@ -26,7 +26,8 @@ from services.notification_service import (
     send_initial_analysis_to_telegram,
     send_polling_start_to_telegram,
     send_analysis_to_telegram,
-    send_extraction_complete_to_telegram
+    send_extraction_complete_to_telegram,
+    send_multi_model_extraction_to_telegram
 )
 
 # Import Telegram bot for command control
@@ -856,9 +857,13 @@ Timeframe: {timeframe or extracted_data.get('timeframe', '1m')}
         emit_progress("Chart Stage 2: Creating fallback response...")
         return create_fallback_llm_response(symbol or extracted_data.get('symbol'), timeframe or extracted_data.get('timeframe'))
 
-def analyze_trading_chart_with_model(image_path: str, model_name: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None) -> dict:
+def analyze_trading_chart_with_model(image_path: str, model_name: str, symbol: str = None, timeframe: str = None, df: pd.DataFrame = None, skip_extraction_notification: bool = False) -> dict:
     # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
-    """Analyze trading chart using two-stage approach with a specific vision model"""
+    """Analyze trading chart using two-stage approach with a specific vision model
+    
+    Args:
+        skip_extraction_notification: If True, skip sending individual extraction notification (used for multi-model analysis)
+    """
     try:
         with open(image_path, "rb") as image_file:
             image_bytes = image_file.read()
@@ -952,11 +957,12 @@ IMPORTANT: Use the EXACT pattern name from this list. Do not use variations or s
             if pattern_info_list:
                 extracted_data['_pattern_info'] = pattern_info_list
             
-            # Send Telegram notification about extraction completion
-            try:
-                send_extraction_complete_to_telegram(extracted_data, model_name)
-            except Exception as notify_error:
-                print(f"Failed to send extraction notification: {str(notify_error)}")
+            # Send Telegram notification about extraction completion (skip for multi-model analysis)
+            if not skip_extraction_notification:
+                try:
+                    send_extraction_complete_to_telegram(extracted_data, model_name)
+                except Exception as notify_error:
+                    print(f"Failed to send extraction notification: {str(notify_error)}")
             
         except Exception as e:
             # Fallback: create minimal extracted data structure
@@ -1139,7 +1145,8 @@ def analyze_trading_chart_multi_model(image_path: str, symbol: str = None, timef
             
             emit_progress(f"   🚀 Starting analysis with {model_display_name} ({model_name})...")
             start_time = time.time()
-            result = analyze_trading_chart_with_model(image_path, model_name, symbol, timeframe, df)
+            # Skip individual extraction notifications - will send combined one after all complete
+            result = analyze_trading_chart_with_model(image_path, model_name, symbol, timeframe, df, skip_extraction_notification=True)
             elapsed_time = time.time() - start_time
             
             with results_lock:
@@ -1212,6 +1219,26 @@ def analyze_trading_chart_multi_model(image_path: str, symbol: str = None, timef
         thread.join()
     
     emit_progress(f"   📊 Multi-model analysis complete: {len(results)} successful, {len(errors)} failed")
+    
+    # Send combined extraction notification with all models' data
+    try:
+        all_extractions = {}
+        # Add successful results
+        for model_display_name, data in results.items():
+            all_extractions[model_display_name] = {
+                "result": data.get("result", {}),
+                "elapsed_time": data.get("elapsed_time", 0)
+            }
+        # Add errors
+        for model_display_name, error_data in errors.items():
+            all_extractions[model_display_name] = {
+                "error": error_data.get("error", "Unknown error")
+            }
+        
+        if all_extractions:
+            send_multi_model_extraction_to_telegram(all_extractions, symbol, timeframe)
+    except Exception as notify_error:
+        print(f"Failed to send multi-model extraction notification: {str(notify_error)}")
     
     # Create comparison summary
     comparison = {
@@ -1921,11 +1948,37 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
         condition_description = ""
 
         if indicator_type == 'indicator_threshold':
-            # Special handling for PATTERN - auto-pass since pattern was detected at analysis time
+            # Known chart pattern names that require visual analysis (can't be verified from OHLCV data)
+            # These patterns were detected during initial LLM chart analysis
+            KNOWN_PATTERN_NAMES = {
+                # Continuation patterns
+                'ASCENDING_TRIANGLE', 'DESCENDING_TRIANGLE', 'SYMMETRICAL_TRIANGLE',
+                'BULL_FLAG', 'BEAR_FLAG', 'BULLISH_PENNANT', 'BEARISH_PENNANT',
+                'RECTANGLE_RANGE_IN_TREND',
+                # Reversal patterns
+                'HEAD_AND_SHOULDERS_TOP', 'INVERSE_HEAD_AND_SHOULDERS_BOTTOM',
+                'DOUBLE_TOP', 'DOUBLE_BOTTOM', 'TRIPLE_TOP', 'TRIPLE_BOTTOM',
+                'RISING_WEDGE', 'FALLING_WEDGE',
+                # Candlestick patterns
+                'BULLISH_ENGULFING', 'BEARISH_ENGULFING', 'HAMMER', 'SHOOTING_STAR',
+                'MORNING_STAR', 'EVENING_STAR',
+                # Channel patterns
+                'ASCENDING_CHANNEL', 'DESCENDING_CHANNEL', 'HORIZONTAL_CHANNEL_RANGE',
+                'CHANNEL_BREAKOUT_ABOVE', 'CHANNEL_BREAKDOWN_BELOW',
+                # Support/resistance patterns
+                'BREAKOUT_ABOVE_RESISTANCE', 'BREAKDOWN_BELOW_SUPPORT', 'FALSE_BREAKOUT_FAKEOUT',
+                # Generic pattern indicator
+                'PATTERN'
+            }
+            
+            # Check if indicator is a pattern (case-insensitive)
+            is_pattern = indicator_name and indicator_name.upper() in KNOWN_PATTERN_NAMES
+            
+            # Special handling for patterns - auto-pass since pattern was detected at analysis time
             # We can't re-verify patterns from OHLCV data (requires visual chart analysis)
-            if indicator_name == 'PATTERN':
+            if is_pattern:
                 target_value = i.get('value')
-                comparator = i.get('comparator', 'exists')
+                comparator = i.get('comparator', 'confirmed')
                 condition_description = f"{indicator_name} {comparator} {target_value}"
                 
                 # Auto-pass: pattern was confirmed during initial LLM chart analysis
@@ -2243,10 +2296,8 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
                 emit_progress_fn(f"Polling complete: max cycles ({max_cycles}) reached")
             return signal_valid, signal_status, triggered_conditions, market_values
 
-        # Send periodic status updates
-        if cycles % 5 == 0:  # Every 5 cycles
-            elapsed_min = int((cycles * wait_seconds) / 60)
-            send_telegram_status(f"⏳ <b>Still Polling...</b>\n\nCycle {cycles}\nElapsed: {elapsed_min}m\nStatus: {signal_status}")
+        # Periodic status updates removed - use /status command to check polling state
+        # User can check AnalysisState via Telegram /status command anytime
 
         if emit_progress_fn:
             emit_progress_fn(f"Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
@@ -2717,16 +2768,15 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                             # Send Telegram notification with trade management buttons
                             send_trade_with_buttons(trade_notification_data, trade_id)
                             
-                            # Start position monitoring
-                            monitor = get_position_monitor()
-                            execution = gate_result.get("execution", {})
-                            monitor.track_position(
-                                coin=hl_outcome.get("coin", coin),
-                                entry_price=trade_notification_data["entry_price"],
-                                stop_loss=execution.get("stop_loss"),
-                                take_profit=take_profits[0].get("price") if take_profits else None
-                            )
-                            monitor.start()
+                            # Note: Position monitoring for SL/TP is now handled inside execute_trade_from_gate
+                            # It automatically monitors MEXC prices and closes on HL when triggered
+                            sl_tp_info = hl_outcome.get("sl_tp_monitoring", {})
+                            if sl_tp_info.get("enabled"):
+                                emit_progress(f"Hyperliquid: SL/TP monitoring active (checks every {sl_tp_info.get('check_interval')}s)")
+                                if sl_tp_info.get("stop_loss_mexc"):
+                                    emit_progress(f"   SL: ${sl_tp_info['stop_loss_mexc']:,.2f} (MEXC)")
+                                if sl_tp_info.get("take_profit_mexc"):
+                                    emit_progress(f"   TP: ${sl_tp_info['take_profit_mexc']:,.2f} (MEXC)")
                             
                             emit_progress(f"Hyperliquid: LIMIT order placed successfully (Trade ID: {trade_id})")
                             emit_progress(f"   Limit Price: ${hl_outcome.get('order_details', {}).get('limit_price', 0):,.2f}")
