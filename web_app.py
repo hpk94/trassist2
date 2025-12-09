@@ -2778,10 +2778,29 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                                 if sl_tp_info.get("take_profit_mexc"):
                                     emit_progress(f"   TP: ${sl_tp_info['take_profit_mexc']:,.2f} (MEXC)")
                             
-                            emit_progress(f"Hyperliquid: LIMIT order placed successfully (Trade ID: {trade_id})")
+                            # Show order status details
+                            order_status = "FILLED" if hl_outcome.get("filled") else "RESTING"
+                            order_id = hl_outcome.get("order_id", "N/A")
+                            emit_progress(f"Hyperliquid: LIMIT order {order_status} (Trade ID: {trade_id})")
+                            emit_progress(f"   Order ID: {order_id}")
                             emit_progress(f"   Limit Price: ${hl_outcome.get('order_details', {}).get('limit_price', 0):,.2f}")
+                            emit_progress(f"   Size: {hl_outcome.get('order_details', {}).get('size', 0):.6f} {hl_outcome.get('coin', 'BTC')}")
+                            
+                            # Verify position exists after order
+                            if hl_outcome.get("filled"):
+                                try:
+                                    from services.hyperliquid_service import get_position
+                                    time.sleep(1)  # Brief delay for position to register
+                                    position = get_position(hl_outcome.get("coin", coin))
+                                    if position:
+                                        emit_progress(f"   ✅ Position verified: {position['direction']} {position['size']:.6f} @ ${position['entry_price']:,.2f}")
+                                    else:
+                                        emit_progress(f"   ⚠️ Warning: Position not found after fill - may need manual verification")
+                                except Exception as verify_err:
+                                    emit_progress(f"   ⚠️ Could not verify position: {verify_err}")
                         else:
-                            emit_progress(f"Hyperliquid: Order placement error - {hl_outcome.get('error')}")
+                            emit_progress(f"Hyperliquid: Order placement FAILED - {hl_outcome.get('error')}")
+                            emit_progress(f"   Response: {hl_outcome.get('response', 'No response')}")
                     else:
                         emit_progress("Hyperliquid: Orders disabled (HYPERLIQUID_ENABLE_ORDERS=false)")
                 except Exception as e:

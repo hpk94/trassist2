@@ -102,6 +102,24 @@ class HyperliquidConfig:
     def get_limit_tif() -> str:
         """Get time-in-force for limit orders: Gtc, Ioc, or Alo"""
         return os.getenv("HYPERLIQUID_LIMIT_TIF", "Gtc")
+    
+    @staticmethod
+    def auto_sl_tp_enabled() -> bool:
+        """Check if automatic SL/TP monitoring and execution is enabled"""
+        return os.getenv("HYPERLIQUID_AUTO_SL_TP", "true").lower() in ("true", "1", "yes")
+    
+    @staticmethod
+    def place_backup_sl_orders() -> bool:
+        """Check if backup SL orders should be placed on Hyperliquid as safety net"""
+        return os.getenv("HYPERLIQUID_BACKUP_SL_ORDERS", "false").lower() in ("true", "1", "yes")
+    
+    @staticmethod
+    def get_sl_tp_check_interval() -> int:
+        """Get interval (seconds) for SL/TP monitoring checks"""
+        try:
+            return int(os.getenv("HYPERLIQUID_SL_TP_CHECK_INTERVAL", "10"))
+        except:
+            return 10
 
 
 # ============================================================================
@@ -746,6 +764,8 @@ def open_position_limit(
     tif = HyperliquidConfig.get_limit_tif()
     
     try:
+        print(f"📝 Placing LIMIT order: {'BUY' if is_buy else 'SELL'} {size} {coin} @ ${price:,.2f}")
+        
         response = exchange.order(
             name=coin,
             is_buy=is_buy,
@@ -756,7 +776,7 @@ def open_position_limit(
         )
         
         result = {
-            "ok": True,
+            "ok": False,  # Will set to True only if order is confirmed
             "response": response,
             "order_details": {
                 "coin": coin,
@@ -773,16 +793,37 @@ def open_position_limit(
         if response:
             status = response.get("status")
             result["order_status"] = status
+            print(f"   Response status: {status}")
             
             if status == "ok":
                 statuses = response.get("response", {}).get("data", {}).get("statuses", [])
+                print(f"   Order statuses: {statuses}")
+                
                 for s in statuses:
                     if "resting" in s:
                         result["order_id"] = s["resting"].get("oid")
                         result["filled"] = False
+                        result["ok"] = True  # Confirmed: order is resting
+                        print(f"   ✅ Order resting (OID: {result['order_id']})")
                     elif "filled" in s:
                         result["filled"] = True
                         result["fill_info"] = s["filled"]
+                        result["ok"] = True  # Confirmed: order filled
+                        print(f"   ✅ Order filled immediately")
+                    elif "error" in s:
+                        result["error"] = s.get("error", "Unknown order error")
+                        print(f"   ❌ Order error: {result['error']}")
+                
+                # If we didn't find resting or filled status, check if there was no status at all
+                if not result.get("ok") and not result.get("error"):
+                    result["error"] = f"No order confirmation received. Statuses: {statuses}"
+                    print(f"   ❌ No order confirmation in response")
+            else:
+                result["error"] = f"API returned status: {status}"
+                print(f"   ❌ API error status: {status}")
+        else:
+            result["error"] = "No response received from exchange"
+            print(f"   ❌ No response from exchange")
         
         # Send Telegram notification for limit orders (not reduce-only/close orders)
         if not reduce_only and result.get("ok"):
@@ -794,6 +835,7 @@ def open_position_limit(
         return result
         
     except Exception as e:
+        print(f"   ❌ Order exception: {e}")
         return {"ok": False, "error": str(e)}
 
 
@@ -1139,7 +1181,8 @@ def close_position_limit(
                 "limit_price": price,
                 "original_direction": position["direction"],
                 "entry_price": position["entry_price"],
-                "unrealized_pnl": position["unrealized_pnl"]
+                "unrealized_pnl": position["unrealized_pnl"],
+                "leverage": position.get("leverage", 1)
             }
         }
         
@@ -1256,6 +1299,25 @@ def close_position_market(coin: str) -> Dict[str, Any]:
 # Trade Execution from Gate Result
 # ============================================================================
 
+def _adjust_price_for_hl(mexc_price: float, price_diff: Dict[str, Any]) -> float:
+    """
+    Adjust a MEXC price to equivalent Hyperliquid price.
+    
+    Uses the current price ratio to convert MEXC (USDT) prices to HL (USDC) prices.
+    This accounts for USDT/USDC differences and exchange-specific spreads.
+    """
+    if not price_diff.get("mexc_price") or not price_diff.get("hyperliquid_price"):
+        return mexc_price  # Can't adjust, return as-is
+    
+    # Calculate ratio: HL_price / MEXC_price
+    ratio = price_diff["hyperliquid_price"] / price_diff["mexc_price"]
+    
+    # Apply ratio to the target price
+    adjusted = mexc_price * ratio
+    
+    return adjusted
+
+
 def execute_trade_from_gate(
     symbol: str,
     gate_result: Dict[str, Any]
@@ -1263,6 +1325,11 @@ def execute_trade_from_gate(
     """
     Execute a trade based on the LLM gate result.
     Uses LIMIT orders only.
+    
+    Features:
+    - Opens position with limit order
+    - Sets up position monitoring for auto SL/TP based on MEXC prices
+    - Optionally places backup SL order on Hyperliquid (price-adjusted)
     
     Args:
         symbol: Trading symbol (e.g., "BTCUSDT.P")
@@ -1279,8 +1346,13 @@ def execute_trade_from_gate(
     
     execution = gate_result.get("execution", {})
     entry_price = execution.get("entry_price")
-    stop_loss = execution.get("stop_loss")
+    stop_loss = execution.get("stop_loss")  # MEXC price
     take_profits = execution.get("take_profits", [])
+    
+    # Get primary take profit
+    take_profit = None
+    if take_profits:
+        take_profit = take_profits[0].get("price") if isinstance(take_profits[0], dict) else take_profits[0]
     
     # Check price difference between MEXC and Hyperliquid
     price_diff = get_price_difference(coin)
@@ -1303,23 +1375,102 @@ def execute_trade_from_gate(
         result["gate_execution"] = execution
         result["price_comparison"] = price_diff
         
-        # TODO: Set up stop loss and take profit orders if supported
-        if stop_loss:
-            result["stop_loss_pending"] = stop_loss
-        if take_profits:
-            result["take_profits_pending"] = take_profits
+        # Get the actual position size from the order
+        position_size = result.get("order_details", {}).get("size")
+        actual_entry = result.get("order_details", {}).get("limit_price", entry_price)
+        
+        # =====================================================================
+        # Set up position monitoring with auto SL/TP (monitors MEXC prices)
+        # =====================================================================
+        if HyperliquidConfig.auto_sl_tp_enabled():
+            print(f"\n📊 Setting up SL/TP monitoring (based on MEXC prices)...")
+            monitor = get_position_monitor()
+            monitor.track_position(
+                coin=coin,
+                entry_price=entry_price,  # MEXC entry price
+                direction=direction,
+                stop_loss=stop_loss,  # MEXC SL price
+                take_profit=take_profit,  # MEXC TP price  
+                take_profits=take_profits,
+                size=position_size
+            )
+            
+            # Start monitor if not already running
+            if not monitor.is_running():
+                monitor.start()
+            
+            result["sl_tp_monitoring"] = {
+                "enabled": True,
+                "stop_loss_mexc": stop_loss,
+                "take_profit_mexc": take_profit,
+                "check_interval": HyperliquidConfig.get_sl_tp_check_interval()
+            }
+            print(f"   ✅ Monitoring active - checking every {HyperliquidConfig.get_sl_tp_check_interval()}s")
+        
+        # =====================================================================
+        # Optionally place backup SL order on Hyperliquid (safety net)
+        # =====================================================================
+        if HyperliquidConfig.place_backup_sl_orders() and stop_loss and position_size:
+            print(f"\n🛡️ Placing backup SL order on Hyperliquid...")
+            
+            # Adjust SL price for HL (account for USDT/USDC difference)
+            adjusted_sl = _adjust_price_for_hl(stop_loss, price_diff)
+            
+            # Add small buffer for backup SL (1% worse than adjusted)
+            # This ensures the MEXC-monitored SL triggers first
+            if direction == "long":
+                backup_sl = adjusted_sl * 0.99  # Slightly lower for longs
+            else:
+                backup_sl = adjusted_sl * 1.01  # Slightly higher for shorts
+            
+            print(f"   MEXC SL: ${stop_loss:,.2f}")
+            print(f"   Adjusted HL SL: ${adjusted_sl:,.2f}")
+            print(f"   Backup HL SL: ${backup_sl:,.2f} (safety buffer)")
+            
+            sl_result = place_stop_loss_order(
+                coin=coin,
+                direction=direction,
+                size=position_size,
+                sl_price=backup_sl
+            )
+            
+            result["backup_sl_order"] = {
+                "mexc_sl": stop_loss,
+                "adjusted_sl": adjusted_sl,
+                "backup_sl_price": backup_sl,
+                "result": sl_result
+            }
+            
+            if sl_result.get("ok"):
+                print(f"   ✅ Backup SL order placed (OID: {sl_result.get('order_id')})")
+            else:
+                print(f"   ⚠️ Backup SL order failed: {sl_result.get('error')}")
+        
+        # Store SL/TP info in result
+        result["sl_tp_config"] = {
+            "stop_loss": stop_loss,
+            "take_profit": take_profit,
+            "take_profits": take_profits,
+            "monitoring_enabled": HyperliquidConfig.auto_sl_tp_enabled(),
+            "backup_orders_enabled": HyperliquidConfig.place_backup_sl_orders()
+        }
     
     return result
 
 
 # ============================================================================
-# Position Monitoring
+# Position Monitoring with Auto SL/TP Execution
 # ============================================================================
 
 class PositionMonitor:
     """
-    Background monitor for open positions.
-    Checks MEXC prices periodically to help manage trades.
+    Background monitor for open positions with automatic SL/TP execution.
+    
+    Key features:
+    - Monitors MEXC prices (where analysis was done)
+    - Auto-closes positions on Hyperliquid when MEXC prices hit SL/TP levels
+    - Sends Telegram notifications on SL/TP triggers
+    - Handles price differences between MEXC (USDT) and Hyperliquid (USDC)
     """
     
     _instance = None
@@ -1332,9 +1483,11 @@ class PositionMonitor:
                     cls._instance = super().__new__(cls)
                     cls._instance._running = False
                     cls._instance._thread = None
-                    cls._instance._check_interval = 60  # seconds
+                    cls._instance._check_interval = HyperliquidConfig.get_sl_tp_check_interval()
                     cls._instance._callbacks = []
                     cls._instance._tracked_positions = {}
+                    cls._instance._auto_execute = HyperliquidConfig.auto_sl_tp_enabled()
+                    cls._instance._processed_alerts = set()  # Prevent duplicate executions
         return cls._instance
     
     def add_callback(self, callback):
@@ -1343,58 +1496,216 @@ class PositionMonitor:
     
     def set_check_interval(self, seconds: int):
         """Set how often to check positions"""
-        self._check_interval = max(10, seconds)  # Minimum 10 seconds
+        self._check_interval = max(5, seconds)  # Minimum 5 seconds for SL/TP
     
-    def track_position(self, coin: str, entry_price: float, stop_loss: Optional[float] = None, 
-                      take_profit: Optional[float] = None):
-        """Start tracking a position for monitoring"""
+    def set_auto_execute(self, enabled: bool):
+        """Enable or disable automatic SL/TP execution"""
+        self._auto_execute = enabled
+        print(f"{'✅' if enabled else '⏸️'} Auto SL/TP execution {'enabled' if enabled else 'disabled'}")
+    
+    def track_position(self, coin: str, entry_price: float, direction: str,
+                       stop_loss: Optional[float] = None, 
+                       take_profit: Optional[float] = None,
+                       take_profits: Optional[List[Dict]] = None,
+                       size: Optional[float] = None):
+        """
+        Start tracking a position for SL/TP monitoring.
+        
+        Args:
+            coin: The coin (e.g., "BTC")
+            entry_price: Entry price (from MEXC analysis)
+            direction: "long" or "short"
+            stop_loss: Stop loss price (MEXC price)
+            take_profit: Primary take profit price (MEXC price)
+            take_profits: List of TP dicts with 'price' key for multiple TPs
+            size: Position size (for partial TP closes)
+        """
+        # Extract primary TP from take_profits list if not provided
+        if take_profit is None and take_profits:
+            take_profit = take_profits[0].get("price") if isinstance(take_profits[0], dict) else take_profits[0]
+        
         self._tracked_positions[coin] = {
             "entry_price": entry_price,
+            "direction": direction.upper(),
             "stop_loss": stop_loss,
             "take_profit": take_profit,
-            "opened_at": datetime.now().isoformat()
+            "take_profits": take_profits or [],
+            "size": size,
+            "opened_at": datetime.now().isoformat(),
+            "sl_triggered": False,
+            "tp_triggered": False
         }
+        
+        print(f"📊 Tracking {coin} {direction.upper()}")
+        print(f"   Entry: ${entry_price:,.2f} (MEXC)")
+        if stop_loss:
+            print(f"   SL: ${stop_loss:,.2f}")
+        if take_profit:
+            print(f"   TP: ${take_profit:,.2f}")
     
     def untrack_position(self, coin: str):
         """Stop tracking a position"""
         if coin in self._tracked_positions:
             del self._tracked_positions[coin]
+            # Clear processed alerts for this coin
+            self._processed_alerts = {a for a in self._processed_alerts if not a.startswith(coin)}
+            print(f"🛑 Stopped tracking {coin}")
+    
+    def get_tracked_positions(self) -> Dict[str, Any]:
+        """Get all tracked positions"""
+        return self._tracked_positions.copy()
+    
+    def _send_sl_tp_notification(self, coin: str, trigger_type: str, mexc_price: float, 
+                                  hl_price: float, close_result: Dict[str, Any]):
+        """Send Telegram notification for SL/TP trigger"""
+        try:
+            from services.notification_service import send_telegram_message
+            
+            tracked = self._tracked_positions.get(coin, {})
+            direction = tracked.get("direction", "UNKNOWN")
+            entry = tracked.get("entry_price", 0)
+            
+            # Calculate PnL
+            if direction == "LONG":
+                pnl_pct = ((mexc_price - entry) / entry) * 100
+            else:
+                pnl_pct = ((entry - mexc_price) / entry) * 100
+            
+            emoji = "🛡️" if trigger_type == "STOP_LOSS" else "🎯"
+            result_emoji = "✅" if close_result.get("ok") else "❌"
+            
+            message = f"""
+{emoji} <b>{trigger_type.replace('_', ' ')} TRIGGERED</b>
+
+<b>Coin:</b> {coin}
+<b>Direction:</b> {direction}
+<b>Entry:</b> ${entry:,.2f}
+<b>MEXC Price:</b> ${mexc_price:,.2f}
+<b>HL Price:</b> ${hl_price:,.2f}
+<b>PnL:</b> {pnl_pct:+.2f}%
+
+{result_emoji} <b>Close Result:</b> {'Success' if close_result.get('ok') else close_result.get('error', 'Failed')}
+"""
+            send_telegram_message(message)
+            
+        except Exception as e:
+            print(f"⚠️ Failed to send SL/TP notification: {e}")
+    
+    def _execute_sl_tp_close(self, coin: str, trigger_type: str, mexc_price: float, 
+                              hl_price: float) -> Dict[str, Any]:
+        """Execute position close for SL/TP trigger"""
+        alert_key = f"{coin}_{trigger_type}_{datetime.now().strftime('%Y%m%d_%H%M')}"
+        
+        # Prevent duplicate execution within same minute
+        if alert_key in self._processed_alerts:
+            return {"ok": False, "error": "Already processed", "skipped": True}
+        
+        self._processed_alerts.add(alert_key)
+        
+        print(f"\n{'🛡️' if trigger_type == 'STOP_LOSS' else '🎯'} {trigger_type} triggered for {coin}!")
+        print(f"   MEXC Price: ${mexc_price:,.2f}")
+        print(f"   HL Price: ${hl_price:,.2f}")
+        print(f"   Diff: {((hl_price - mexc_price) / mexc_price * 100):+.3f}%")
+        
+        if not self._auto_execute:
+            print(f"   ⏸️ Auto-execute disabled - manual close required")
+            return {"ok": False, "error": "Auto-execute disabled", "manual_required": True}
+        
+        if not HyperliquidConfig.orders_enabled():
+            print(f"   ⚠️ Orders disabled - cannot close position")
+            return {"ok": False, "error": "Orders disabled"}
+        
+        # Use market order for immediate execution on SL/TP
+        print(f"   🚀 Executing market close on Hyperliquid...")
+        result = close_position_market(coin)
+        
+        if result.get("ok"):
+            print(f"   ✅ Position closed successfully")
+            # Mark as triggered to prevent further checks
+            if coin in self._tracked_positions:
+                self._tracked_positions[coin][f"{trigger_type.lower()}_triggered"] = True
+        else:
+            print(f"   ❌ Close failed: {result.get('error')}")
+        
+        # Send notification
+        self._send_sl_tp_notification(coin, trigger_type, mexc_price, hl_price, result)
+        
+        return result
     
     def _check_positions(self):
-        """Internal method to check all positions"""
+        """Internal method to check all positions for SL/TP triggers"""
         positions = get_open_positions()
+        open_coins = {pos["coin"] for pos in positions}
+        
+        # Clean up tracked positions that no longer exist
+        closed_coins = set(self._tracked_positions.keys()) - open_coins
+        for coin in closed_coins:
+            print(f"📤 Position {coin} closed externally, removing from tracking")
+            self.untrack_position(coin)
         
         for pos in positions:
             coin = pos["coin"]
             tracked = self._tracked_positions.get(coin, {})
             
+            # Skip if not tracked or already triggered
+            if not tracked:
+                continue
+            if tracked.get("sl_triggered") or tracked.get("tp_triggered"):
+                continue
+            
             # Get both prices for comparison
             hl_price = get_hyperliquid_price(coin)
             mexc_price = get_mexc_price(f"{coin}USDT")
+            
+            if not mexc_price or not hl_price:
+                continue
+            
+            direction = tracked.get("direction", pos.get("direction", "UNKNOWN"))
+            stop_loss = tracked.get("stop_loss")
+            take_profit = tracked.get("take_profit")
             
             update = {
                 "position": pos,
                 "hyperliquid_price": hl_price,
                 "mexc_price": mexc_price,
                 "tracked_info": tracked,
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
+                "alert": None
             }
             
             # Check stop loss based on MEXC price (since analysis was on MEXC)
-            if tracked.get("stop_loss") and mexc_price:
-                if pos["direction"] == "LONG" and mexc_price <= tracked["stop_loss"]:
+            if stop_loss:
+                sl_hit = False
+                if direction == "LONG" and mexc_price <= stop_loss:
+                    sl_hit = True
+                elif direction == "SHORT" and mexc_price >= stop_loss:
+                    sl_hit = True
+                
+                if sl_hit:
                     update["alert"] = "STOP_LOSS_HIT"
-                elif pos["direction"] == "SHORT" and mexc_price >= tracked["stop_loss"]:
-                    update["alert"] = "STOP_LOSS_HIT"
+                    close_result = self._execute_sl_tp_close(coin, "STOP_LOSS", mexc_price, hl_price)
+                    update["close_result"] = close_result
+                    if close_result.get("ok"):
+                        self.untrack_position(coin)
+                        continue
             
-            # Check take profit
-            if tracked.get("take_profit") and mexc_price:
-                if pos["direction"] == "LONG" and mexc_price >= tracked["take_profit"]:
+            # Check take profit based on MEXC price
+            if take_profit and not update.get("alert"):
+                tp_hit = False
+                if direction == "LONG" and mexc_price >= take_profit:
+                    tp_hit = True
+                elif direction == "SHORT" and mexc_price <= take_profit:
+                    tp_hit = True
+                
+                if tp_hit:
                     update["alert"] = "TAKE_PROFIT_HIT"
-                elif pos["direction"] == "SHORT" and mexc_price <= tracked["take_profit"]:
-                    update["alert"] = "TAKE_PROFIT_HIT"
+                    close_result = self._execute_sl_tp_close(coin, "TAKE_PROFIT", mexc_price, hl_price)
+                    update["close_result"] = close_result
+                    if close_result.get("ok"):
+                        self.untrack_position(coin)
+                        continue
             
-            # Notify callbacks
+            # Notify callbacks (for external monitoring/logging)
             for callback in self._callbacks:
                 try:
                     callback(update)
@@ -1404,12 +1715,13 @@ class PositionMonitor:
     def start(self):
         """Start the position monitor"""
         if self._running:
+            print("⚠️ Position monitor already running")
             return
         
         self._running = True
         
         def monitor_loop():
-            print("✅ Position monitor started")
+            print(f"✅ Position monitor started (interval: {self._check_interval}s, auto-execute: {self._auto_execute})")
             while self._running:
                 try:
                     self._check_positions()
@@ -1424,6 +1736,11 @@ class PositionMonitor:
     def stop(self):
         """Stop the position monitor"""
         self._running = False
+        print("🛑 Stopping position monitor...")
+    
+    def is_running(self) -> bool:
+        """Check if monitor is running"""
+        return self._running
 
 
 def get_position_monitor() -> PositionMonitor:

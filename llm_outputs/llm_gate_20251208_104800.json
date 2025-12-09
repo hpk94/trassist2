@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI is below 50 indicating bearish momentum.",
+    "MACD histogram is negative supporting further downside.",
+    "Price action shows a recent lower high and lower low, confirming downtrend continuation."
+  ],
+  "warnings": [
+    "High leverage of 30x used, increasing the risk of liquidation."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91936.01,
+    "stop_loss": 92000.0,
+    "take_profits": [
+      {
+        "price": 91590.01,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Leverage set to 30x, ensure adequate funding to avoid liquidation."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

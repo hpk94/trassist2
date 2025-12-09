@@ -1,0 +1,265 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "YYYY-MM-DD 10:54",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": null,
+    "resistance": null
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 40.84,
+      "status": "neutral",
+      "signal": "neither overbought nor oversold"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "data unavailable"
+    },
+    "VOLUME": {
+      "current": 2.78671768,
+      "average": null,
+      "ratio": null,
+      "trend": "data unavailable"
+    },
+    "FIBONACCI": {
+      "anchors": {},
+      "levels": {
+        "0.236": 91357.5
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "data unavailable"
+    },
+    "MACD12_26_9": {
+      "macd_line": -18.9911,
+      "signal_line": -9.9748,
+      "histogram": -9.0163
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Rising wedge pattern suggests short, RSI neutral, MACD bearish, volume context missing"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "rising_wedge_valid",
+        "indicator": "PATTERN",
+        "comparator": "==",
+        "value": "confirmed",
+        "observed_on_candle": 0
+      },
+      {
+        "id": "rsi_neutral_or_down",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "macd_bearish",
+        "indicator": "MACD12_26_9",
+        "comparator": "<",
+        "value": 0,
+        "observed_on_candle": 0
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_above_wedge_resistance",
+        "type": "price_breach",
+        "level": "wedge_resistance"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": "above_wedge_resistance",
+      "basis": "pattern_invalidation"
+    },
+    "take_profit": [
+      {
+        "price": 91357.5,
+        "basis": "fib_0.236_level",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI and MACD for confirmation of bearish momentum.",
+    "Execute short if RSI holds below 50 and MACD remains negative.",
+    "Invalidate if price breaches the wedge resistance."
+  ],
+  "improvements": "Ensure volume analysis is integrated for robust confirmation.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "YYYY-MM-DD 10:54",
+        "visual_indicators": {
+          "RSI14": {
+            "value": null,
+            "visible": true
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": true
+          }
+        },
+        "fibonacci": {
+          "anchors": {},
+          "levels": {
+            "0.236": 91357.5
+          },
+          "timeframe_hints": {}
+        },
+        "patterns": [
+          {
+            "pattern": "rising_wedge",
+            "candle_index": 0,
+            "confidence": 0.9,
+            "pattern_name": "rising_wedge",
+            "pattern_direction": "short",
+            "pattern_type": "reversal_or_continuation",
+            "usual_breakout_direction": "bearish_down"
+          }
+        ],
+        "support_resistance": {
+          "support": [],
+          "resistance": []
+        },
+        "visual_trend": "bullish",
+        "_pattern_info": [
+          {
+            "name": "rising_wedge",
+            "direction": "short",
+            "type": "reversal_or_continuation",
+            "usual_breakout_direction": "bearish_down",
+            "notes": "Often a bearish pattern even though price is rising; breakdown below lower trendline is watched.",
+            "look": "Price rises within converging, upward-sloping trendlines.",
+            "typical_context": "Can appear in uptrends or as a corrective move in downtrends."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on short)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "DeepSeek": "short",
+        "Gemini": "short"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.6,
+        "Gemini": 0.85
+      },
+      "response_times": {
+        "ChatGPT5.1": 20.025648832321167,
+        "DeepSeek": 21.948314905166626,
+        "Gemini": 94.95968675613403
+      },
+      "agreement": true,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.7,
+        "elapsed_time": 20.025648832321167,
+        "stop_loss": "above_wedge_resistance",
+        "take_profits": [
+          {
+            "price": 91357.5,
+            "rr": 1.5
+          }
+        ],
+        "max_rr": 1.5
+      },
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.6,
+        "elapsed_time": 21.948314905166626,
+        "stop_loss": 92100.0,
+        "take_profits": [
+          {
+            "price": 91357.5,
+            "rr": 1.5
+          }
+        ],
+        "max_rr": 1.5
+      },
+      "Gemini": {
+        "direction": "short",
+        "confidence": 0.85,
+        "elapsed_time": 94.95968675613403,
+        "stop_loss": 92050.0,
+        "take_profits": [
+          {
+            "price": 91600.0,
+            "rr": 2.0
+          },
+          {
+            "price": 91360.0,
+            "rr": 3.6
+          }
+        ],
+        "max_rr": 3.6
+      }
+    },
+    "errors": {}
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.85,
+  "reasons": [
+    "Volume is above average, supporting the short setup.",
+    "Current RSI is not overbought, allowing room for downward movement.",
+    "Price has been unable to exceed recent highs, indicating resistance strength."
+  ],
+  "warnings": [
+    "Recent candles show slight upward movement, monitor for potential reversal."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90418.68,
+    "stop_loss": 92104.1,
+    "take_profits": [
+      {
+        "price": 90132.1,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.2,
+    "position_size_note": "With the 30x leverage, ensure position size does not exceed risk tolerance."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 1,
+      "total": 1
+    },
+    "context_alignment": "strong"
+  }
+}

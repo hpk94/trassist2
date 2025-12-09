@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI is significantly below neutral, indicating bearish momentum.",
+    "Volume is increasing, supporting directional movement.",
+    "Price is below key Fibonacci level (0.618), aligning with short setup."
+  ],
+  "warnings": [
+    "Entry at market may involve slippage due to recent volatility."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90208.0,
+    "stop_loss": 90500.0,
+    "take_profits": [
+      {
+        "price": 89609.9,
+        "portion": 0.5
+      },
+      {
+        "price": 88900.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Adjust position size according to leverage and account for high leverage volatility."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

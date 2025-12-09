@@ -1,0 +1,28 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.4,
+  "reasons": [
+    "Current RSI is below the oversold level, indicating potential for bounce, but opening signal is neutral.",
+    "Recent price action shows a steady decline without confirmation of reversal."
+  ],
+  "warnings": [
+    "Market context does not show strong confluence for a bullish entry. Immediate market conditions are weak."
+  ],
+  "execution": {
+    "entry_type": "none",
+    "entry_price": 0.0,
+    "stop_loss": 0.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "No trade due to lack of strong bullish confirmation."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 2
+    },
+    "context_alignment": "weak"
+  }
+}

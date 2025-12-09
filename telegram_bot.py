@@ -155,7 +155,8 @@ class TelegramBot:
                 keyboard = {
                     "keyboard": [
                         [{"text": "/status"}, {"text": "/balance"}, {"text": "/positions"}],
-                        [{"text": "/close"}, {"text": "/stop"}, {"text": "/help"}]
+                        [{"text": "/sltp"}, {"text": "/close"}, {"text": "/stop"}],
+                        [{"text": "/help"}]
                     ],
                     "resize_keyboard": True,
                     "persistent": True
@@ -209,7 +210,8 @@ class TelegramBot:
         inline_keyboard = [
             [
                 {"text": "📊 Check P&L", "callback_data": f"pnl:{trade_id}"},
-                {"text": "📈 Prices", "callback_data": f"prices:{trade_id}"}
+                {"text": "📈 Prices", "callback_data": f"prices:{trade_id}"},
+                {"text": "🎯 SL/TP", "callback_data": f"sltp:{trade_id}"}
             ],
             [
                 {"text": "🔒 Close 50%", "callback_data": f"close50:{trade_id}"},
@@ -303,6 +305,7 @@ class TelegramBot:
 /status - Check current analysis status
 /balance - View wallet balance
 /positions - View open positions
+/sltp - View SL/TP levels for tracked positions
 /close - Close all positions
 /stop - Stop the running analysis
 /help - Show this help message
@@ -349,6 +352,9 @@ Upload a chart to start a new analysis.
         
         elif command == "/positions":
             self._show_positions()
+        
+        elif command == "/sltp":
+            self._show_sltp_levels()
         
         elif command == "/balance":
             self._show_balance()
@@ -441,9 +447,11 @@ You can upload a new chart once the analysis has stopped.
                 direction_emoji = "🟢" if pos["direction"] == "LONG" else "🔴"
                 pnl_emoji = "📈" if pos["unrealized_pnl"] >= 0 else "📉"
                 
-                # Calculate P&L percentage
+                # Calculate P&L percentage (leverage-adjusted = ROI on margin)
                 position_value = pos["entry_price"] * pos["size"]
-                pnl_pct = (pos["unrealized_pnl"] / position_value * 100) if position_value > 0 else 0
+                leverage = pos.get("leverage", 1) or 1
+                margin = position_value / leverage
+                pnl_pct = (pos["unrealized_pnl"] / margin * 100) if margin > 0 else 0
                 
                 message += f"{direction_emoji} <b>{pos['coin']}</b> {pos['direction']}\n"
                 message += f"   Size: {pos['size']:.6f}\n"
@@ -474,6 +482,115 @@ You can upload a new chart once the analysis has stopped.
             self.send_message("❌ Hyperliquid service not available")
         except Exception as e:
             self.send_message(f"❌ Error getting positions: {e}")
+    
+    def _show_sltp_levels(self):
+        """Show SL/TP levels for all tracked positions"""
+        try:
+            from services.hyperliquid_service import get_position_monitor, get_mexc_price, get_open_positions
+            
+            monitor = get_position_monitor()
+            tracked = monitor.get_tracked_positions()
+            
+            if not tracked:
+                # Check if there are positions but not tracked
+                positions = get_open_positions()
+                if positions:
+                    msg = "<b>🎯 SL/TP Levels</b>\n\n"
+                    msg += "⚠️ <i>No SL/TP tracking active for current positions.</i>\n\n"
+                    msg += "Positions without SL/TP tracking:\n"
+                    for pos in positions:
+                        msg += f"• {pos['coin']} ({pos['direction']})\n"
+                    msg += "\n<i>SL/TP tracking is set up automatically when trades are opened via the trading assistant.</i>"
+                else:
+                    msg = "<b>🎯 SL/TP Levels</b>\n\n<i>No tracked positions.</i>"
+                self.send_message(msg)
+                return
+            
+            msg = "<b>🎯 SL/TP Levels</b>\n\n"
+            
+            for coin, data in tracked.items():
+                direction = data.get("direction", "UNKNOWN")
+                entry = data.get("entry_price", 0)
+                stop_loss = data.get("stop_loss")
+                take_profit = data.get("take_profit")
+                
+                direction_emoji = "🟢" if direction == "LONG" else "🔴"
+                
+                # Get current MEXC price
+                mexc_price = get_mexc_price(f"{coin}USDT")
+                
+                msg += f"{direction_emoji} <b>{coin}</b> {direction}\n"
+                msg += f"   <b>Entry:</b> ${entry:,.2f}\n"
+                
+                if mexc_price:
+                    # Calculate current P&L
+                    if direction == "LONG":
+                        pnl_pct = ((mexc_price - entry) / entry) * 100
+                    else:
+                        pnl_pct = ((entry - mexc_price) / entry) * 100
+                    pnl_emoji = "📈" if pnl_pct >= 0 else "📉"
+                    msg += f"   <b>Current:</b> ${mexc_price:,.2f} ({pnl_emoji} {pnl_pct:+.2f}%)\n"
+                
+                if stop_loss:
+                    sl_dist = abs((stop_loss - entry) / entry * 100)
+                    if mexc_price:
+                        if direction == "LONG":
+                            sl_pct_away = ((mexc_price - stop_loss) / mexc_price * 100)
+                        else:
+                            sl_pct_away = ((stop_loss - mexc_price) / mexc_price * 100)
+                        msg += f"   🛡️ <b>SL:</b> ${stop_loss:,.2f} ({sl_pct_away:.2f}% away)\n"
+                    else:
+                        msg += f"   🛡️ <b>SL:</b> ${stop_loss:,.2f} ({sl_dist:.2f}% from entry)\n"
+                else:
+                    msg += f"   🛡️ <b>SL:</b> Not set\n"
+                
+                if take_profit:
+                    tp_dist = abs((take_profit - entry) / entry * 100)
+                    if mexc_price:
+                        if direction == "LONG":
+                            tp_pct_away = ((take_profit - mexc_price) / mexc_price * 100)
+                        else:
+                            tp_pct_away = ((mexc_price - take_profit) / mexc_price * 100)
+                        msg += f"   🎯 <b>TP:</b> ${take_profit:,.2f} ({tp_pct_away:.2f}% away)\n"
+                    else:
+                        msg += f"   🎯 <b>TP:</b> ${take_profit:,.2f} ({tp_dist:.2f}% from entry)\n"
+                else:
+                    msg += f"   🎯 <b>TP:</b> Not set\n"
+                
+                # R:R ratio
+                if stop_loss and take_profit and entry:
+                    if direction == "LONG":
+                        risk = entry - stop_loss
+                        reward = take_profit - entry
+                    else:
+                        risk = stop_loss - entry
+                        reward = entry - take_profit
+                    if risk > 0:
+                        rr = reward / risk
+                        msg += f"   📊 <b>R:R:</b> 1:{rr:.2f}\n"
+                
+                msg += "\n"
+            
+            # Monitor status
+            if monitor.is_running():
+                msg += "━━━━━━━━━━━━━━━━━━━━\n"
+                msg += "✅ <b>Auto SL/TP monitoring:</b> Active\n"
+                msg += "<i>Positions will auto-close when SL/TP hit on MEXC</i>"
+            else:
+                msg += "━━━━━━━━━━━━━━━━━━━━\n"
+                msg += "⚠️ <b>Auto SL/TP monitoring:</b> Inactive"
+            
+            # Add refresh button
+            inline_keyboard = [
+                [{"text": "🔄 Refresh", "callback_data": "refresh:sltp"}]
+            ]
+            
+            self.send_message(msg, inline_keyboard=inline_keyboard)
+            
+        except ImportError:
+            self.send_message("❌ Hyperliquid service not available")
+        except Exception as e:
+            self.send_message(f"❌ Error getting SL/TP levels: {e}")
     
     def _close_all_positions(self):
         """Close all open positions"""
@@ -533,7 +650,10 @@ You can upload a new chart once the analysis has stopped.
                 
                 if position:
                     pnl = position["unrealized_pnl"]
-                    pnl_pct = (pnl / (position["entry_price"] * position["size"])) * 100 if position["size"] > 0 else 0
+                    position_value = position["entry_price"] * position["size"]
+                    leverage = position.get("leverage", 1) or 1
+                    margin = position_value / leverage
+                    pnl_pct = (pnl / margin * 100) if margin > 0 else 0
                     text = f"{'📈' if pnl >= 0 else '📉'} {coin}: ${pnl:.2f} ({pnl_pct:+.2f}%)"
                 else:
                     text = f"No position found for {coin}"
@@ -552,6 +672,88 @@ You can upload a new chart once the analysis has stopped.
                     text = "Could not fetch prices"
                 
                 self.answer_callback(callback_id, text)
+            
+            elif action == "sltp":
+                # Show current SL/TP levels
+                from services.hyperliquid_service import get_position_monitor, get_mexc_price
+                
+                trade_data = self._active_trades.get(param, {})
+                coin = trade_data.get("coin", param)
+                
+                monitor = get_position_monitor()
+                tracked = monitor.get_tracked_positions().get(coin, {})
+                
+                if tracked:
+                    stop_loss = tracked.get("stop_loss")
+                    take_profit = tracked.get("take_profit")
+                    entry = tracked.get("entry_price", 0)
+                    direction = tracked.get("direction", "UNKNOWN")
+                    
+                    # Get current MEXC price for distance calculation
+                    mexc_price = get_mexc_price(f"{coin}USDT")
+                    
+                    msg = f"<b>🎯 SL/TP Levels for {coin}</b>\n\n"
+                    msg += f"<b>Direction:</b> {direction}\n"
+                    msg += f"<b>Entry:</b> ${entry:,.2f}\n"
+                    
+                    if mexc_price:
+                        msg += f"<b>Current (MEXC):</b> ${mexc_price:,.2f}\n"
+                    
+                    msg += "\n"
+                    
+                    if stop_loss:
+                        sl_distance_pct = abs((stop_loss - entry) / entry * 100)
+                        sl_status = "🔴" if (direction == "LONG" and mexc_price and mexc_price <= stop_loss) or \
+                                           (direction == "SHORT" and mexc_price and mexc_price >= stop_loss) else "⚪"
+                        msg += f"{sl_status} <b>Stop Loss:</b> ${stop_loss:,.2f} ({sl_distance_pct:.2f}% from entry)\n"
+                        if mexc_price:
+                            if direction == "LONG":
+                                sl_current_dist = ((mexc_price - stop_loss) / stop_loss * 100)
+                                msg += f"   └ {sl_current_dist:.2f}% above SL\n"
+                            else:
+                                sl_current_dist = ((stop_loss - mexc_price) / mexc_price * 100)
+                                msg += f"   └ {sl_current_dist:.2f}% below SL\n"
+                    else:
+                        msg += "⚪ <b>Stop Loss:</b> Not set\n"
+                    
+                    if take_profit:
+                        tp_distance_pct = abs((take_profit - entry) / entry * 100)
+                        tp_status = "🟢" if (direction == "LONG" and mexc_price and mexc_price >= take_profit) or \
+                                           (direction == "SHORT" and mexc_price and mexc_price <= take_profit) else "⚪"
+                        msg += f"{tp_status} <b>Take Profit:</b> ${take_profit:,.2f} ({tp_distance_pct:.2f}% from entry)\n"
+                        if mexc_price:
+                            if direction == "LONG":
+                                tp_current_dist = ((take_profit - mexc_price) / mexc_price * 100)
+                                msg += f"   └ {tp_current_dist:.2f}% to TP\n"
+                            else:
+                                tp_current_dist = ((mexc_price - take_profit) / take_profit * 100)
+                                msg += f"   └ {tp_current_dist:.2f}% to TP\n"
+                    else:
+                        msg += "⚪ <b>Take Profit:</b> Not set\n"
+                    
+                    # Calculate R:R if both set
+                    if stop_loss and take_profit and entry:
+                        if direction == "LONG":
+                            risk = entry - stop_loss
+                            reward = take_profit - entry
+                        else:
+                            risk = stop_loss - entry
+                            reward = entry - take_profit
+                        
+                        if risk > 0:
+                            rr_ratio = reward / risk
+                            msg += f"\n<b>Risk:Reward:</b> 1:{rr_ratio:.2f}"
+                    
+                    # Show if monitoring is active
+                    if monitor.is_running():
+                        msg += f"\n\n✅ <i>Auto SL/TP monitoring active</i>"
+                    else:
+                        msg += f"\n\n⚠️ <i>Monitor not running</i>"
+                    
+                    self.send_message(msg)
+                    self.answer_callback(callback_id, "SL/TP levels shown below ⬇️")
+                else:
+                    self.answer_callback(callback_id, f"No SL/TP tracking for {coin}", show_alert=True)
             
             elif action == "close50":
                 # Close 50% of position
@@ -584,12 +786,14 @@ You can upload a new chart once the analysis has stopped.
                     close_details = result.get("close_details", {})
                     self.answer_callback(callback_id, f"✅ Closing {coin} position...")
                     
-                    # Calculate P&L percentage
+                    # Calculate P&L percentage (leverage-adjusted = ROI on margin)
                     entry = close_details.get('entry_price', 0)
                     size = close_details.get('size', 0)
                     pnl = close_details.get('unrealized_pnl', 0)
+                    leverage = close_details.get('leverage', 1) or 1
                     position_value = entry * size
-                    pnl_pct = (pnl / position_value * 100) if position_value > 0 else 0
+                    margin = position_value / leverage
+                    pnl_pct = (pnl / margin * 100) if margin > 0 else 0
                     pnl_emoji = "📈" if pnl >= 0 else "📉"
                     
                     msg = f"<b>🔒 Close Order Placed</b>\n\n"
@@ -680,6 +884,9 @@ You can upload a new chart once the analysis has stopped.
                 elif param == "balance":
                     self.answer_callback(callback_id, "Refreshing...")
                     self._show_balance()
+                elif param == "sltp":
+                    self.answer_callback(callback_id, "Refreshing...")
+                    self._show_sltp_levels()
                 else:
                     self.answer_callback(callback_id, "Refreshed")
             

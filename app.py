@@ -849,10 +849,7 @@ def poll_until_decision(symbol, timeframe, max_cycles=None):
             print(f"  Polling complete: max cycles ({max_cycles}) reached")
             return signal_valid, signal_status, triggered_conditions, market_values
 
-        # Send periodic status updates
-        if cycles % 5 == 0:  # Every 5 cycles
-            elapsed_min = int((cycles * wait_seconds) / 60)
-            send_telegram_status(f"⏳ <b>Still Polling...</b>\n\nCycle {cycles}\nElapsed: {elapsed_min}m\nStatus: {signal_status}")
+        # Periodic status updates removed - use /status command to check polling state
 
         print(f"  Polling cycle {cycles + 1}: waiting {wait_seconds} seconds...")
         time.sleep(wait_seconds)

@@ -59,6 +59,20 @@ HYPERLIQUID_LIMIT_TIF=Gtc
 # Slippage for close orders (as decimal, default: 0.002)
 HYPERLIQUID_CLOSE_SLIPPAGE=0.002
 
+# === Stop Loss / Take Profit Configuration ===
+
+# Enable automatic SL/TP monitoring and execution (default: true)
+# Monitors MEXC prices and auto-closes on Hyperliquid when triggered
+HYPERLIQUID_AUTO_SL_TP=true
+
+# Place backup SL orders directly on Hyperliquid (default: false)
+# Acts as a safety net with price adjusted for USDT/USDC difference
+# Note: Primary SL/TP is monitored via MEXC prices
+HYPERLIQUID_BACKUP_SL_ORDERS=false
+
+# Check interval in seconds for SL/TP monitoring (default: 10)
+HYPERLIQUID_SL_TP_CHECK_INTERVAL=10
+
 # === Optional Advanced Settings ===
 
 # Skip WebSocket connection (default: true)
@@ -107,15 +121,49 @@ When a trade is opened, you'll receive a Telegram notification with interactive 
 6. Telegram notification with management buttons is sent
 7. Position monitor starts tracking the trade
 
-### 2. Position Monitoring
+### 2. Automatic SL/TP Management
 
-The position monitor runs in the background and:
-- Checks positions at regular intervals
-- Monitors MEXC prices (since analysis was based on MEXC)
-- Alerts when stop loss or take profit levels are hit (based on MEXC price)
-- Allows you to close trades via Telegram buttons
+The system provides automatic stop loss and take profit handling:
 
-### 3. Limit Orders vs Market Orders
+**How it works:**
+1. When a trade is opened, the SL/TP prices from the LLM analysis are stored
+2. A background monitor checks **MEXC prices** every 10 seconds (configurable)
+3. When MEXC price hits SL or TP, the position is **automatically closed on Hyperliquid**
+4. Telegram notification is sent with the result
+
+**Why monitor MEXC but trade on Hyperliquid?**
+- Your chart analysis was done on MEXC (USDT perpetuals)
+- The SL/TP levels are based on MEXC prices
+- Hyperliquid uses USDC which can have slightly different prices
+- Monitoring MEXC ensures your SL/TP triggers at the intended levels
+
+**Configuration:**
+```bash
+# Enable/disable auto SL/TP (default: true)
+HYPERLIQUID_AUTO_SL_TP=true
+
+# Check interval in seconds (default: 10)
+HYPERLIQUID_SL_TP_CHECK_INTERVAL=10
+
+# Optional: Place backup SL orders on Hyperliquid (default: false)
+# These are price-adjusted and act as a safety net
+HYPERLIQUID_BACKUP_SL_ORDERS=false
+```
+
+**Backup SL Orders (optional):**
+If enabled, the system also places a stop loss order directly on Hyperliquid:
+- Price is adjusted to account for USDT/USDC difference
+- Set 1% worse than the MEXC-based SL (so MEXC monitor triggers first)
+- Acts as a safety net if monitoring fails
+
+### 3. Manual Position Management
+
+You can also manage positions manually via Telegram buttons:
+- Check P&L in real-time
+- Close partial or full position
+- Emergency close with market order
+
+### 4. Limit Orders vs Market Orders
 
 | Order Type | Use Case | Fees |
 |------------|----------|------|
