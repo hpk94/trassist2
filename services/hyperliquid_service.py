@@ -1533,7 +1533,9 @@ class PositionMonitor:
             "size": size,
             "opened_at": datetime.now().isoformat(),
             "sl_triggered": False,
-            "tp_triggered": False
+            "tp_triggered": False,
+            "position_confirmed": False,  # Track if we've seen an actual filled position
+            "confirmation_retries": 0  # Count retries waiting for fill
         }
         
         print(f"📊 Tracking {coin} {direction.upper()}")
@@ -1637,11 +1639,40 @@ class PositionMonitor:
         positions = get_open_positions()
         open_coins = {pos["coin"] for pos in positions}
         
-        # Clean up tracked positions that no longer exist
-        closed_coins = set(self._tracked_positions.keys()) - open_coins
-        for coin in closed_coins:
-            print(f"📤 Position {coin} closed externally, removing from tracking")
-            self.untrack_position(coin)
+        # Check tracked positions that are not currently open
+        tracked_coins = set(self._tracked_positions.keys())
+        missing_coins = tracked_coins - open_coins
+        
+        for coin in missing_coins:
+            tracked = self._tracked_positions.get(coin, {})
+            
+            # If we've confirmed this position was open before, it's now closed
+            if tracked.get("position_confirmed"):
+                print(f"📤 Position {coin} closed externally, removing from tracking")
+                self.untrack_position(coin)
+            else:
+                # Position not confirmed yet - likely limit order still pending
+                retries = tracked.get("confirmation_retries", 0) + 1
+                self._tracked_positions[coin]["confirmation_retries"] = retries
+                
+                # Max retries: ~5 minutes (30 retries * 10s interval)
+                MAX_CONFIRMATION_RETRIES = 30
+                
+                if retries >= MAX_CONFIRMATION_RETRIES:
+                    print(f"⚠️ Position {coin} never filled after {MAX_CONFIRMATION_RETRIES} checks, removing from tracking")
+                    self.untrack_position(coin)
+                elif retries == 1:
+                    # Only print on first retry to avoid spam
+                    print(f"⏳ Waiting for {coin} limit order to fill... (attempt {retries})")
+                elif retries % 6 == 0:  # Print every ~1 minute
+                    print(f"⏳ Still waiting for {coin} limit order to fill... (attempt {retries})")
+        
+        # Mark positions as confirmed when we see them open
+        for coin in open_coins:
+            if coin in self._tracked_positions:
+                if not self._tracked_positions[coin].get("position_confirmed"):
+                    print(f"✅ Position {coin} confirmed filled, SL/TP monitoring active")
+                self._tracked_positions[coin]["position_confirmed"] = True
         
         for pos in positions:
             coin = pos["coin"]
