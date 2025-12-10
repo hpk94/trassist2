@@ -1249,12 +1249,18 @@ def close_position_market(coin: str) -> Dict[str, Any]:
         
         print(f"🚨 Emergency close {coin}: {'BUY' if is_buy else 'SELL'} {size} @ market (slippage: {slippage*100}%)")
         
-        response = exchange.market_open(
+        # Calculate limit price with slippage (market_open doesn't support reduce_only)
+        if is_buy:
+            limit_px = current_price * (1 + slippage)
+        else:
+            limit_px = current_price * (1 - slippage)
+        
+        response = exchange.order(
             name=coin,
             is_buy=is_buy,
             sz=size,
-            px=current_price,
-            slippage=slippage,
+            limit_px=limit_px,
+            order_type={"limit": {"tif": "Ioc"}},  # Immediate-or-cancel for market-like behavior
             reduce_only=True
         )
         

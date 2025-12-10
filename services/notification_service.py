@@ -15,6 +15,7 @@ class NotificationService:
     def __init__(self):
         self.telegram_bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
         self.telegram_chat_id = os.getenv("TELEGRAM_CHAT_ID")
+        self.telegram_enabled = bool(self.telegram_bot_token and self.telegram_chat_id)
         
     def send_trade_notification(self, trade_data: Dict[str, Any], notification_type: str = "valid_trade") -> Dict[str, bool]:
         """
