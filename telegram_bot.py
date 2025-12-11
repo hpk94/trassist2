@@ -7,6 +7,7 @@ Supports inline buttons for trade management
 
 import os
 import json
+import re
 import threading
 import time
 from datetime import datetime
@@ -49,6 +50,8 @@ class AnalysisState:
                     cls._instance._start_time = None
                     cls._instance._should_stop = False
                     cls._instance._analysis_data = {}
+                    cls._instance._condition_status = {}
+                    cls._instance._polling_cycle = 0
         return cls._instance
     
     @property
@@ -104,6 +107,32 @@ class AnalysisState:
         """Retrieve analysis data"""
         with self._lock:
             return self._analysis_data.get(key)
+    
+    def update_condition_status(self, condition_status: Dict[str, Any]):
+        """Store current condition status during polling"""
+        with self._lock:
+            self._condition_status = condition_status
+    
+    def get_condition_status(self) -> Dict[str, Any]:
+        """Retrieve current condition status"""
+        with self._lock:
+            return self._condition_status.copy() if self._condition_status else {}
+    
+    def update_polling_cycle(self, cycle: int):
+        """Store current polling cycle number"""
+        with self._lock:
+            self._polling_cycle = cycle
+    
+    def get_polling_cycle(self) -> int:
+        """Retrieve current polling cycle number"""
+        with self._lock:
+            return self._polling_cycle
+    
+    def clear_condition_status(self):
+        """Clear condition status when analysis ends"""
+        with self._lock:
+            self._condition_status = {}
+            self._polling_cycle = 0
 
 
 class TelegramBot:
@@ -334,11 +363,98 @@ class TelegramBot:
 <b>Direction:</b> {status['direction'] or 'Analyzing...'}
 <b>Start Time:</b> {status['start_time']}
 <b>Elapsed Time:</b> {elapsed_min}m {elapsed_sec}s
-
-<b>Status:</b> Analysis in progress...
-
-Use /stop to cancel this analysis.
-                """.strip()
+"""
+                
+                # Add condition status if polling is in progress
+                condition_status = self.state.get_condition_status()
+                polling_cycle = self.state.get_polling_cycle()
+                
+                if condition_status:
+                    status_text += f"\n<b>━━━ Polling Cycle {polling_cycle} ━━━</b>\n"
+                    
+                    # Core conditions
+                    core_met = condition_status.get('core_met', 0)
+                    core_total = condition_status.get('core_total', 0)
+                    core_pct = (core_met / core_total * 100) if core_total > 0 else 0
+                    status_text += f"\n<b>📋 Core Conditions:</b> {core_met}/{core_total} ({core_pct:.0f}%)\n"
+                    
+                    # Show individual conditions
+                    indicators = condition_status.get('indicators', [])
+                    if indicators:
+                        for ind in indicators[:8]:  # Limit to 8 to avoid message too long
+                            met = ind.get('met', False)
+                            emoji = "✅" if met else "⏳"
+                            name = ind.get('name', 'Unknown')
+                            condition = ind.get('condition', '')
+                            current = ind.get('current_value')
+                            target = ind.get('target_value')
+                            
+                            # Format current value
+                            if current is not None:
+                                try:
+                                    if isinstance(current, (int, float)):
+                                        current_str = f"{current:.2f}" if abs(current) < 1000 else f"{current:.0f}"
+                                    else:
+                                        current_str = f"{current}"
+                                except:
+                                    current_str = "?"
+                            else:
+                                current_str = "?"
+                            
+                            # Format target/condition to show what needs to be met
+                            target_str = ""
+                            if condition:
+                                # Extract comparator and value from condition string (e.g., "RSI14 <= 30.0")
+                                match = re.search(r'([<>=!]+)\s*([0-9.]+)', condition)
+                                if match:
+                                    comparator = match.group(1)
+                                    target_val = match.group(2)
+                                    # Escape HTML special characters for Telegram
+                                    comparator_display = comparator.replace('<', '&lt;').replace('>', '&gt;')
+                                    target_str = f"{comparator_display}{target_val}"
+                            elif target is not None:
+                                try:
+                                    if isinstance(target, (int, float)):
+                                        target_str = f"{target:.2f}" if abs(target) < 1000 else f"{target:.0f}"
+                                    else:
+                                        target_str = f"{target}"
+                                except:
+                                    pass
+                            
+                            # Build the display line
+                            if target_str:
+                                status_text += f"  {emoji} {name}: {current_str} (need {target_str})\n"
+                            else:
+                                status_text += f"  {emoji} {name}: {current_str}\n"
+                        
+                        if len(indicators) > 8:
+                            status_text += f"  ... +{len(indicators) - 8} more\n"
+                    
+                    # Invalidation status
+                    invalidation_triggered = condition_status.get('invalidation_triggered', False)
+                    triggered_conditions = condition_status.get('triggered_conditions', [])
+                    
+                    if invalidation_triggered:
+                        status_text += f"\n<b>⚠️ Invalidation:</b> TRIGGERED\n"
+                        for tc in triggered_conditions[:3]:
+                            status_text += f"  ❌ {tc}\n"
+                    else:
+                        status_text += f"\n<b>🛡️ Invalidation:</b> Not triggered\n"
+                    
+                    # Market values
+                    market = condition_status.get('market_values', {})
+                    if market:
+                        price = market.get('current_price')
+                        rsi = market.get('current_rsi')
+                        if price:
+                            status_text += f"\n<b>💰 Price:</b> ${price:,.2f}"
+                        if rsi:
+                            status_text += f"  <b>RSI:</b> {rsi:.1f}"
+                        status_text += "\n"
+                else:
+                    status_text += "\n<b>Status:</b> Analysis in progress...\n"
+                
+                status_text += "\nUse /stop to cancel this analysis."
             else:
                 status_text = """
 <b>📊 Analysis Status: IDLE</b>
@@ -1031,6 +1147,18 @@ def set_analysis_running(running: bool):
 def set_analysis_info(symbol: str, direction: str):
     """Set current analysis info"""
     get_analysis_state().set_analysis_info(symbol, direction)
+
+def update_condition_status(condition_status: Dict[str, Any]):
+    """Update current condition status during polling"""
+    get_analysis_state().update_condition_status(condition_status)
+
+def update_polling_cycle(cycle: int):
+    """Update current polling cycle number"""
+    get_analysis_state().update_polling_cycle(cycle)
+
+def clear_condition_status():
+    """Clear condition status when analysis ends"""
+    get_analysis_state().clear_condition_status()
 
 def send_telegram_status(message: str):
     """Send a status update via Telegram"""
