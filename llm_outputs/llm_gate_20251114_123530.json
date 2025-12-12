@@ -1,0 +1,36 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI below 50 and oversold, price below fib 0.236, volume below average, no invalidations triggered"
+  ],
+  "warnings": [
+    "Current RSI is oversold, which may limit downside momentum"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 96211.91,
+    "stop_loss": 96900.0,
+    "take_profits": [
+      {
+        "price": 96000.0,
+        "portion": 0.5
+      },
+      {
+        "price": 95860.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.75,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

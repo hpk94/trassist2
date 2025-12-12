@@ -1,0 +1,172 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-29 12:28",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 111900.0,
+    "resistance": 112400.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 79.1,
+      "status": "overbought",
+      "signal": "potential_reversal_warning"
+    },
+    "MACD12_26_9": {
+      "macd_line": 67.5977,
+      "signal_line": 56.3047,
+      "histogram": 11.293,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "likely_above_upper",
+      "bandwidth": "expanding"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 79.1,
+      "d_percent": 71.45,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 5210964.62,
+      "average": null,
+      "ratio": null,
+      "trend": "surging"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "high"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": null,
+      "confidence": 0.88
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.64,
+    "notes": "While strong bullish momentum is present with volume and MACD confirmation, RSI and Stoch are in overbought; rising wedge at resistance zone suggests caution for continuation longs"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_overbought",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 80.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rising_wedge_near_resistance",
+        "type": "structure_pattern",
+        "level": "trend_channel_top",
+        "comparator": "=",
+        "value": 112400.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_structure"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "previous_average",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "breakout_above_resistance",
+        "type": "price_breach",
+        "level": 112400.0,
+        "comparator": ">"
+      },
+      {
+        "id": "macd_histogram_increasing",
+        "type": "momentum_growth",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "histogram increasing"
+      },
+      {
+        "id": "rsi_sustained_above_80",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 80.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 112420.0,
+      "basis": "above_rising_wedge",
+      "distance_ticks": 126
+    },
+    "take_profit": [
+      {
+        "price": 112000.0,
+        "basis": "channel_midline",
+        "rr": 2.0
+      },
+      {
+        "price": 111900.0,
+        "basis": "channel_support",
+        "rr": 3.1
+      }
+    ]
+  },
+  "summary_actions": [
+    "Avoid new longs near the wedge resistance",
+    "Look for bearish candlestick or MACD histogram reversal to confirm short trigger",
+    "Watch RSI14 for possible rejection from extreme overbought",
+    "Use tight stops if shorting as trend still has strong bullish pressure"
+  ],
+  "improvements": "Wait for bearish pattern confirmation (e.g., shooting star, bearish engulfing) before shorting. Add Bollinger Bands or MA for better breakout/reversal clarity."
+}

@@ -1,0 +1,162 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-29 06:14",
+  "trend_direction": "sideways_to_bearish",
+  "support_resistance": {
+    "support": 111540.0,
+    "resistance": 111880.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 47.11,
+      "status": "neutral",
+      "signal": "consolidating"
+    },
+    "MACD12_26_9": {
+      "macd_line": 4.9735,
+      "signal_line": 9.9056,
+      "histogram": -4.9321,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 0.75507309,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": null,
+      "confidence": 0.88
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Descending triangle with neutral RSI and confirmed bearish MACD suggests a slight edge to a downside breakout. No confirmation yet."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_triangle_midline",
+        "type": "price_level",
+        "level": "descending_triangle_mid",
+        "comparator": "<",
+        "value": 111700.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_structure"
+      },
+      {
+        "id": "touching_support_base",
+        "type": "price_level",
+        "level": "descending_triangle_base",
+        "comparator": "<=",
+        "value": 111540.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_trendline",
+        "type": "price_breach",
+        "level": "descending_triangle_upper_trendline",
+        "comparator": ">",
+        "value": 111880.0
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_over_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 60.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111880.0,
+      "basis": "above descending triangle upper trendline",
+      "distance_ticks": 224
+    },
+    "take_profit": [
+      {
+        "price": 111400.0,
+        "basis": "measured move from triangle height",
+        "rr": 1.15
+      },
+      {
+        "price": 111200.0,
+        "basis": "volume void fill zone",
+        "rr": 2.05
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor price action near 111540 base \u2014 watch for breakdown volume",
+    "Confirm if MACD maintains bearish crossover and RSI stays under 50",
+    "Consider short entry on breakdown candle below 111540 with volume > 1.5x average",
+    "Invalidate if price breaks above triangle resistance (~111880)"
+  ],
+  "improvements": "Add Bollinger Bands or VWAP for clearer mean reversion context; enable volume relative measure against last 50 bars; define ATR14 to calculate stop-loss more precisely."
+}

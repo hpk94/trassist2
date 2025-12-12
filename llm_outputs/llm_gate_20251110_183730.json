@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.9,
+  "reasons": [
+    "RSI above 50 confirms bullish momentum",
+    "Price above fib_0.236 level supports long setup",
+    "No invalidations triggered and checklist fully met"
+  ],
+  "warnings": [
+    "Current price near initial take profit at 105559.1 may limit upside",
+    "RSI at 65.31 is elevated, monitor for overbought conditions"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 105576.46,
+    "stop_loss": 104800.0,
+    "take_profits": [
+      {
+        "price": 105559.1,
+        "portion": 0.5
+      },
+      {
+        "price": 105773.7,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

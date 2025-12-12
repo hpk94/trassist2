@@ -1,0 +1,268 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-01 19:25",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 89134.6,
+    "resistance": 92135.9
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 67.59,
+      "status": "overbought",
+      "signal": "approaching_overbought"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 0.15673383,
+      "average": "matching_recent_trend",
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 89134.6,
+        "to": 92135.9
+      },
+      "levels": {
+        "0.236": 91367.6,
+        "0.382": 90743.8,
+        "0.5": 90693.2,
+        "0.618": 90206.1,
+        "0.786": 89789.4
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unavailable"
+    },
+    "MACD12_26_9": {
+      "macd_line": 119.545,
+      "signal_line": 116.0273,
+      "histogram": 3.5177
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": false,
+    "notes": "RSI is near overbought, volume is neutral, Fibs suggest recent highs."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "macd_histogram_peak",
+        "indicator": "MACD12_26_9",
+        "comparator": "<=",
+        "value": 5.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_above_resistance",
+        "type": "price_breach",
+        "level": 92135.9
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 92136.0,
+      "basis": "above_resistance"
+    },
+    "take_profit": [
+      {
+        "price": 91367.6,
+        "basis": "fib_0.236_retacement",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for RSI14 >= 70 indicating overbought conditions.",
+    "Assess volume trend for breakout or reversal confirmation.",
+    "Enter short if price fails at resistance and RSI confirms overbought.",
+    "Invalidate if price closes above 92135.9."
+  ],
+  "improvements": "Ensure Stochastic data is available for additional momentum confirmation; use MACD peak to reinforce short entry if RSI suggests overbought.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSD",
+        "timeframe": "1m",
+        "time_of_screenshot": "2023-10-01 19:25",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 60,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": "average",
+            "visible": true
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 89134.6,
+            "to": 92135.9
+          },
+          "levels": {
+            "0.236": 91367.6,
+            "0.382": 90743.8,
+            "0.5": 90693.2,
+            "0.618": 90206.1,
+            "0.786": 89789.4
+          },
+          "timeframe_hints": {
+            "yellow": "1m"
+          }
+        },
+        "patterns": [],
+        "support_resistance": {
+          "support": [
+            89134.6
+          ],
+          "resistance": [
+            92135.9,
+            91168
+          ]
+        },
+        "visual_trend": "bullish"
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "DeepSeek",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "DeepSeek": "short",
+        "ChatGPT5.1": "long",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "DeepSeek": 0.5,
+        "ChatGPT5.1": 0.7,
+        "Gemini": 0.85
+      },
+      "response_times": {
+        "DeepSeek": 17.391438245773315,
+        "ChatGPT5.1": 20.667856216430664,
+        "Gemini": 97.98187375068665
+      },
+      "agreement": false,
+      "consensus_direction": "long",
+      "fastest_model": "DeepSeek",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.5,
+        "elapsed_time": 17.391438245773315,
+        "stop_loss": 92136.0,
+        "take_profits": [
+          {
+            "price": 91367.6,
+            "rr": 1.5
+          }
+        ],
+        "max_rr": 1.5
+      },
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.7,
+        "elapsed_time": 20.667856216430664,
+        "stop_loss": 90000.6,
+        "take_profits": [
+          {
+            "price": 91680.3,
+            "rr": 1.5
+          },
+          {
+            "price": 92135.9,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.85,
+        "elapsed_time": 97.98187375068665,
+        "stop_loss": 91550.0,
+        "take_profits": [
+          {
+            "price": 91900.0,
+            "rr": 1.7
+          },
+          {
+            "price": 92135.9,
+            "rr": 3.5
+          }
+        ],
+        "max_rr": 3.5
+      }
+    },
+    "errors": {}
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-04 16:56",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 104649.9,
+    "resistance": 106468.3
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 38.0,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 25.0,
+      "d_percent": 20.0,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 0.81982437,
+      "average": 1.0,
+      "ratio": 0.82,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 106468.3,
+        "to": 104649.9
+      },
+      "levels": {
+        "0.236": 105079.0,
+        "0.382": 105344.5,
+        "0.5": 105559.1,
+        "0.618": 105773.7,
+        "0.786": 106079.2
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 106000.0,
+      "middle": 105000.0,
+      "lower": 104000.0,
+      "price_position": "below_middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": -120.0,
+      "signal_line": -110.0,
+      "histogram": -10.0
+    },
+    "ATR14": {
+      "value": 75.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI and Stochastic showing recovery, but volume is low, indicating weak confirmation."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_below_30",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 105344.5,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_fib_0618",
+        "type": "price_breach",
+        "level": 105773.7
+      },
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 105773.7,
+      "basis": "above_fib_0.618"
+    },
+    "take_profit": [
+      {
+        "price": 104649.9,
+        "basis": "recent_low",
+        "rr": 1.2
+      },
+      {
+        "price": 103800.0,
+        "basis": "triangle_breakdown_target",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Await further confirmation of downtrend via volume increase.",
+    "Confirm price remaining below Fib 0.382.",
+    "Enter short on further rejection of Fibonacci levels.",
+    "Invalidate if price breaks above Fib 0.618."
+  ],
+  "improvements": "Monitor Bollinger Band context for volatility; ensure volume aligns with price movement."
+}

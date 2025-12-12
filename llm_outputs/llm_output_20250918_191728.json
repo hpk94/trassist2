@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-18 17:16",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 117400.0,
+    "resistance": 117800.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 56.09,
+      "status": "neutral",
+      "signal": "pullback_from_near_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 14.1342,
+      "signal_line": -2.3487,
+      "histogram": 16.4829,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "undefined"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "undefined"
+    },
+    "VOLUME": {
+      "current": 4.49385814,
+      "average": null,
+      "ratio": "undefined",
+      "trend": "not_available"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "undefined"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": "multi",
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.83,
+    "notes": "Price consolidating inside ascending triangle with a series of higher lows and steady resistance; MACD shows strong bullish momentum; RSI is neutral but recovering."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_neutral_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "ascending_triangle_break_pending",
+        "type": "price_level",
+        "level": "resistance",
+        "comparator": "<",
+        "value": 117800.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_of_rising_trendline",
+        "type": "price_breach",
+        "level": "ascending_trendline_support",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_falls_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 117470.0,
+      "basis": "below ascending trendline support",
+      "distance_ticks": 155
+    },
+    "take_profit": [
+      {
+        "price": 117850.0,
+        "basis": "resistance breakout level",
+        "rr": 1.45
+      },
+      {
+        "price": 118000.0,
+        "basis": "measured move from triangle height",
+        "rr": 2.45
+      }
+    ]
+  },
+  "summary_actions": [
+    "Await candle close above 117800 for breakout confirmation",
+    "If break occurs, confirm MACD line remains above signal and RSI stays above 50",
+    "Enter long on breakout candle close",
+    "Invalidate signal on MACD crossover down or break of ascending support"
+  ],
+  "improvements": "Add Bollinger Bands and Stochastic for additional entry timing precision; use volume divergence or surge to confirm breakout. Define exact triangle height and projected breakout target for confidence."
+}

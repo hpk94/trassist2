@@ -1,0 +1,75 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-10 19:23",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 95000.0,
+    "resistance": 96700.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 45.0,
+      "status": "neutral",
+      "signal": "falling"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.0,
+      "d_percent": 35.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 2.5,
+      "average": 2.8,
+      "ratio": 0.89,
+      "trend": "below_average"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 97000.0,
+        "to": 94500.0
+      },
+      "levels": {
+        "0.236": 96690.9,
+        "0.382": 96272.2,
+        "0.5": 95933.9,
+        "0.618": 95595.5,
+        "0.786": 95113.7
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "falling_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": false,
+    "notes": "RSI and Stoch in neutral regions with low volume; no strong confluence with chart patterns."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [],
+      "lookback_seconds": 0
+    },
+    "core_checklist": [],
+    "secondary_checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {},
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Await stronger back-test of key Fibonacci level.",
+    "Monitor for volume increase to validate potential wedge breakout.",
+    "No trade setup active without clear confluence."
+  ],
+  "improvements": "Consider monitoring for a break above the upper trend line of the wedge alongside increased volume and RSI breaking above 50."
+}

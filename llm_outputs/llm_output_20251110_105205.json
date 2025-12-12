@@ -1,0 +1,130 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-10 09:51",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 105944.7,
+    "resistance": 106560.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 64.17,
+      "status": "neutral",
+      "signal": "approaching_overbought"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 64.17,
+      "d_percent": 57.12,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 351331,
+      "average": 270000,
+      "ratio": 1.3,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 105300.5,
+        "to": 106560.2
+      },
+      "levels": {
+        "0.236": 105799.3,
+        "0.382": 105944.7,
+        "0.5": 106062.2,
+        "0.618": 106179.7,
+        "0.786": 106347.1,
+        "1.0": 106560.2
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.85,
+    "confluence_with_pattern": true,
+    "notes": "Volume high, RSI approaching overbought, ascending triangle formation"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_approach_overbought",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_increasing",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_break_resistance",
+        "indicator": "PRICE",
+        "comparator": ">",
+        "value": 106560.2,
+        "basis": "resistance"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": 105944.7
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 105944.7,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 106800.0,
+        "basis": "fibonacci_extension",
+        "rr": 1.5
+      },
+      {
+        "price": 107175.7,
+        "basis": "fib_1.618_extension",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for clear break above resistance at 106560.2",
+    "Confirm volume remains high",
+    "Ensure RSI does not exceed 70 at entry",
+    "Invalidate if price closes below 105944.7"
+  ],
+  "improvements": "Consider using additional trend confirmation indicators for better certainty"
+}

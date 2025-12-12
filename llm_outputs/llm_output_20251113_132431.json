@@ -1,0 +1,116 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-11-13 12:24",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 102659.15,
+    "resistance": 103239.54
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 52.28,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 51.79,
+      "d_percent": 45.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 1025000,
+      "average": 948000,
+      "ratio": 1.08,
+      "trend": "above_average"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 102409.49,
+        "to": 103239.54
+      },
+      "levels": {
+        "0.236": 103023.78,
+        "0.382": 102965.73,
+        "0.5": 102824.51,
+        "0.618": 102683.29,
+        "0.786": 102561.16
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Triangle nearing apex, volume increasing, neutral RSI and Stochastic"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_triangle_res",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 103239.54,
+        "basis": "triangle_breakout"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_triangle_support",
+        "type": "price_breach",
+        "level": 102659.15
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102659.15,
+      "basis": "below_triangle_support"
+    },
+    "take_profit": [
+      {
+        "price": 102965.73,
+        "basis": "fib_0.382_extension",
+        "rr": 1.2
+      },
+      {
+        "price": 103239.54,
+        "basis": "resistance_level",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for volume to sustain above average",
+    "Break above triangle resistance for a long entry",
+    "Monitor RSI and Stochastic for momentum confirmation",
+    "Invalidate if the price closes below triangle support"
+  ],
+  "improvements": "Watch for any MACD crossover as additional momentum confirmation."
+}

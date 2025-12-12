@@ -1,0 +1,284 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-12-11 08:37",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 89346.2,
+    "resistance": 90446.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 37.64,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": null
+    },
+    "VOLUME": {
+      "current": 0.04891602,
+      "average": null,
+      "ratio": null,
+      "trend": "flat"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 89346.2,
+        "to": 90446.0
+      },
+      "levels": {
+        "0.236": 90186.4,
+        "0.382": 90025.9,
+        "0.5": 89886.1,
+        "0.618": 89766.3,
+        "0.786": 89581.6
+      }
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": -37.752,
+      "signal_line": -29.3144,
+      "histogram": -8.4376
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI is low indicating potential oversold condition, descending triangle pattern suggests bearish breakout."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_40",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 40.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "macd_below_signal",
+        "indicator": "MACD12_26_9",
+        "comparator": "<",
+        "value": -29.3144,
+        "observed_on_candle": 0
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_recent_high",
+        "type": "price_breach",
+        "level": "recent_high"
+      },
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 90025.9,
+      "basis": "above_fib_0.382"
+    },
+    "take_profit": [
+      {
+        "price": 89886.1,
+        "basis": "fib_0.5_level",
+        "rr": 1.5
+      },
+      {
+        "price": 89766.3,
+        "basis": "fib_0.618_level",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter short based on descending triangle pattern confirmation.",
+    "Ensure RSI remains below 40 for confirmation.",
+    "Monitor MACD for continued bearish signal.",
+    "Set tight stop loss above recent price action.",
+    "Target take profits at Fibonacci retracement levels."
+  ],
+  "improvements": "Utilize additional volume data once available for stronger confirmation. Watch for MACD crossover to bolster trend confirmation.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-11 08:37",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 43.91,
+            "visible": true
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 89346.2,
+            "to": 90446.0
+          },
+          "levels": {
+            "0.236": 90186.4,
+            "0.382": 90025.9,
+            "0.5": 89886.1,
+            "0.618": 89766.3,
+            "0.786": 89581.6
+          },
+          "timeframe_hints": {}
+        },
+        "patterns": [
+          {
+            "pattern": "descending_triangle",
+            "candle_index": 0,
+            "confidence": 0.85,
+            "pattern_name": "descending_triangle",
+            "pattern_direction": "short",
+            "pattern_type": "continuation",
+            "usual_breakout_direction": "bearish_down"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            89346.2
+          ],
+          "resistance": [
+            90446.0
+          ]
+        },
+        "visual_trend": "bearish",
+        "_pattern_info": [
+          {
+            "name": "descending_triangle",
+            "direction": "short",
+            "type": "continuation",
+            "usual_breakout_direction": "bearish_down",
+            "notes": "Breakout is usually below the horizontal support; watch for increased selling volume.",
+            "look": "Flat support below, falling highs (lower highs) above.",
+            "typical_context": "Forms during a downtrend as a consolidation."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "DeepSeek": "short",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.7,
+        "DeepSeek": 0.7,
+        "Gemini": 0.75
+      },
+      "response_times": {
+        "ChatGPT5.1": 20.383708000183105,
+        "DeepSeek": 22.47149109840393,
+        "Gemini": 85.36311483383179
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.7,
+        "elapsed_time": 20.383708000183105,
+        "stop_loss": 90025.9,
+        "take_profits": [
+          {
+            "price": 89886.1,
+            "rr": 1.5
+          },
+          {
+            "price": 89766.3,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "DeepSeek": {
+        "direction": "short",
+        "confidence": 0.7,
+        "elapsed_time": 22.47149109840393,
+        "stop_loss": 90025.9,
+        "take_profits": [
+          {
+            "price": 89581.6,
+            "rr": 1.5
+          },
+          {
+            "price": 89250.0,
+            "rr": 2.5
+          }
+        ],
+        "max_rr": 2.5
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.75,
+        "elapsed_time": 85.36311483383179,
+        "stop_loss": 89880.0,
+        "take_profits": [
+          {
+            "price": 90186.0,
+            "rr": 1.1
+          },
+          {
+            "price": 90440.0,
+            "rr": 2.8
+          }
+        ],
+        "max_rr": 2.8
+      }
+    },
+    "errors": {}
+  }
+}

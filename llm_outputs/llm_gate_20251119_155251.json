@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "Price is above the 0.618 Fibonacci level, supporting the long setup",
+    "RSI is neutral and not overbought, aligning with secondary checklist",
+    "No invalidations triggered and checklist passed, indicating strong alignment"
+  ],
+  "warnings": [
+    "Entry is near the first take profit level, consider partial profit taking early",
+    "Market context shows price has moved significantly from the original setup, monitor for retracement"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91645.09,
+    "stop_loss": 91208.5,
+    "take_profits": [
+      {
+        "price": 91660.0,
+        "portion": 0.5
+      },
+      {
+        "price": 91863.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital, adjust size based on stop loss distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

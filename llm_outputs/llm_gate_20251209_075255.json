@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "No invalidation conditions triggered",
+    "RSI is below the overbought level",
+    "MACD above signal line confirms the bullish momentum",
+    "Price has maintained above the 0.382 Fibonacci level"
+  ],
+  "warnings": [
+    "Close monitoring required due to high leverage",
+    "Short timeframe increases risk of rapid market shifts"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90120.59,
+    "stop_loss": 89550.0,
+    "take_profits": [
+      {
+        "price": 90800.0,
+        "portion": 0.5
+      },
+      {
+        "price": 91132.1,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Adjust position size to account for 30x leverage"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

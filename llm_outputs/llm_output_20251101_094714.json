@@ -1,0 +1,128 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-02 20:55",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110911.2,
+    "resistance": 111355.5
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 56.62,
+      "status": "neutral",
+      "signal": "downward"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 61.84,
+      "d_percent": 56.62,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 287650,
+      "average": "N/A",
+      "ratio": "N/A",
+      "trend": "steady"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 110134.3,
+        "to": 111688.0
+      },
+      "levels": {
+        "0.236": 110501.0,
+        "0.382": 110727.8,
+        "0.5": 110911.2,
+        "0.618": 111094.6,
+        "0.786": 111355.5
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Rising wedge nearing completion, RSI neutral, Stochastic overbought, holding at Fib 0.786."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "stoch_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">",
+        "value": 80.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_near_fib_0786",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 111355.5,
+        "basis": "fib_0.786"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "wedge_break",
+        "indicator": "PATTERN",
+        "pattern": "rising_wedge",
+        "confirmation": "confirmed"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_resistance"
+      },
+      {
+        "id": "new_high_above_111688",
+        "indicator": "PRICE",
+        "comparator": ">",
+        "value": 111688.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111600.0,
+      "basis": "above_wedge_resistance"
+    },
+    "take_profit": [
+      {
+        "price": 110911.2,
+        "basis": "fib_0.5_retracement",
+        "rr": 2.0
+      },
+      {
+        "price": 110727.8,
+        "basis": "fib_0.382_retracement",
+        "rr": 3.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor wedge pattern; prepare for short entry when breaks down",
+    "Ensure Stochastic confirms overbought return",
+    "Use Fib 0.786 as key resistance for entry filtering",
+    "Invalidate setup if new highs break established resistance"
+  ],
+  "improvements": "Strengthen confirmation with volume spike during wedge break; consider secondary indicators like MACD for stronger confluence"
+}

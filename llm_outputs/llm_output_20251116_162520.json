@@ -1,0 +1,135 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-16 15:24",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 95163.7,
+    "resistance": 96589.4
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 51.3,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.5,
+      "d_percent": 38.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 1.5397,
+      "average": 2.0,
+      "ratio": 0.77,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 95163.7,
+        "to": 96589.4
+      },
+      "levels": {
+        "0.236": 95592.5,
+        "0.382": 95871.6,
+        "0.5": 96094.0,
+        "0.618": 96316.3,
+        "0.786": 96629.1
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": true,
+    "notes": "Neutral RSI and Stochastic. Volume decreasing. Descending triangle suggests potential breakout."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_neutral",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 55.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_neutral",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_fib_0236",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 95592.5,
+        "basis": "fib_0.236"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_triangle",
+        "type": "price_breach",
+        "level": "triangle_resistance"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 95600.0,
+      "basis": "above_triangle_resistance"
+    },
+    "take_profit": [
+      {
+        "price": 95000.0,
+        "basis": "previous_support",
+        "rr": 1.5
+      },
+      {
+        "price": 94600.0,
+        "basis": "fib_0.618_extension",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm RSI and Stochastic stay neutral or move lower",
+    "Break below Fib 0.236 for short entry",
+    "Invalidate if price moves above triangle resistance"
+  ],
+  "improvements": "Wait for increased volume to confirm any breakout direction"
+}

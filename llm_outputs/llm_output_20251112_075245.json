@@ -1,0 +1,79 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-31 07:52",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 103239.6,
+    "resistance": 103611.9
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 41.8,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 2532690.91,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 102637.4,
+        "to": 103611.9
+      },
+      "levels": {
+        "0.236": 103381.9,
+        "0.382": 103239.6,
+        "0.5": 103124.7,
+        "0.618": 103009.7,
+        "0.786": 102845.9,
+        "1.618": 102035.2
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": false,
+    "notes": "Neutral RSI, price near Fib 0.382, no strong momentum or pattern confluence."
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [],
+      "lookback_seconds": 0
+    },
+    "core_checklist": [],
+    "secondary_checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "none"
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Wait for stronger confluence between indicators",
+    "Watch for breakout above resistance or breakdown below support",
+    "Monitor RSI for oversold or overbought conditions"
+  ],
+  "improvements": "Enhance signal clarity using volume trends and stochastic momentum"
+}

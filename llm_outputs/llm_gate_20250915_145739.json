@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.84,
+  "reasons": [
+    "Price has tapped the lower bound of a falling channel, indicating potential support.",
+    "Checklist elements passed, including structural pattern confirmation and bullish volume return.",
+    "RSI is recovering from low areas (currently 36.1), confirming no oversold invalidation breach.",
+    "MACD remains below zero but not in extreme bearish territory."
+  ],
+  "warnings": [
+    "No strong retest confirmation after channel boundary touch \u2014 minor risk of fakeout.",
+    "MACD still negative, momentum recovery not yet fully confirmed."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 114705.78,
+    "stop_loss": 114600.0,
+    "take_profits": [
+      {
+        "price": 114752.3,
+        "portion": 0.5
+      },
+      {
+        "price": 114894.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.95,
+    "position_size_note": "Size position based on 105.78 risk per unit to target RR of ~3:1."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

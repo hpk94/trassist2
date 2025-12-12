@@ -1,0 +1,170 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-16 13:30",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115392.89,
+    "resistance": 115552.61
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 55.78,
+      "status": "neutral",
+      "signal": "bullish_continuation"
+    },
+    "MACD12_26_9": {
+      "macd_line": 16.7448,
+      "signal_line": 18.7239,
+      "histogram": -1.979,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 56.09,
+      "d_percent": 55.62,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 11.55,
+      "average": 9.98,
+      "ratio": 1.16,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": "entire formation since ~11:30",
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.68,
+    "notes": "Price is testing top of ascending channel near 0.786 Fib resistance; volume is rising with neutral RSI; MACD shows early bearish divergence; cautious continuation."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 60,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_rejects_0_786",
+        "type": "price_retest",
+        "level": "fib_0_786",
+        "lookback_candles": 3,
+        "tolerance_ticks": 5,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "within_rising_channel",
+        "type": "pattern_context",
+        "pattern": "ascending_channel",
+        "location": "upper_bound",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_above_channel",
+        "type": "price_breach",
+        "level": "ascending_channel_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_65",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 65
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115563.0,
+      "basis": "above channel and Fib 1.0 breakout",
+      "distance_ticks": 57
+    },
+    "take_profit": [
+      {
+        "price": 115398.0,
+        "basis": "channel midpoint/Fib 0.5",
+        "rr": 1.4
+      },
+      {
+        "price": 115246.0,
+        "basis": "Fib 0.236 + channel bottom",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Signal met for short entry at 0.786 rejection with bearish MACD crossover",
+    "Set stop above channel + Fib 1.0 breakout zone",
+    "Initial targets: mid-channel at 0.5 Fib and channel bottom at 0.236 Fib",
+    "Watch for invalidation on MACD flip or RSI > 65"
+  ],
+  "improvements": "Include Bollinger Bands or VWAP for additional dynamic resistance confluence; add candle confirmation like shooting star or engulfing if waiting for second entry"
+}

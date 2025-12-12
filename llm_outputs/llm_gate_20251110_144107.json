@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.7,
+  "reasons": [
+    "RSI below 70 and not overbought, supporting long setup",
+    "Price above key Fibonacci 0.618 level, confirming bullish structure",
+    "No invalidations triggered, with clear stop-loss level defined"
+  ],
+  "warnings": [
+    "Current RSI at 62.3 is moderately high; monitor for overbought conditions",
+    "Stochastic overbought condition may limit upside momentum"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 106457.37,
+    "stop_loss": 105900.0,
+    "take_profits": [
+      {
+        "price": 106800.0,
+        "portion": 0.5
+      },
+      {
+        "price": 107200.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital based on stop-loss distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

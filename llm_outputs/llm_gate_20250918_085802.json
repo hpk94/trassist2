@@ -1,0 +1,33 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Price has already reached and slightly exceeded the highest defined take profit at 117080.0, eliminating favorable risk/reward entry zone.",
+    "Opening signal was based on confluence at prices significantly lower than current market value, undermining setup validity."
+  ],
+  "warnings": [
+    "Chasing the price here introduces asymmetric downside risk as original entry area around channel lower bound has been left far behind."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 117080.28,
+    "stop_loss": 116850.0,
+    "take_profits": [
+      {
+        "price": 117000.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": -0.35,
+    "position_size_note": "Do not open \u2014 R/R profile is negative due to late entry beyond TP2."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "medium"
+  }
+}

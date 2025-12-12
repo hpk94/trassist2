@@ -1,0 +1,181 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-22 14:22",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 112500.0,
+    "resistance": 113200.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 52.93,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": 59.4503,
+      "signal_line": 79.0564,
+      "histogram": -19.6061,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "outside_scope",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 53.28,
+      "d_percent": 59.49,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 121560,
+      "average": 98000,
+      "ratio": 1.24,
+      "trend": "rising"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": "N/A",
+      "confidence": 0.86
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.62,
+    "notes": "Rising wedge at resistance with bearish MACD crossover and neutral RSI suggests weakening bullish momentum"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_wedge_pattern",
+        "type": "candle_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": "last_20_candles",
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stochastic_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_below_55",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 55,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_near_resistance",
+        "type": "price_level",
+        "level": "resistance",
+        "comparator": ">=",
+        "value": 113200.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">=",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_upper_trendline",
+        "comparator": ">",
+        "value": 113250.0
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_exceeds_65",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 65.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113250.0,
+      "basis": "above_wedge_breakout",
+      "distance_ticks": 135
+    },
+    "take_profit": [
+      {
+        "price": 112750.0,
+        "basis": "midrange_wedge",
+        "rr": 2.0
+      },
+      {
+        "price": 112500.0,
+        "basis": "lower_wedge_support",
+        "rr": 3.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter short position upon bearish confirmation inside rising wedge",
+    "Confirm MACD < signal line and Stochastic bearish crossover",
+    "Look for price stall or reversal near resistance ~113200",
+    "Place stop-loss above wedge at 113250",
+    "First take-profit at 112750, trailing optional"
+  ],
+  "improvements": "Add Bollinger Bands or VWAP to verify volatility compression near wedge top, and confirm rejection volume next candle."
+}

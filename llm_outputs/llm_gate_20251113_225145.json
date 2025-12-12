@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "Price is below resistance level, supporting short setup",
+    "Checklist fully passed with no invalidations triggered",
+    "RSI above 60 indicates potential for downward correction"
+  ],
+  "warnings": [
+    "RSI is moderately high, which may limit short-term downside momentum"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 98848.86,
+    "stop_loss": 99324.4,
+    "take_profits": [
+      {
+        "price": 98000.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

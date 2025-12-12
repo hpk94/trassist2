@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.7,
+  "reasons": [
+    "RSI and Stochastic overbought signals present",
+    "Volume increase supports bearish momentum",
+    "Price near resistance level with defined invalidation"
+  ],
+  "warnings": [
+    "Current price very close to stop loss level",
+    "RSI is extremely overbought, watch for potential reversal"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 101949.99,
+    "stop_loss": 101956.1,
+    "take_profits": [
+      {
+        "price": 101695.1,
+        "portion": 0.5
+      },
+      {
+        "price": 101600.8,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.6,
+    "position_size_note": "Risk per trade should not exceed 1% of capital due to tight stop loss"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

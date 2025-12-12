@@ -1,0 +1,115 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-10 13:44",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 105799.3,
+    "resistance": 105944.7
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": "41",
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": "N/A",
+      "d_percent": "N/A",
+      "signal": "N/A"
+    },
+    "VOLUME": {
+      "current": "N/A",
+      "average": "N/A",
+      "ratio": "N/A",
+      "trend": "steady"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 105564.2,
+        "to": 106560.2
+      },
+      "levels": {
+        "0.236": 105808.4,
+        "0.382": 105944.7,
+        "0.5": 106062.2,
+        "0.618": 106179.7,
+        "0.786": 106347.1
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "sideways",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": false,
+    "notes": "RSI recovering, no strong pattern or volume spike"
+  },
+  "opening_signal": {
+    "direction": "neutral",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 120
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_neutral",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 40.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_near_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 105944.7,
+        "basis": "fib_0.382"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "price_below_support",
+        "type": "price_breach",
+        "level": 105799.3
+      },
+      {
+        "id": "rsi_divergence",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 105750.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 106060.0,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for RSI14 recovery beyond neutral",
+    "Monitor price movement near Fib 0.382 level",
+    "No entry without stronger confirmation",
+    "Invalidate if support at 105799.3 is breached"
+  ],
+  "improvements": "Monitor volume for breakout; await clear directional bias"
+}

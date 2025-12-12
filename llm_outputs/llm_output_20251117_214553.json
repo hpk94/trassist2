@@ -1,0 +1,123 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-17 20:45",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 91247.4,
+    "resistance": 91988.6
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 47.77,
+      "status": "neutral",
+      "signal": "declining"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 47.54,
+      "d_percent": 45.12,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 183840,
+      "average": 200000,
+      "ratio": 0.92,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91247.4,
+        "to": 94388.2
+      },
+      "levels": {
+        "0.236": 91988.6,
+        "0.382": 92447.2,
+        "0.5": 92817.8,
+        "0.618": 93188.4,
+        "0.786": 93716.1
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": false,
+    "notes": "RSI neutral, descending channel with potential breakout, volume below average"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "price_below_fib_0236",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 91988.6,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "rsi_decline",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 1
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": 91988.6
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 92100.0,
+      "basis": "above_resistance"
+    },
+    "take_profit": [
+      {
+        "price": 91250.0,
+        "basis": "support_level",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Consider short entry if price breaks below 0.236 Fibonacci level",
+    "Volume confirmation needed for stronger conviction",
+    "Monitor RSI for further decline"
+  ],
+  "improvements": "Monitor for a potential breakout of the descending channel; utilize volume spikes as confirmation"
+}

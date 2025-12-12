@@ -1,0 +1,141 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "YYYY-MM-DD 15:51",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 91334.9,
+    "resistance": 91660.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 54.2,
+      "status": "neutral",
+      "signal": "declining"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 45.0,
+      "d_percent": 50.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 0.04503708,
+      "average": 0.035,
+      "ratio": 1.29,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91006.2,
+        "to": 91863.5
+      },
+      "levels": {
+        "0.236": 91208.5,
+        "0.382": 91333.7,
+        "0.5": 91434.9,
+        "0.618": 91536.0,
+        "0.786": 91660.0
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 92000.0,
+      "middle": 91500.0,
+      "lower": 91000.0,
+      "price_position": "above_middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": 78.2,
+      "signal_line": 86.9,
+      "histogram": -8.7
+    },
+    "ATR14": {
+      "value": 120.5
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "channel_up",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Fibonacci support tested, increasing volume, RSI declining"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "volume_increasing",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      },
+      {
+        "id": "price_above_fib_0618",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 91536.0,
+        "basis": "fib_0.618"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "rsi_neutral",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 70.0
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0382",
+        "type": "price_breach",
+        "level": "fib_0.382"
+      },
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91208.5,
+      "basis": "below_fib_0.236"
+    },
+    "take_profit": [
+      {
+        "price": 91660.0,
+        "basis": "fib_0.786",
+        "rr": 2.0
+      },
+      {
+        "price": 91863.5,
+        "basis": "channel_resistance",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Ensure volume remains elevated",
+    "Verify price holds above Fib 0.618",
+    "Monitor RSI for overbought conditions",
+    "Invalidate setup if price closes below Fib 0.382"
+  ],
+  "improvements": "Consider using BB for volatility context; monitor MACD for potential reversal signals"
+}

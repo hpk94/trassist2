@@ -1,0 +1,35 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.7,
+  "reasons": [
+    "Price is below the fib_0.618 resistance, confirming the bearish sentiment.",
+    "RSI confirms low with values under 50, supporting bearish momentum.",
+    "MACD histogram is negative, aligning with the short signal."
+  ],
+  "warnings": [
+    "Ensure SL is tightly managed due to high leverage.",
+    "The recent price dip might have reduced potential reward."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92586.97,
+    "stop_loss": 93100.83,
+    "take_profits": [
+      {
+        "price": 91720.6,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "High leverage; small position size recommended."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

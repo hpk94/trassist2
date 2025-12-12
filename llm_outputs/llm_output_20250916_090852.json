@@ -1,0 +1,156 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-16 07:07",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115533.5,
+    "resistance": 116131.9
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 54.66,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": 18.5342,
+      "signal_line": 16.8939,
+      "histogram": 1.6403,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 1.80810356,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": "visible_channel",
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Visible rising wedge bearish pattern, but bullish MACD crossover and RSI recovery from oversold near Fib 1.618 support suggest bounce possibility"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_recovery",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_1_618",
+        "type": "price_level",
+        "level": "fib_1_618",
+        "anchors": {
+          "from": "latest_swing_low",
+          "to": "latest_swing_high"
+        },
+        "comparator": ">=",
+        "value": 115533.5,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "support"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_1_618",
+        "type": "price_breach",
+        "level": 115533.5,
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_confirmed_bearish",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115510.0,
+      "basis": "below_fib_1_618",
+      "distance_ticks": 18.1
+    },
+    "take_profit": [
+      {
+        "price": 115935.0,
+        "basis": "prior high resistance",
+        "rr": 1.1
+      },
+      {
+        "price": 116131.9,
+        "basis": "Fib 2.618 extension",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm RSI is above 50 with upward angle",
+    "MACD must remain bullish crossover with histogram growth",
+    "Price should remain supported above Fib 1.618 level (115533.5)",
+    "Enter on next candle close above short-term trendline or bullish engulfing",
+    "If price closes below 115533.5 or RSI turns down sharply, invalidate long"
+  ],
+  "improvements": "Add Bollinger Bands or Stochastic Oscillator confirmation for better entry zone identification, and define relative volume strength to validate further momentum before scaling in"
+}

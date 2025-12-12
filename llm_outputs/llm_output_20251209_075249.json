@@ -1,0 +1,323 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "YYYY-MM-DD 07:50",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 89559.7,
+    "resistance": 91559.6
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 67.52,
+      "status": "neutral",
+      "signal": "potential_overbought"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 3.16833347,
+      "average": "compare_with_hourly",
+      "trend": "average"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91559.6,
+        "to": 89559.7
+      },
+      "levels": {
+        "0.236": 91160.2,
+        "0.382": 90531.7,
+        "0.5": 90831.9,
+        "0.618": 91132.1,
+        "0.786": 91559.6
+      }
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": 35.8166,
+      "signal_line": 5.7401,
+      "histogram": 30.0765
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unavailable"
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI near overbought, descending channel suggests bullish breakout potential. Volume is average."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 120
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_70",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "rsi_above_67",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 60.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "macd_above_signal",
+        "indicator": "MACD12_26_9",
+        "comparator": ">",
+        "value": 0.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_close_above_0_382_fib",
+        "indicator": "PRICE",
+        "comparator": ">",
+        "value": 90531.7,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "support"
+      },
+      {
+        "id": "rsi_above_70",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89550.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 90800.0,
+        "basis": "recent_high",
+        "rr": 1.2
+      },
+      {
+        "price": 91132.1,
+        "basis": "fib_0.618_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for movement below 70.",
+    "Look for a close above the 0.382 Fibonacci level.",
+    "Enter long if MACD histogram shows positive momentum.",
+    "Invalidate if price drops below support at 89559.7."
+  ],
+  "improvements": "Monitor for a breakout as RSI approaches overbought, consider MACD histogram as an early momentum indicator.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "YYYY-MM-DD 07:50",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 30.0,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": "average",
+            "visible": true
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 91559.6,
+            "to": 89559.7
+          },
+          "levels": {
+            "0.236": 91160.2,
+            "0.382": 90531.7,
+            "0.5": 90831.9,
+            "0.618": 91132.1,
+            "0.786": 91559.6
+          },
+          "timeframe_hints": {
+            "yellow": "1m",
+            "blue": "1h",
+            "white": "1d"
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "descending_channel",
+            "candle_index": 0,
+            "confidence": 0.85,
+            "pattern_name": "descending_channel",
+            "pattern_direction": "long",
+            "pattern_type": "trend_channel",
+            "usual_breakout_direction": "often_bullish_up_through_upper_boundary"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            89559.7
+          ],
+          "resistance": [
+            91559.6
+          ]
+        },
+        "visual_trend": "bearish",
+        "_pattern_info": [
+          {
+            "name": "descending_channel",
+            "direction": "long",
+            "type": "trend_channel",
+            "usual_breakout_direction": "often_bullish_up_through_upper_boundary",
+            "notes": "Staying within the channel confirms the downtrend. A strong breakout above the upper boundary can signal a trend reversal or major short-covering rally.",
+            "look": "Price oscillates between two roughly parallel downward-sloping trendlines (lower highs and lower lows).",
+            "typical_context": "Established downtrend with orderly bounces."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "DeepSeek",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "DeepSeek": "long",
+        "ChatGPT5.1": "long",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "DeepSeek": 0.6,
+        "ChatGPT5.1": 0.75,
+        "Gemini": 0.9
+      },
+      "response_times": {
+        "DeepSeek": 23.7488431930542,
+        "ChatGPT5.1": 24.0559139251709,
+        "Gemini": 110.07394099235535
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "DeepSeek",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.6,
+        "elapsed_time": 23.7488431930542,
+        "stop_loss": 89550.0,
+        "take_profits": [
+          {
+            "price": 90800.0,
+            "rr": 1.2
+          },
+          {
+            "price": 91132.1,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.75,
+        "elapsed_time": 24.0559139251709,
+        "stop_loss": 89559.7,
+        "take_profits": [
+          {
+            "price": 90831.9,
+            "rr": 1.5
+          },
+          {
+            "price": 91132.1,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.9,
+        "elapsed_time": 110.07394099235535,
+        "stop_loss": 90030.0,
+        "take_profits": [
+          {
+            "price": 90531.7,
+            "rr": 2.8
+          },
+          {
+            "price": 90831.9,
+            "rr": 5.1
+          }
+        ],
+        "max_rr": 5.1
+      }
+    },
+    "errors": {}
+  }
+}

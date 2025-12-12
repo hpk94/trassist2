@@ -1,0 +1,312 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-12-12 09:14",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 92200.0,
+    "resistance": 92400.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 58.57,
+      "status": "bullish",
+      "signal": "positive_momentum_but_not_overbought"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable_no_trade_bias_from_stoch"
+    },
+    "VOLUME": {
+      "current": 0.05279403,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown_average_not_provided"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 92283.01,
+        "to": 92373.91
+      },
+      "levels": {
+        "0.236": 92352.46,
+        "0.382": 92339.18,
+        "0.5": 92328.46,
+        "0.618": 92317.74,
+        "0.786": 92302.47
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unavailable"
+    },
+    "MACD12_26_9": {
+      "macd_line": 17.5909,
+      "signal_line": 10.0674,
+      "histogram": 7.5235
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.83
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.45,
+    "confluence_with_pattern": false,
+    "notes": "Symmetrical triangle is neutral; direction should follow breakout. RSI14=58.57 and MACD positive support mild bullish bias, but Stochastic and volume-vs-average confirmations are unavailable. Prefer no entry until a breakout above 92400 or breakdown below 92200 occurs with measurable volume confirmation."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "price_breaks_triangle_resistance_92400",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 92400.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "rsi_supports_breakout",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 55.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "macd_positive_context",
+        "indicator": "MACD12_26_9",
+        "comparator": ">",
+        "value": 0.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "retest_hold_above_92400_within_3_candles",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 92400.0,
+        "basis": "retest_preference_1_to_3_candles"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "breakout_failure_close_back_below_92400",
+        "type": "price_breach",
+        "level": 92400.0
+      },
+      {
+        "id": "lose_near_support_92200",
+        "type": "price_breach",
+        "level": 92200.0
+      },
+      {
+        "id": "rsi_overbought_filter",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 92190.0,
+      "basis": "below_key_support_92200_triangle_breakdown_buffer"
+    },
+    "take_profit": [
+      {
+        "price": 92400.0,
+        "basis": "first_resistance_break_level_confirmation",
+        "rr": 0.5
+      },
+      {
+        "price": 92650.0,
+        "basis": "next_resistance_target",
+        "rr": 2.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Treat the symmetrical triangle as neutral: wait for a confirmed breakout level, not a prediction.",
+    "Long only if PRICE >= 92400 and RSI14 >= 55 on the last closed candle (candle 0).",
+    "Prefer a retest hold of 92400 within 1\u20133 candles before entry; invalidate if price closes back below 92400.",
+    "If PRICE <= 92200 first, do not long; reassess for a short breakdown setup instead."
+  ],
+  "improvements": "To increase signal accuracy, add missing core confirmations: compute STOCH14_3_3 (%K/%D) and provide VOLUME average to enable a VOLUME ratio filter (e.g., ratio > 1.2). Without those, triangle breakouts have higher fakeout risk on 1m.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-5.2-2025-12-11",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-12 09:14",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 58.72,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": false
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": null,
+            "to": null
+          },
+          "levels": {},
+          "timeframe_hints": {
+            "yellow": "1m",
+            "blue": "1h",
+            "white": "1d"
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.83,
+            "pattern_name": "symmetrical_triangle",
+            "pattern_direction": "neutral",
+            "pattern_type": "continuation",
+            "usual_breakout_direction": "in_direction_of_prior_trend"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            92200.0,
+            92100.0
+          ],
+          "resistance": [
+            92400.0,
+            92650.0
+          ]
+        },
+        "visual_trend": "neutral",
+        "_pattern_info": [
+          {
+            "name": "symmetrical_triangle",
+            "direction": "neutral",
+            "type": "continuation",
+            "usual_breakout_direction": "in_direction_of_prior_trend",
+            "notes": "Can break either way; prior trend bias plus volume and momentum help gauge direction.",
+            "look": "Converging trendlines with lower highs and higher lows.",
+            "typical_context": "Consolidation after a prior trend (up or down)."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-5.2-2025-12-11",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "long",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.45,
+        "Gemini": 0.75
+      },
+      "response_times": {
+        "ChatGPT5.1": 27.01381206512451,
+        "Gemini": 57.71547603607178
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.45,
+        "elapsed_time": 27.01381206512451,
+        "stop_loss": 92190.0,
+        "take_profits": [
+          {
+            "price": 92400.0,
+            "rr": 0.5
+          },
+          {
+            "price": 92650.0,
+            "rr": 2.3
+          }
+        ],
+        "max_rr": 2.3
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.75,
+        "elapsed_time": 57.71547603607178,
+        "stop_loss": 92230.0,
+        "take_profits": [
+          {
+            "price": 92416.0,
+            "rr": 1.5
+          },
+          {
+            "price": 92650.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      }
+    },
+    "errors": {
+      "DeepSeek": {
+        "error": "Authentication failed. Check your DEEPSEEK_API_KEY in .env file.",
+        "error_type": "AnalysisError",
+        "model": "deepseek/chat"
+      }
+    }
+  }
+}

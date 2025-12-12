@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.78,
+  "reasons": [
+    "RSI and Stochastic in overbought territory confirming potential exhaustion",
+    "Active rising wedge pattern suggests reversal risk",
+    "Price currently within fib resistance zone (0.618\u20130.786)",
+    "MACD histogram is still positive but consistent with topping behavior"
+  ],
+  "warnings": [
+    "MACD still slightly bullish\u2014momentum shift not fully confirmed",
+    "Entry lacks an explicit retest of wedge top or fib resistance but proximity is acceptable"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 115824.44,
+    "stop_loss": 115900.0,
+    "take_profits": [
+      {
+        "price": 115740.17,
+        "portion": 0.5
+      },
+      {
+        "price": 115604.18,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.2,
+    "position_size_note": "Use standard size. Risk capped clearly with nearby technical invalidation."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

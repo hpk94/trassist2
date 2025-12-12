@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.84,
+  "reasons": [
+    "Checklist fully passed: channel support respected, RSI above 30, and volume spike confirmed",
+    "No invalidation conditions triggered: price holding above key support, RSI above 30, no MACD bearish crossover",
+    "RSI at 39.56 confirms recovery from oversold zone, supporting upside momentum"
+  ],
+  "warnings": [
+    "No retest of support level immediately prior to entry; adds moderate risk to entry precision"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 119684.73,
+    "stop_loss": 119360.0,
+    "take_profits": [
+      {
+        "price": 119850.0,
+        "portion": 0.6
+      },
+      {
+        "price": 120150.0,
+        "portion": 0.4
+      }
+    ],
+    "risk_reward": 2.45,
+    "position_size_note": "Consider scaled position sizing due to 300+ tick stop in a high-volatility asset"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

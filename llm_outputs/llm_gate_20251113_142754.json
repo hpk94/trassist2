@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.7,
+  "reasons": [
+    "RSI recovery above 30 threshold observed",
+    "Stochastic recovery above 20 threshold met",
+    "Volume increase condition satisfied",
+    "No invalidations triggered, price above key fib level"
+  ],
+  "warnings": [
+    "RSI is near oversold boundary, monitor for sustained recovery",
+    "Entry is not at a precise retest level, increasing risk"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 102720.82,
+    "stop_loss": 102664.0,
+    "take_profits": [
+      {
+        "price": 102949.0,
+        "portion": 0.5
+      },
+      {
+        "price": 103070.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of account equity"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

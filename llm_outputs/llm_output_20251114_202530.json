@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-14 20:24",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 95400.0,
+    "resistance": 96900.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 69.1,
+      "status": "near_overbought",
+      "signal": "upward_momentum"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 80.0,
+      "d_percent": 78.0,
+      "signal": "approaching_overbought"
+    },
+    "VOLUME": {
+      "current": 8.51,
+      "average": 6.0,
+      "ratio": 1.42,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 96000.0,
+        "to": 94500.0
+      },
+      "levels": {
+        "0.236": 96690.9,
+        "0.382": 96272.2,
+        "0.5": 95933.9,
+        "0.618": 95595.5,
+        "0.786": 95113.7
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle_break",
+      "candle_index": 0,
+      "confidence": 0.78
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.9,
+    "confluence_with_pattern": true,
+    "notes": "Volume rising with RSI and Stoch near overbought. Potential reversal at Fib 0.382."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_near_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 65.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_approaching_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 75.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_average",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_at_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 96272.2,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_fib_0236",
+        "type": "price_breach",
+        "level": "fib_0.236"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 96700.0,
+      "basis": "above_fib_0236"
+    },
+    "take_profit": [
+      {
+        "price": 95500.0,
+        "basis": "fib_0.618",
+        "rr": 1.5
+      },
+      {
+        "price": 95100.0,
+        "basis": "swing_low",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for RSI14 >= 65 and STOCH14_3_3 > 75 confluence",
+    "Confirm rejection at Fib 0.382",
+    "Enter short if volume sustains above average",
+    "Invalidate if price closes above Fib 0.236"
+  ],
+  "improvements": "Use additional confirmation from secondary indicator signals, optimize stop-loss placement using ATR for volatility context."
+}

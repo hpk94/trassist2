@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI recovery to above 55 indicates strength",
+    "MACD histogram is positive, suggesting bullish momentum",
+    "Checklist passed with no invalidations triggered"
+  ],
+  "warnings": [
+    "High leverage setting requires precise execution",
+    "Recent price movement is moderate, further spikes possible"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91963.25,
+    "stop_loss": 91752.0,
+    "take_profits": [
+      {
+        "price": 92650.0,
+        "portion": 0.7
+      },
+      {
+        "price": 92900.0,
+        "portion": 0.3
+      }
+    ],
+    "risk_reward": 2.8,
+    "position_size_note": "Leverage is set at 30x; careful size management essential"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

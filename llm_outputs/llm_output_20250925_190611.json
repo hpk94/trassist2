@@ -1,0 +1,176 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-25 17:04",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 110780.0,
+    "resistance": 111500.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 32.35,
+      "status": "neutral",
+      "signal": "approaching_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": -78.0508,
+      "signal_line": -71.2682,
+      "histogram": -6.7826,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 1.14161175,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": "multi",
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.69,
+    "notes": "Descending triangle breakdown attempt with RSI near oversold and bearish MACD crossover. Watch for candle confirmation below support."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 35.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "pattern_desc_triangle",
+        "type": "chart_pattern",
+        "pattern": "descending_triangle",
+        "candle_index": "multi",
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "price_closes_below_support",
+        "type": "price_level",
+        "level": "support",
+        "comparator": "<=",
+        "value": 110780.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_present",
+        "type": "volume_threshold",
+        "lookback_candles": 1,
+        "comparator": ">",
+        "value": 0.8,
+        "baseline": "avg_volume_estimate",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_closes_back_above_support",
+        "type": "price_breach",
+        "level": 110780.0,
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_rebounds_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0
+      },
+      {
+        "id": "false_breakout_large_green",
+        "type": "candle_pattern",
+        "pattern": "bullish_engulfing",
+        "candle_index": 0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111000.0,
+      "basis": "above_triangle_resistance",
+      "distance_ticks": 210
+    },
+    "take_profit": [
+      {
+        "price": 110300.0,
+        "basis": "previous_swing_low",
+        "rr": 1.8
+      },
+      {
+        "price": 109800.0,
+        "basis": "triangle_extension_target",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for 1 min close below 110780 to confirm descending triangle breakout",
+    "Confirm MACD maintains bearish crossover",
+    "Monitor RSI doesn't rebound above 50",
+    "Volume needs to remain above estimated average on breakdown",
+    "Enter short on breakdown below support with SL above 111000"
+  ],
+  "improvements": "Add BB20_2 and Stochastic for additional entry confluence; ensure volume rise confirms breakdown. Use ATR for better SL placement."
+}

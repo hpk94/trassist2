@@ -1,0 +1,137 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-13 11:18",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 102150.0,
+    "resistance": 103100.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 56.5,
+      "status": "neutral",
+      "signal": "bearish_divergence"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 55.0,
+      "d_percent": 50.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 28,
+      "average": 26,
+      "ratio": 1.08,
+      "trend": "neutral"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 102150.0,
+        "to": 103100.0
+      },
+      "levels": {
+        "0.236": 102387.7,
+        "0.382": 102507.6,
+        "0.5": 102625.0,
+        "0.618": 102742.4,
+        "0.786": 102902.4
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 103200.0,
+      "middle": 102500.0,
+      "lower": 101800.0,
+      "price_position": "above_middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": 13.5,
+      "signal_line": 14.0,
+      "histogram": -0.5
+    },
+    "ATR14": {
+      "value": 100.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": false,
+    "notes": "RSI shows bearish divergence; volume slightly above average, but neutral setup"
+  },
+  "opening_signal": {
+    "direction": "neutral",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_60",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "macd_histogram_negative",
+        "indicator": "MACD12_26_9",
+        "comparator": "<",
+        "value": 0.0
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": "resistance"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102000.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 103000.0,
+        "basis": "near_resistance",
+        "rr": 1.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Observe for RSI crossing below 50 for potential short entry",
+    "Confirm volume supports continuation",
+    "Avoid long entries until resistance is broken clearly"
+  ],
+  "improvements": "Consider tighter stop-loss based on immediate candlestick lows; confirm RSI support levels for better entries."
+}

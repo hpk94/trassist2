@@ -1,0 +1,29 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "No valid opening signal is present in the LLM snapshot",
+    "Opening condition 'is_met' is false \u2014 setup remains inactive"
+  ],
+  "warnings": [
+    "No stop loss or take profit targets defined",
+    "Checklist passed but without a confirmed trade setup this is insufficient"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 117238.59,
+    "stop_loss": 0.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "No position should be opened due to inactive signal"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

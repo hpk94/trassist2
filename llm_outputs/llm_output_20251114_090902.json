@@ -1,0 +1,124 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-14 08:08",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 96235.6,
+    "resistance": 98957.6
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 41.51,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 37.45,
+      "d_percent": 41.51,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 767170,
+      "average": 650000,
+      "ratio": 1.18,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 96235.6,
+        "to": 98957.6
+      },
+      "levels": {
+        "0": 96235.6,
+        "0.236": 97082.8,
+        "0.382": 97606.9,
+        "0.5": 98035.0,
+        "0.618": 98454.1,
+        "0.786": 99057.2
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": false,
+    "notes": "RSI recovering with volume increase, descending channel pattern present"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      },
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 97606.9,
+        "basis": "fib_0.382"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "channel_support"
+      },
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 96150.0,
+      "basis": "below_channel_support"
+    },
+    "take_profit": [
+      {
+        "price": 98300.0,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for confirmation above Fib 0.382 level",
+    "Check RSI and volume for recovery signals",
+    "Enter long position with increased volume",
+    "Invalidate if price closes below channel support"
+  ],
+  "improvements": "Consider monitoring larger timeframe to confirm breakout strength"
+}

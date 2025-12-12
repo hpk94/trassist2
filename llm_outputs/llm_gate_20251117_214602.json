@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "Price is below the 0.236 Fibonacci resistance level, supporting the short setup",
+    "RSI is above 50, indicating bearish momentum",
+    "Checklist alignment is strong with no invalidations triggered"
+  ],
+  "warnings": [
+    "RSI is near neutral levels; monitor for potential reversal"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91726.96,
+    "stop_loss": 92100.0,
+    "take_profits": [
+      {
+        "price": 91250.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of account equity"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

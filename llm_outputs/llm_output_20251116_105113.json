@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-11-16 09:50",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 95817.0,
+    "resistance": 96466.19
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 60.36,
+      "status": "neutral",
+      "signal": "bullish_momentum"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 71.0,
+      "d_percent": 68.0,
+      "signal": "bullish"
+    },
+    "VOLUME": {
+      "current": 629,
+      "average": 500,
+      "ratio": 1.26,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 95465.69,
+        "to": 96466.19
+      },
+      "levels": {
+        "0.236": 96245.79,
+        "0.382": 96163.57,
+        "0.5": 96065.94,
+        "0.618": 95968.31,
+        "0.786": 95845.11
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.85,
+    "confluence_with_pattern": true,
+    "notes": "RSI and Stochastic indicate bullish momentum, price is respecting Fib levels, volume is increasing"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_crossed_up",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 96163.57,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_swing_low",
+        "type": "price_breach",
+        "level": "swing_low"
+      },
+      {
+        "id": "stoch_below_50",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 50.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 95845.11,
+      "basis": "below_fib_0786"
+    },
+    "take_profit": [
+      {
+        "price": 96466.19,
+        "basis": "recent_high",
+        "rr": 1.5
+      },
+      {
+        "price": 96822.34,
+        "basis": "fib_1.618_extension",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if RSI is above 50 and Stochastic crosses up with volume support",
+    "Monitor Fib 0.382 level for continued support",
+    "Target take profit at recent high and Fib extension",
+    "Use stop loss below Fib 0.786"
+  ],
+  "improvements": "Monitor for sustained volume increase, be wary of overbought signals"
+}

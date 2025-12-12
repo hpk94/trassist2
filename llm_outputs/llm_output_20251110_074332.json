@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-10 07:42",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 105947.9,
+    "resistance": 106348.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 58,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 45,
+      "d_percent": 42,
+      "signal": "bullish crossover"
+    },
+    "VOLUME": {
+      "current": 2.28,
+      "average": 1.8,
+      "ratio": 1.27,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 105569.4,
+        "to": 106560.2
+      },
+      "levels": {
+        "0.236": 105803.2,
+        "0.382": 105947.9,
+        "0.5": 106064.8,
+        "0.618": 106181.7,
+        "0.786": 106348.2
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising wedge",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovering, Stoch bullish crossover, volume increasing, near Fib 0.618."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 50,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_crossover",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">",
+        "value": 20,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0618",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 106181.7,
+        "basis": "fib_0.618"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0382",
+        "type": "price_breach",
+        "level": 105947.9
+      },
+      {
+        "id": "rsi_drop",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 40
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 105947.9,
+      "basis": "below_fib_0382"
+    },
+    "take_profit": [
+      {
+        "price": 106348.2,
+        "basis": "fib_0786",
+        "rr": 1.5
+      },
+      {
+        "price": 106560.2,
+        "basis": "recent_high",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm RSI14 > 50 and stochastic bullish crossover.",
+    "Ensure volume continues above average.",
+    "Enter long if price holds above Fib 0.618.",
+    "Invalidate if price closes below Fib 0.382."
+  ],
+  "improvements": "Monitor for breakout above rising wedge apex, ensure volume supports move."
+}

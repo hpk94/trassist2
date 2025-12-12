@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-06 22:07",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 91247.4,
+    "resistance": 92388.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 60.0,
+      "status": "bullish",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 75.0,
+      "d_percent": 70.0,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 1300000,
+      "average": 1200000,
+      "ratio": 1.08,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91247.4,
+        "to": 94388.2
+      },
+      "levels": {
+        "0.236": 91988.6,
+        "0.382": 92447.2,
+        "0.5": 92817.8,
+        "0.618": 93188.4,
+        "0.786": 93716.1
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 93500.0,
+      "middle": 92000.0,
+      "lower": 90500.0,
+      "price_position": "below_middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": 10.0,
+      "signal_line": 8.5,
+      "histogram": 1.5
+    },
+    "ATR14": {
+      "value": 150.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "channel_breakout",
+      "candle_index": 1,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.75,
+    "confluence_with_pattern": true,
+    "notes": "RSI showing strength, breakout from descending channel, Fibonacci 0.236 retest observed"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_confirmed",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "stoch_above_70",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_retest_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 91988.6,
+        "basis": "fib_0.236"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_91247",
+        "type": "price_breach",
+        "level": 91247.4
+      },
+      {
+        "id": "stoch_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 80.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91000.0,
+      "basis": "below_last_swing"
+    },
+    "take_profit": [
+      {
+        "price": 92447.2,
+        "basis": "fib_0.382_level",
+        "rr": 1.5
+      },
+      {
+        "price": 92817.8,
+        "basis": "fib_0.5_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI to sustain above 50 for bullish momentum",
+    "Confirm breakout with volume above average",
+    "Enter on retest of the Fibonacci 0.236 level",
+    "Exit if price closes below 91247.4"
+  ],
+  "improvements": "Add MACD crossover for additional confirmation; consider Bollinger Band position for volatility context"
+}

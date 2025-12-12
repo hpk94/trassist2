@@ -1,0 +1,27 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price is above the invalidation level of 89000.0, which contradicts the short setup."
+  ],
+  "warnings": [
+    "Price breach of channel resistance invalidates the trade; RSI is overbought but not a primary concern here."
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 0.0,
+    "stop_loss": 0.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "Trade rejected due to invalidation."
+  },
+  "checks": {
+    "invalidation_triggered": true,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

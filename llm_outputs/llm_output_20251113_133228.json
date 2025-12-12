@@ -1,0 +1,102 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-11-13 12:31",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 102802.49,
+    "resistance": 103026.07
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 55.58,
+      "status": "neutral",
+      "signal": "steady"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 51.07,
+      "d_percent": 50.87,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 446466,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 102062.92,
+        "to": 103083.62
+      },
+      "levels": {
+        "0.236": 102326.11,
+        "0.382": 102607.86,
+        "0.5": 102822.27,
+        "0.618": 103036.68,
+        "0.786": 103263.07
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": true,
+    "notes": "RSI and Stochastic are neutral, triangle pattern detected, price near Fib retracement."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 102607.86,
+        "basis": "fib_0.382"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_swing_low",
+        "type": "price_breach",
+        "level": 102802.49
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102620.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 103026.07,
+        "basis": "resistance_level",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor price relative to Fib 0.382 for potential long entries.",
+    "Ensure volume supports breakout above triangle.",
+    "Invalidate on close below support level."
+  ],
+  "improvements": "Consider waiting for stronger RSI or Stochastic signals before entry."
+}

@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI14 is below 55, indicating momentum supports a downward move.",
+    "Rising wedge pattern observed with a confirmed break, aligning with a short setup."
+  ],
+  "warnings": [
+    "Trade is being executed at a volatility level that could cause rapid price changes.",
+    "Close to the support level; may result in short-lived downward movement."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91483.61,
+    "stop_loss": 91600.0,
+    "take_profits": [
+      {
+        "price": 91200.0,
+        "portion": 0.5
+      },
+      {
+        "price": 91098.8,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.2,
+    "position_size_note": "Leverage set at 30x isolated; ensure account margin can support potential rapid price movements."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

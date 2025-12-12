@@ -1,0 +1,150 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-12 20:29",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 101458.4,
+    "resistance": 102252.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 64.97,
+      "status": "neutral",
+      "signal": "uptrend"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 66.0,
+      "d_percent": 64.0,
+      "signal": "uptrend"
+    },
+    "VOLUME": {
+      "current": 838850,
+      "average": "estimated",
+      "ratio": "estimated",
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 100708.0,
+        "to": 102672.4
+      },
+      "levels": {
+        "0.236": 101171.6,
+        "0.382": 101458.4,
+        "0.5": 101690.2,
+        "0.618": 101922.0,
+        "0.786": 102252.0
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": "N/A",
+      "middle": "N/A",
+      "lower": "N/A",
+      "price_position": "N/A"
+    },
+    "MACD12_26_9": {
+      "macd_line": 83.1241,
+      "signal_line": 77.7209,
+      "histogram": 5.4032
+    },
+    "ATR14": {
+      "value": "N/A"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.8,
+    "confluence_with_pattern": true,
+    "notes": "RSI uptrend, Stochastic uptrend, high volume, rising wedge pattern presence"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_uptrend",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_uptrend",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_increasing",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": "baseline"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0.5",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 101690.2,
+        "basis": "fib_0.5"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_101458",
+        "type": "price_breach",
+        "level": 101458.4
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 101450.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 101922.0,
+        "basis": "fib_0.618",
+        "rr": 1.2
+      },
+      {
+        "price": 102252.0,
+        "basis": "fib_0.786",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI and Stochastic for continuation above 60",
+    "Confirm price holds above Fib 0.5 level",
+    "Validate increased volume before entry",
+    "Invalidate on close below 101458.4"
+  ],
+  "improvements": "Focus on volume spikes; confirm breakout validity beyond rising wedge."
+}

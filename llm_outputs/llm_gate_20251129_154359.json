@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "MACD bearish histogram is confirmed which supports short signal",
+    "Price remains below the key Fibonacci 0.618 level which supports bearish outlook",
+    "RSI is not ascending and is well below the invalidation level of 60"
+  ],
+  "warnings": [
+    "Recent candle shows some buying pressure as it settles near its low"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 90628.95,
+    "stop_loss": 90870.0,
+    "take_profits": [
+      {
+        "price": 90565.8,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Maintain standard risk with adherence to SL and TP levels"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

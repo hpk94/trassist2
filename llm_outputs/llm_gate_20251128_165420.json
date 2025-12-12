@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI and Stochastics show recovery from oversold levels",
+    "Price is above key Fibonacci 0.382 level",
+    "Volume is above average indicating buying interest"
+  ],
+  "warnings": [
+    "No explicit retest of support level observed",
+    "RSI is in neutral zone, limiting momentum confirmation"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92388.4,
+    "stop_loss": 91000.0,
+    "take_profits": [
+      {
+        "price": 92488.1,
+        "portion": 0.5
+      },
+      {
+        "price": 92900.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.6,
+    "position_size_note": "Risk per trade should not exceed 1% of account equity"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

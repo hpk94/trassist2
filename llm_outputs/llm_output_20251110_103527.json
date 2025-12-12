@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-10 09:34",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 105945.0,
+    "resistance": 106560.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 68.21,
+      "status": "overbought",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 80.0,
+      "d_percent": 75.0,
+      "signal": "overbought"
+    },
+    "VOLUME": {
+      "current": 11100000,
+      "average": 10000000,
+      "ratio": 1.11,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 105564.2,
+        "to": 106560.2
+      },
+      "levels": {
+        "0.236": 105799.3,
+        "0.382": 105944.7,
+        "0.5": 106062.2,
+        "0.618": 106179.7,
+        "0.786": 106347.1
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising_channel",
+      "candle_index": 0,
+      "confidence": 0.7
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI and Stochastic overbought, high volume, Fibonacci level at 0.786 retested"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_overbought",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">",
+        "value": 80.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_786_fib",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 106347.1,
+        "basis": "fib_0.786"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_above_recent_high",
+        "type": "price_breach",
+        "level": "recent_high"
+      },
+      {
+        "id": "rsi_extreme",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 75.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 106560.0,
+      "basis": "above_recent_high"
+    },
+    "take_profit": [
+      {
+        "price": 106062.2,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      },
+      {
+        "price": 105944.7,
+        "basis": "fib_0.382",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for RSI14 to move below 70",
+    "Confirm Stochastic retracement from overbought",
+    "Enter short if price remains below Fib 0.786",
+    "Invalidate if price moves above recent high"
+  ],
+  "improvements": "Consider waiting for divergence signals in RSI or Stochastic before entry"
+}

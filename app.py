@@ -466,19 +466,28 @@ def check_indicator_threshold(df, condition):
         comparator = condition['comparator']
         threshold_value = condition['value']
     
+        # Map indicator names to actual DataFrame column names
+        # MACD12_26_9 maps to MACD_Line for threshold comparisons (checking if MACD is positive/negative)
+        # STOCH14_3_3 maps to STOCH_K for threshold comparisons
+        indicator_column_map = {
+            'MACD12_26_9': 'MACD_Line',
+            'STOCH14_3_3': 'STOCH_K',
+        }
+        column_name = indicator_column_map.get(indicator_name, indicator_name)
+    
         # Check if DataFrame is empty or missing required columns
-        if df.empty or indicator_name not in df.columns:
-            print(f"      Warning: DataFrame empty or missing indicator '{indicator_name}'")
+        if df.empty or column_name not in df.columns:
+            print(f"      Warning: DataFrame empty or missing indicator '{column_name}' (from '{indicator_name}')")
             return False
     
         # Check if the indicator value is null/NaN
-        current_value = df[indicator_name].iloc[-1]
+        current_value = df[column_name].iloc[-1]
         if pd.isna(current_value):
-            print(f"      Warning: Indicator '{indicator_name}' value is null/NaN")
+            print(f"      Warning: Indicator '{column_name}' value is null/NaN")
             return False
     
         condition_met = evaluate_comparison(current_value, comparator, threshold_value)
-        print(f"      Indicator '{indicator_name}': {current_value} {comparator} {threshold_value} = {condition_met}")
+        print(f"      Indicator '{indicator_name}' ({column_name}): {current_value} {comparator} {threshold_value} = {condition_met}")
         return condition_met
 
 def check_price_level(df, condition):
@@ -795,7 +804,18 @@ def validate_trading_signal(df):
         else:
             # Evaluate new pass rule
             patterns = llm_output.get('pattern_analysis', []) if isinstance(llm_output, dict) else []
-            strong_pattern = any((p.get('confidence') or 0) >= 0.75 for p in (patterns or []))
+            
+            def _safe_confidence(p):
+                """Safely get confidence as float, handling string values like 'unknown'"""
+                conf = p.get('confidence')
+                if conf is None:
+                    return 0
+                try:
+                    return float(conf)
+                except (ValueError, TypeError):
+                    return 0
+            
+            strong_pattern = any(_safe_confidence(p) >= 0.75 for p in (patterns or []))
             if all_core_met or (num_core_met >= 2 and strong_pattern):
                 print("    Signal validation result: VALID")
                 return True, "valid", [], market_values

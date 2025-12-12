@@ -1,0 +1,159 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-18 21:15",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 117050.0,
+    "resistance": 117800.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 18.91,
+      "status": "oversold",
+      "signal": "bearish_continuation_likely"
+    },
+    "MACD12_26_9": {
+      "macd_line": -57.1672,
+      "signal_line": -49.7633,
+      "histogram": -7.4039,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 22.5,
+      "d_percent": 28.0,
+      "signal": "entering_oversold"
+    },
+    "VOLUME": {
+      "current": 6.56328028,
+      "average": 4.8,
+      "ratio": 1.37,
+      "trend": "spiking"
+    },
+    "ATR14": {
+      "value": 95.4,
+      "period": 14,
+      "volatility": "moderate"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_wedge",
+      "candle_index": "composite_pattern_last_30min",
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Descending volume into falling wedge with RSI14 in oversold at wedge bottom hints at potential bounce, but MACD and momentum remain strongly bearish."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_30",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "falling_wedge_detected",
+        "type": "candle_pattern",
+        "pattern": "falling_wedge",
+        "candle_index": "multi",
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_below_wedge_support",
+        "type": "price_breach",
+        "level": 117050.0,
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_continues_decline",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 15.0
+      },
+      {
+        "id": "macd_confirms_bearish_momentum",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line strongly < signal_line"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 117040.0,
+      "basis": "below_falling_wedge_support",
+      "distance_ticks": 237
+    },
+    "take_profit": [
+      {
+        "price": 117500.0,
+        "basis": "wedge_midpoint_resistance",
+        "rr": 1.0
+      },
+      {
+        "price": 117780.0,
+        "basis": "wedge_upper_resistance",
+        "rr": 2.1
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for bullish reversal confirmation within falling wedge",
+    "RSI is currently oversold; wait for rising RSI + bullish candle for entry trigger",
+    "MACD and momentum remain bearish, so avoid premature longs",
+    "Set tight stop below wedge support at 117040.0"
+  ],
+  "improvements": "Avoid entering during active bearish MACD phase. Wait for bullish engulfing candle or RSI bullish divergence with follow-through candle to confirm bounce. Consider setting alerts for RSI14 > 30 and stochastic %K cross above %D for entry refinement."
+}

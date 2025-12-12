@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-19 23:03",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 90088.4,
+    "resistance": 90427.7
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 46.23,
+      "status": "neutral",
+      "signal": "bearish"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35.2,
+      "d_percent": 28.1,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 2.43,
+      "average": 1.5,
+      "ratio": 1.62,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 88840.0,
+        "to": 90860.0
+      },
+      "levels": {
+        "0.236": 89316.7,
+        "0.382": 89611.6,
+        "0.5": 89850.0,
+        "0.618": 90088.4,
+        "0.786": 90427.7
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 90500.0,
+      "middle": 89800.0,
+      "lower": 89100.0,
+      "price_position": "upper"
+    },
+    "MACD12_26_9": {
+      "macd_line": 37.68,
+      "signal_line": 78.19,
+      "histogram": -40.51
+    },
+    "ATR14": {
+      "value": 120.5
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge_breakdown",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.75,
+    "confluence_with_pattern": true,
+    "notes": "Volume confirms bearish pattern, Fib 0.618 acting as potential resistance"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_neutral_bearish",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_neutral",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_increase",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_fib_0768",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 90427.7,
+        "basis": "fib_0.786"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_rising_wedge",
+        "type": "price_breach",
+        "level": "rising_wedge_top"
+      },
+      {
+        "id": "rsi_bullish_reversal",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 90430.0,
+      "basis": "above_recent_high"
+    },
+    "take_profit": [
+      {
+        "price": 89850.0,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      },
+      {
+        "price": 89611.6,
+        "basis": "fib_0.382",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for continued bearish move",
+    "Confirm volume spike on breakdown",
+    "Enter short if price rejects at Fib 0.618",
+    "Invalidate setup if price breaks above wedge resistance"
+  ],
+  "improvements": "Consider entering after RSI confirms under 40; use ATR to adjust stop loss distances"
+}

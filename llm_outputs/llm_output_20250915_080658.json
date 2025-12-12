@@ -1,0 +1,159 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-15 06:04",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115635.0,
+    "resistance": 116716.4
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 68.95,
+      "status": "neutral",
+      "signal": "bearish_divergence"
+    },
+    "MACD12_26_9": {
+      "macd_line": 51.8431,
+      "signal_line": 48.8445,
+      "histogram": 2.9986,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "outside_band",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 2.86632644,
+      "average": 2.0,
+      "ratio": 1.43,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 1,
+      "confidence": 0.88
+    },
+    {
+      "pattern": "bearish_engulfing",
+      "candle_index": 0,
+      "confidence": 0.79
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.67,
+    "notes": "Bearish engulfing at wedge resistance with RSI divergence suggests a high-risk reversal setup; volume increasing but wedge pattern signals possible breakdown."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_bearish_divergence",
+        "type": "signal_pattern",
+        "indicator": "RSI14",
+        "condition": "lower_high_in_rsi_with_higher_high_in_price",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "bearish_engulfing_top",
+        "type": "candle_pattern",
+        "pattern": "bearish_engulfing",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "rising_wedge_break_risk",
+        "type": "chart_pattern",
+        "pattern": "rising_wedge",
+        "direction": "bearish",
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "breaks_above_wedge",
+        "type": "price_breach",
+        "level": "upper_wedge_trendline",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_crosses_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "bullish_engulfing_above",
+        "type": "candle_pattern",
+        "pattern": "bullish_engulfing",
+        "candle_index": 0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 116580.0,
+      "basis": "above_last_swing_high",
+      "distance_ticks": 135.8
+    },
+    "take_profit": [
+      {
+        "price": 115911.6,
+        "basis": "fib_0.786",
+        "rr": 3.91
+      },
+      {
+        "price": 115749.1,
+        "basis": "fib_0.618",
+        "rr": 5.12
+      }
+    ]
+  },
+  "summary_actions": [
+    "Short entry confirmed after bearish engulfing inside rising wedge",
+    "Volume increases provide confirmation of reversal risk",
+    "Set stop-loss above 116580 (last swing high)",
+    "Target initial take profits on retracement levels at 0.786 and 0.618 Fib"
+  ],
+  "improvements": "Add ATR-based stop filter and confirm MACD histogram negativity to validate momentum shift more thoroughly"
+}

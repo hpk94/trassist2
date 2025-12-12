@@ -1,0 +1,324 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-12-12 09:49",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 92100.0,
+    "resistance": 92650.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 73.06,
+      "status": "overbought",
+      "signal": "overbought_momentum"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 9.182491,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": null,
+        "to": null
+      },
+      "levels": {
+        "0.236": 91843.5,
+        "0.382": 92106.6,
+        "0.5": 92319.3,
+        "0.618": 92532.0,
+        "0.786": 92834.9
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown"
+    },
+    "MACD12_26_9": {
+      "macd_line": 79.6534,
+      "signal_line": 58.8985,
+      "histogram": 20.7549
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.71
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.35,
+    "confluence_with_pattern": false,
+    "notes": "Pattern suggests SHORT (descending_triangle), but real-time momentum is bullish: RSI14=73.06 (overbought but strong) and MACD is positive with rising histogram (20.7549). No real-time Stochastic and no volume-vs-average ratio provided, so core short confirmation (momentum rollover + sell-volume expansion + breakdown below support/Fib) is missing. Treat pattern as secondary only until a confirmed breakdown; otherwise risk of shorting into strength is high."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "price_break_support_92100",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 92100.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_below_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 92106.6,
+        "basis": "fib_0.382"
+      },
+      {
+        "id": "rsi_not_strong_bull",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 65.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "retest_fail_92100",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 92100.0,
+        "basis": "support_retest_within_1_3_candles"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_back_above_support_92100",
+        "type": "price_breach",
+        "level": 92100.0
+      },
+      {
+        "id": "rsi_stays_overbought_strength",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "break_and_hold_above_resistance_92650",
+        "type": "price_breach",
+        "level": 92650.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 92670.0,
+      "basis": "above_resistance_92650_buffer"
+    },
+    "take_profit": [
+      {
+        "price": 92106.6,
+        "basis": "fib_0.382",
+        "rr": 1.0
+      },
+      {
+        "price": 91843.5,
+        "basis": "fib_0.236",
+        "rr": 1.7
+      },
+      {
+        "price": 92319.3,
+        "basis": "fib_0.5_partial_if_entry_on_break_92532_retest",
+        "rr": 0.6
+      }
+    ]
+  },
+  "summary_actions": [
+    "Do NOT short while PRICE is holding above 92100 and RSI14 remains >= 70; this conflicts with the triangle-bear continuation expectation.",
+    "Only consider SHORT if PRICE breaks below 92100 AND slips below Fib 0.382 (92106.6) with RSI14 cooling to <= 65.",
+    "Prefer a breakdown then 1\u20133 candle retest-fail of 92100 before entry; invalidate if any 1m close reclaims 92100 or breaks above 92650."
+  ],
+  "improvements": "Provide real-time STOCH14_3_3 (%K/%D) and volume average so the core checklist can include: (1) Stoch bearish cross from >80 or loss of 50-line, and (2) VOLUME ratio > 1.2 on breakdown (baseline: average). Without these, the descending_triangle direction alone is insufficient for a high-accuracy 1m scalp, especially with RSI14=73.06 and strong MACD momentum.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-5.2-2025-12-11",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-12 09:49",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 45.63,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": false
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": null,
+            "to": null
+          },
+          "levels": {
+            "0.236": 91843.5,
+            "0.382": 92106.6,
+            "0.5": 92319.3,
+            "0.618": 92532.0,
+            "0.786": 92834.9
+          },
+          "timeframe_hints": {
+            "yellow": "1m",
+            "blue": "1h",
+            "white": "1d"
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "descending_triangle",
+            "candle_index": 0,
+            "confidence": 0.71,
+            "pattern_name": "descending_triangle",
+            "pattern_direction": "short",
+            "pattern_type": "continuation",
+            "usual_breakout_direction": "bearish_down"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            92100.0
+          ],
+          "resistance": [
+            92650.0
+          ]
+        },
+        "visual_trend": "bearish",
+        "_pattern_info": [
+          {
+            "name": "descending_triangle",
+            "direction": "short",
+            "type": "continuation",
+            "usual_breakout_direction": "bearish_down",
+            "notes": "Breakout is usually below the horizontal support; watch for increased selling volume.",
+            "look": "Flat support below, falling highs (lower highs) above.",
+            "typical_context": "Forms during a downtrend as a consolidation."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-5.2-2025-12-11",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.35,
+        "Gemini": 0.85
+      },
+      "response_times": {
+        "ChatGPT5.1": 30.965251922607422,
+        "Gemini": 93.28712892532349
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.35,
+        "elapsed_time": 30.965251922607422,
+        "stop_loss": 92670.0,
+        "take_profits": [
+          {
+            "price": 92106.6,
+            "rr": 1.0
+          },
+          {
+            "price": 91843.5,
+            "rr": 1.7
+          },
+          {
+            "price": 92319.3,
+            "rr": 0.6
+          }
+        ],
+        "max_rr": 1.7
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.85,
+        "elapsed_time": 93.28712892532349,
+        "stop_loss": 92450.0,
+        "take_profits": [
+          {
+            "price": 92830.0,
+            "rr": 1.5
+          },
+          {
+            "price": 93300.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      }
+    },
+    "errors": {
+      "DeepSeek": {
+        "error": "Authentication failed. Check your DEEPSEEK_API_KEY in .env file.",
+        "error_type": "AnalysisError",
+        "model": "deepseek/chat"
+      }
+    }
+  }
+}

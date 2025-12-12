@@ -1,0 +1,121 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-02 20:55",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 110911.2,
+    "resistance": 111355.5
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 61.84,
+      "status": "neutral",
+      "signal": "bullish"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 56.62,
+      "d_percent": 61.84,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 287650,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 110134.3,
+        "to": 111688.0
+      },
+      "levels": {
+        "0.236": 110501.0,
+        "0.382": 110727.8,
+        "0.5": 110911.2,
+        "0.618": 111094.5,
+        "0.786": 111355.5
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Rising wedge near 0.786 Fibonacci resistance, RSI in bullish area"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "price_below_fib_0786",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 111355.5,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "rsi_below_70",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "pattern_confirm_rising_wedge",
+        "indicator": "PATTERN",
+        "pattern": "rising_wedge",
+        "confidence": ">=",
+        "value": 0.7
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_fib_0786",
+        "type": "price_breach",
+        "level": "fib_0.786"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111355.5,
+      "basis": "above_wedge_peak"
+    },
+    "take_profit": [
+      {
+        "price": 110911.2,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      },
+      {
+        "price": 110727.8,
+        "basis": "fib_0.382",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for break below 0.786 Fib for short entry",
+    "Ensure RSI stays below 70",
+    "Validate rising wedge exit confirmation",
+    "Invalidate if price closes above 0.786 Fib level"
+  ],
+  "improvements": "Monitor volume for spikes confirming breakout; ensure RSI remains below overbought levels for safety"
+}

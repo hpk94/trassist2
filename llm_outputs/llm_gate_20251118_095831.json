@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.7,
+  "reasons": [
+    "Checklist passed with no invalidations triggered",
+    "Current price aligns with short setup below fib_0.618 level",
+    "RSI and Stochastic conditions from snapshot are not contradicted by current market"
+  ],
+  "warnings": [
+    "No recent retest of key resistance level observed",
+    "RSI is neutral, not strongly bearish as in original setup"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 91224.78,
+    "stop_loss": 91600.0,
+    "take_profits": [
+      {
+        "price": 90760.0,
+        "portion": 0.5
+      },
+      {
+        "price": 90394.1,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.2,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "medium"
+  }
+}

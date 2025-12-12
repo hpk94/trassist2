@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.7,
+  "reasons": [
+    "Checklist fully passed with no invalidations triggered",
+    "RSI and Stochastic conditions met for recovery, supporting long setup",
+    "Current price above key Fibonacci level, aligning with secondary checklist"
+  ],
+  "warnings": [
+    "No explicit retest of swing low observed; entry is based on momentum recovery",
+    "RSI at 48.17 is neutral, not strongly oversold, limiting upside confidence"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 101630.58,
+    "stop_loss": 100800.0,
+    "take_profits": [
+      {
+        "price": 102000.0,
+        "portion": 0.5
+      },
+      {
+        "price": 102850.7,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.75,
+    "position_size_note": "Size based on stop loss at 100800.0 and entry at 101630.58"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.83,
+  "reasons": [
+    "MACD bearish crossover confirmed on current candle",
+    "Rising wedge pattern identified near resistance zone",
+    "Price tested and remains near key resistance level at 113110",
+    "Volume elevated suggesting validity of breakout attempt"
+  ],
+  "warnings": [
+    "No explicit retest of upper wedge boundary\u2014entry risk elevated without confirmation"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 113095.16,
+    "stop_loss": 113130.0,
+    "take_profits": [
+      {
+        "price": 112920.0,
+        "portion": 0.5
+      },
+      {
+        "price": 112800.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.4,
+    "position_size_note": "Size based on 35 tick risk to 1st target with max 1% account exposure."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

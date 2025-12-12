@@ -1,0 +1,133 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-12 18:35",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 101274.2,
+    "resistance": 102850.7
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 46.97,
+      "status": "neutral",
+      "signal": "none"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.5,
+      "d_percent": 38.2,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 306340,
+      "average": 350000,
+      "ratio": 0.87,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 101274.2,
+        "to": 102672.4
+      },
+      "levels": {
+        "0.236": 101604.2,
+        "0.382": 101808.3,
+        "0.5": 101973.3,
+        "0.618": 102138.3,
+        "0.786": 102373.2
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 102000.0,
+      "middle": 101800.0,
+      "lower": 101600.0,
+      "price_position": "below_middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": 12.5,
+      "signal_line": 8.2,
+      "histogram": 4.3
+    },
+    "ATR14": {
+      "value": 50.5
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.4,
+    "confluence_with_pattern": false,
+    "notes": "RSI neutral, low volume, within triangle"
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "price_inside_triangle",
+        "indicator": "PRICE",
+        "comparator": "within",
+        "value": [
+          101604.2,
+          102138.3
+        ],
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<=",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "triangle_breakout",
+        "type": "pattern_break",
+        "level": "outside_lines"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 101274.2,
+      "basis": "below_swing_low"
+    },
+    "take_profit": [
+      {
+        "price": 101808.3,
+        "basis": "fib_0.382",
+        "rr": 1.0
+      },
+      {
+        "price": 102138.3,
+        "basis": "fib_0.618",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for breakout of the triangle",
+    "Confirm volume increase on breakout",
+    "Consider RSI trend for confirmation"
+  ],
+  "improvements": "Monitor for a breakout confirmation with increased volume; RSI and Stochastic should align for a stronger signal"
+}

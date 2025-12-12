@@ -1,0 +1,130 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-22 20:02",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 84400.0,
+    "resistance": 84700.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 50.9,
+      "status": "neutral",
+      "signal": "stable"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40.0,
+      "d_percent": 42.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 0.51771428,
+      "average": 0.4,
+      "ratio": 1.29,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 84000.0,
+        "to": 85000.0
+      },
+      "levels": {
+        "0.236": 84260.0,
+        "0.382": 84480.0,
+        "0.5": 84500.0,
+        "0.618": 84620.0,
+        "0.786": 84800.0
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 85500.0,
+      "middle": 84500.0,
+      "lower": 83500.0,
+      "price_position": "middle"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Triangle formation with increasing volume, RSI stabilizing"
+  },
+  "opening_signal": {
+    "direction": "evaluate",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_neutral",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_increasing",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "breakout_impending",
+        "indicator": "PATTERN",
+        "comparator": "=",
+        "value": "pending",
+        "basis": "symmetrical_triangle"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_outside_triangle",
+        "type": "price_breach",
+        "pattern": "symmetrical_triangle"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 84300.0,
+      "basis": "below_lower_triangle"
+    },
+    "take_profit": [
+      {
+        "price": 84700.0,
+        "basis": "local_resistance",
+        "rr": 1.5
+      },
+      {
+        "price": 85000.0,
+        "basis": "fib_0.618_extension",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor triangle completion and volume confirmation",
+    "Wait for RSI to signal clearer direction",
+    "Consider entry on breakout with increasing volume",
+    "Invalidate if price closes outside triangle"
+  ],
+  "improvements": "Wait for breakout confirmation and ensure RSI supports direction"
+}

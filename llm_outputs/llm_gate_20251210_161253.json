@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI is bullish and above neutrality, supporting upward momentum.",
+    "Price is holding above the Fib 0.236 level, indicating a stable bullish structure.",
+    "Volume is above average, suggesting market interest."
+  ],
+  "warnings": [
+    "High leverage of 30x increases risk significantly. Caution is advised."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92120.76,
+    "stop_loss": 91879.34,
+    "take_profits": [
+      {
+        "price": 92211.865,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Ensure position size adheres to risk management, ideally not exceeding 1% of total account value due to high leverage."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

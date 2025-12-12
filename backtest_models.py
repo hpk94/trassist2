@@ -316,6 +316,19 @@ def analyze_model_performance(trades: List[TradeResult]) -> Dict:
     }
 
 
+def analyze_by_direction(trades: List[TradeResult]) -> Dict:
+    """Analyze performance split by trade direction (long vs short)."""
+    long_trades = [t for t in trades if t.direction.lower() in ['long', 'bullish', 'buy']]
+    short_trades = [t for t in trades if t.direction.lower() in ['short', 'bearish', 'sell']]
+    
+    return {
+        'long': analyze_model_performance(long_trades),
+        'short': analyze_model_performance(short_trades),
+        'long_count': len(long_trades),
+        'short_count': len(short_trades),
+    }
+
+
 def main():
     print("=" * 80)
     print("MODEL BACKTESTING - Finding the Best Predictive Model")
@@ -407,8 +420,10 @@ def main():
     print()
     
     model_stats = {}
+    model_direction_stats = {}
     for model, trades in model_trades.items():
         model_stats[model] = analyze_model_performance(trades)
+        model_direction_stats[model] = analyze_by_direction(trades)
     
     # Sort by total PnL
     sorted_models = sorted(model_stats.items(), key=lambda x: -x[1]['total_pnl_pct'])
@@ -422,41 +437,161 @@ def main():
               f"{stats['profit_factor']:>8.2f} {stats['sl_hits']:>5} {stats['tp_hits']:>5} "
               f"{stats['max_drawdown_pct']:>9.1f}%")
     
+    # ========================================================================
+    # LONG vs SHORT ANALYSIS
+    # ========================================================================
     print()
     print("=" * 80)
-    print("DETAILED MODEL ANALYSIS")
+    print("LONG TRADES ANALYSIS")
+    print("=" * 80)
+    print()
+    
+    # Sort models by LONG performance
+    long_sorted = sorted(
+        [(m, model_direction_stats[m]['long']) for m in model_direction_stats],
+        key=lambda x: -x[1]['total_pnl_pct'] if x[1]['total_trades'] > 0 else float('-inf')
+    )
+    
+    print(f"{'Model':<15} {'Trades':>7} {'Win Rate':>10} {'Total PnL':>12} {'Avg PnL':>10} {'PF':>8}")
+    print("-" * 70)
+    
+    for model, stats in long_sorted:
+        if stats['total_trades'] > 0:
+            pf = stats['profit_factor'] if stats['profit_factor'] != float('inf') else 999.99
+            print(f"{model:<15} {stats['total_trades']:>7} {stats['win_rate']:>9.1f}% "
+                  f"{stats['total_pnl_pct']:>+11.1f}% {stats['avg_pnl_pct']:>+9.1f}% "
+                  f"{pf:>8.2f}")
+        else:
+            print(f"{model:<15} {'N/A':>7} {'N/A':>10} {'N/A':>12} {'N/A':>10} {'N/A':>8}")
+    
+    print()
+    print("=" * 80)
+    print("SHORT TRADES ANALYSIS")
+    print("=" * 80)
+    print()
+    
+    # Sort models by SHORT performance
+    short_sorted = sorted(
+        [(m, model_direction_stats[m]['short']) for m in model_direction_stats],
+        key=lambda x: -x[1]['total_pnl_pct'] if x[1]['total_trades'] > 0 else float('-inf')
+    )
+    
+    print(f"{'Model':<15} {'Trades':>7} {'Win Rate':>10} {'Total PnL':>12} {'Avg PnL':>10} {'PF':>8}")
+    print("-" * 70)
+    
+    for model, stats in short_sorted:
+        if stats['total_trades'] > 0:
+            pf = stats['profit_factor'] if stats['profit_factor'] != float('inf') else 999.99
+            print(f"{model:<15} {stats['total_trades']:>7} {stats['win_rate']:>9.1f}% "
+                  f"{stats['total_pnl_pct']:>+11.1f}% {stats['avg_pnl_pct']:>+9.1f}% "
+                  f"{pf:>8.2f}")
+        else:
+            print(f"{model:<15} {'N/A':>7} {'N/A':>10} {'N/A':>12} {'N/A':>10} {'N/A':>8}")
+    
+    # ========================================================================
+    # DETAILED MODEL ANALYSIS
+    # ========================================================================
+    print()
+    print("=" * 80)
+    print("DETAILED MODEL ANALYSIS (with Long/Short breakdown)")
     print("=" * 80)
     
     for model, stats in sorted_models:
+        dir_stats = model_direction_stats[model]
+        long_stats = dir_stats['long']
+        short_stats = dir_stats['short']
+        
         print(f"\n📊 {model}")
-        print("-" * 40)
-        print(f"  Total Trades:     {stats['total_trades']}")
-        print(f"  Win Rate:         {stats['win_rate']:.1f}%")
-        print(f"  Total PnL:        {stats['total_pnl_pct']:+.2f}% (${stats['total_pnl_usd']:+,.2f})")
-        print(f"  Avg Trade PnL:    {stats['avg_pnl_pct']:+.2f}%")
-        print(f"  Avg Win:          {stats['avg_win_pct']:+.2f}%")
-        print(f"  Avg Loss:         {stats['avg_loss_pct']:+.2f}%")
-        print(f"  Profit Factor:    {stats['profit_factor']:.2f}")
-        print(f"  Best Trade:       {stats['best_trade_pct']:+.2f}%")
-        print(f"  Worst Trade:      {stats['worst_trade_pct']:+.2f}%")
-        print(f"  Max Drawdown:     {stats['max_drawdown_pct']:.2f}%")
-        print(f"  Exit by SL:       {stats['sl_hits']} ({stats['sl_hits']/stats['total_trades']*100:.1f}%)" if stats['total_trades'] > 0 else "  Exit by SL: N/A")
-        print(f"  Exit by TP:       {stats['tp_hits']} ({stats['tp_hits']/stats['total_trades']*100:.1f}%)" if stats['total_trades'] > 0 else "  Exit by TP: N/A")
-        print(f"  Exit by Timeout:  {stats['timeouts']} ({stats['timeouts']/stats['total_trades']*100:.1f}%)" if stats['total_trades'] > 0 else "  Exit by Timeout: N/A")
-        if 'avg_duration_min' in stats:
-            print(f"  Avg Duration:     {stats['avg_duration_min']:.1f} minutes")
+        print("-" * 60)
+        print(f"  {'OVERALL':<12} | {'LONG':<20} | {'SHORT':<20}")
+        print(f"  {'-'*12} | {'-'*20} | {'-'*20}")
+        
+        # Trades
+        print(f"  Trades: {stats['total_trades']:<3} | "
+              f"Trades: {long_stats['total_trades']:<13} | "
+              f"Trades: {short_stats['total_trades']:<13}")
+        
+        # Win Rate
+        long_wr = f"{long_stats['win_rate']:.1f}%" if long_stats['total_trades'] > 0 else "N/A"
+        short_wr = f"{short_stats['win_rate']:.1f}%" if short_stats['total_trades'] > 0 else "N/A"
+        print(f"  Win Rate: {stats['win_rate']:.1f}% | "
+              f"Win Rate: {long_wr:<13} | "
+              f"Win Rate: {short_wr:<13}")
+        
+        # Total PnL
+        long_pnl = f"{long_stats['total_pnl_pct']:+.1f}%" if long_stats['total_trades'] > 0 else "N/A"
+        short_pnl = f"{short_stats['total_pnl_pct']:+.1f}%" if short_stats['total_trades'] > 0 else "N/A"
+        print(f"  PnL: {stats['total_pnl_pct']:+.1f}%    | "
+              f"PnL: {long_pnl:<16} | "
+              f"PnL: {short_pnl:<16}")
+        
+        # Avg PnL
+        long_avg = f"{long_stats['avg_pnl_pct']:+.1f}%" if long_stats['total_trades'] > 0 else "N/A"
+        short_avg = f"{short_stats['avg_pnl_pct']:+.1f}%" if short_stats['total_trades'] > 0 else "N/A"
+        print(f"  Avg: {stats['avg_pnl_pct']:+.1f}%    | "
+              f"Avg: {long_avg:<16} | "
+              f"Avg: {short_avg:<16}")
+        
+        # Profit Factor
+        long_pf = f"{long_stats['profit_factor']:.2f}" if long_stats['total_trades'] > 0 and long_stats['profit_factor'] != float('inf') else "∞" if long_stats['total_trades'] > 0 else "N/A"
+        short_pf = f"{short_stats['profit_factor']:.2f}" if short_stats['total_trades'] > 0 and short_stats['profit_factor'] != float('inf') else "∞" if short_stats['total_trades'] > 0 else "N/A"
+        overall_pf = f"{stats['profit_factor']:.2f}" if stats['profit_factor'] != float('inf') else "∞"
+        print(f"  PF: {overall_pf:<7} | "
+              f"PF: {long_pf:<17} | "
+              f"PF: {short_pf:<17}")
+        
+        # Recommendation
+        if long_stats['total_trades'] >= 3 and short_stats['total_trades'] >= 3:
+            long_better = long_stats['total_pnl_pct'] > short_stats['total_pnl_pct']
+            if long_better and long_stats['total_pnl_pct'] > 0:
+                print(f"  💡 Recommendation: Better at LONG trades")
+            elif not long_better and short_stats['total_pnl_pct'] > 0:
+                print(f"  💡 Recommendation: Better at SHORT trades")
+            elif long_stats['total_pnl_pct'] > 0 or short_stats['total_pnl_pct'] > 0:
+                print(f"  💡 Recommendation: Use for {'LONG' if long_stats['total_pnl_pct'] > 0 else 'SHORT'} only")
+            else:
+                print(f"  ⚠️ Warning: Negative PnL on both directions")
     
-    # Determine winner
+    # ========================================================================
+    # WINNER SUMMARY
+    # ========================================================================
     print()
     print("=" * 80)
+    print("🏆 WINNER SUMMARY")
+    print("=" * 80)
+    
     if sorted_models:
         winner = sorted_models[0]
-        print(f"🏆 BEST MODEL: {winner[0]}")
+        print(f"\n🥇 OVERALL BEST: {winner[0]}")
         print(f"   Total PnL: {winner[1]['total_pnl_pct']:+.2f}% (${winner[1]['total_pnl_usd']:+,.2f})")
         print(f"   Win Rate: {winner[1]['win_rate']:.1f}%")
         print(f"   Profit Factor: {winner[1]['profit_factor']:.2f}")
-    else:
-        print("No trades to analyze")
+    
+    # Best for LONG
+    best_long = max(
+        [(m, model_direction_stats[m]['long']) for m in model_direction_stats if model_direction_stats[m]['long']['total_trades'] >= 3],
+        key=lambda x: x[1]['total_pnl_pct'],
+        default=None
+    )
+    if best_long and best_long[1]['total_pnl_pct'] > 0:
+        print(f"\n🟢 BEST FOR LONG: {best_long[0]}")
+        print(f"   Long PnL: {best_long[1]['total_pnl_pct']:+.2f}%")
+        print(f"   Long Win Rate: {best_long[1]['win_rate']:.1f}%")
+        print(f"   Long Trades: {best_long[1]['total_trades']}")
+    
+    # Best for SHORT
+    best_short = max(
+        [(m, model_direction_stats[m]['short']) for m in model_direction_stats if model_direction_stats[m]['short']['total_trades'] >= 3],
+        key=lambda x: x[1]['total_pnl_pct'],
+        default=None
+    )
+    if best_short and best_short[1]['total_pnl_pct'] > 0:
+        print(f"\n🔴 BEST FOR SHORT: {best_short[0]}")
+        print(f"   Short PnL: {best_short[1]['total_pnl_pct']:+.2f}%")
+        print(f"   Short Win Rate: {best_short[1]['win_rate']:.1f}%")
+        print(f"   Short Trades: {best_short[1]['total_trades']}")
+    
+    print()
     print("=" * 80)
     
     # Save detailed results
@@ -473,6 +608,12 @@ def main():
         'files_analyzed': len(files),
         'total_predictions': len(all_predictions),
         'model_statistics': {m: s for m, s in model_stats.items()},
+        'model_direction_statistics': {m: s for m, s in model_direction_stats.items()},
+        'winners': {
+            'overall': sorted_models[0][0] if sorted_models else None,
+            'best_long': best_long[0] if best_long and best_long[1]['total_pnl_pct'] > 0 else None,
+            'best_short': best_short[0] if best_short and best_short[1]['total_pnl_pct'] > 0 else None,
+        },
         'individual_trades': {
             model: [
                 {
@@ -501,6 +642,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

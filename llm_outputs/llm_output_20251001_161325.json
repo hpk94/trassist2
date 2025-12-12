@@ -1,0 +1,177 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-01 14:12",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 116500.0,
+    "resistance": 117250.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 63.96,
+      "status": "neutral",
+      "signal": "cooling_from_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 130.4363,
+      "signal_line": 124.333,
+      "histogram": 6.1033,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "near_upper_est",
+      "bandwidth": "wide"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": 0.09090923,
+      "average": 0.078,
+      "ratio": 1.17,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "blowoff_top_wick",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.68,
+    "notes": "Price is touching upper trendline resistance of rising channel with signs of exhaustion; RSI backing off overbought; MACD still positive but losing momentum"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_drop_below_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_hits_channel_top",
+        "type": "price_level",
+        "level": "channel_upper",
+        "comparator": ">=",
+        "value": 117250.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "macd_histogram_fading",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 6.5,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "candle_rejection_wick",
+        "type": "candle_pattern",
+        "pattern": "long_upper_wick",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "volume_spike_on_reversal",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_channel_top",
+        "type": "price_breach",
+        "level": "channel_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_continues_rising",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line continues > signal_line with increasing histogram"
+      },
+      {
+        "id": "rsi_cross_back_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 70.0
+      },
+      {
+        "id": "volume_dry_up",
+        "type": "volume_threshold",
+        "comparator": "<",
+        "value": 0.9,
+        "baseline": "average_volume"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 117265.0,
+      "basis": "above_recent_wick",
+      "distance_ticks": 200
+    },
+    "take_profit": [
+      {
+        "price": 116800.0,
+        "basis": "local_support",
+        "rr": 1.3
+      },
+      {
+        "price": 116500.0,
+        "basis": "channel_midline",
+        "rr": 2.8
+      }
+    ]
+  },
+  "summary_actions": [
+    "Setup matches short reversal from channel top with confluence in long wick, fading RSI, and MACD",
+    "Entry justified on upper channel rejection with temporary overbought condition backing off",
+    "Enter short with SL above wick high ~117265 and TP first zone 116800",
+    "Invalidate setup if price cleanly breaks upper trendline or RSI climbs back >70"
+  ],
+  "improvements": "Add Bollinger Bands for volatility envelope and include a Stochastic confirmation to differentiate real rejection from continuation"
+}

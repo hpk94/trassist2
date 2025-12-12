@@ -1,0 +1,180 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-19 07:03",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 116200.0,
+    "resistance": 117000.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 44.98,
+      "status": "neutral",
+      "signal": "mild_bearish_continuation"
+    },
+    "MACD12_26_9": {
+      "macd_line": -7.6764,
+      "signal_line": -5.5184,
+      "histogram": -2.1579,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 45.92,
+      "d_percent": 49.42,
+      "signal": "neutral_cross"
+    },
+    "VOLUME": {
+      "current": 0.52710923,
+      "average": "unknown",
+      "ratio": "unknown",
+      "trend": "flat"
+    },
+    "ATR14": {
+      "value": "unknown",
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_wedge",
+      "candle_index": "over multiple candles",
+      "confidence": 0.84
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Falling wedge suggests potential bullish reversal, but RSI and MACD are not signaling imminent buying strength yet. Breakout not confirmed."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "falling_wedge_complete",
+        "type": "candle_pattern",
+        "pattern": "falling_wedge",
+        "candle_index": "multi",
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "rsi_recovery_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_spike_on_breakout",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.5,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_breaks_upper_wedge",
+        "type": "price_level",
+        "level": "falling_wedge_upper_trendline",
+        "comparator": ">=",
+        "value": 116700.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "stochastic_cross_up",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_makes_new_lows",
+        "type": "price_breach",
+        "level": 116200.0,
+        "comparator": "<"
+      },
+      {
+        "id": "macd_histogram_negative",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 0.0
+      },
+      {
+        "id": "rsi_breaks_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 116200.0,
+      "basis": "below_falling_wedge_support",
+      "distance_ticks": 455
+    },
+    "take_profit": [
+      {
+        "price": 116950.0,
+        "basis": "minor_resistance",
+        "rr": 1.2
+      },
+      {
+        "price": 117200.0,
+        "basis": "breakout_target",
+        "rr": 2.2
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor price action closely for breakout above wedge resistance near 116700",
+    "Wait for MACD crossover and RSI > 50 to confirm entry",
+    "Use volume spike on breakout as confirmation for long entry",
+    "Place stop below 116200 if entry triggers"
+  ],
+  "improvements": "Add Bollinger Bands or EMA for dynamic breakout confirmation. Track breakout candle size relative to ATR once available. Avoid early entries until MACD shifts."
+}

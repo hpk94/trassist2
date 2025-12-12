@@ -1,0 +1,122 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-18 14:28",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 90929.5,
+    "resistance": 91405.4
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 37.7,
+      "status": "neutral",
+      "signal": "bearish"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 38.0,
+      "d_percent": 40.0,
+      "signal": "downtrend"
+    },
+    "VOLUME": {
+      "current": 2.76411942,
+      "average": null,
+      "ratio": null,
+      "trend": "low"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 90397.0,
+        "to": 91405.4
+      },
+      "levels": {
+        "0.236": 90929.5,
+        "0.382": 90635.0,
+        "0.5": 90397.0,
+        "0.618": 90159.1,
+        "0.786": 89820.3
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": true,
+    "notes": "RSI and Stoch both indicate bearish momentum, low volume, strong support at Fib 0.236"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_bearish",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_downtrend",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_238",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 90929.5,
+        "basis": "fib_0.236"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_resistance",
+        "type": "price_breach",
+        "level": 91405.4
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91410.0,
+      "basis": "above_resistance"
+    },
+    "take_profit": [
+      {
+        "price": 90900.0,
+        "basis": "below_support",
+        "rr": 1.0
+      },
+      {
+        "price": 90600.0,
+        "basis": "fib_0.382",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for a short entry if RSI remains below 50",
+    "Ensure price action stays below Fibonacci 0.236",
+    "Set stop-loss above resistance at 91410.0"
+  ],
+  "improvements": "Increase observation of volume and look for breakout confirmations"
+}

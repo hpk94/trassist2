@@ -66,7 +66,7 @@ Analyse the trader’s provided chart(s) and market data to:
 3. **Indicator Analysis**  
    - **RSI14**: overbought ≥ 70, oversold ≤ 30.  
    - **Stochastic 14_3_3**: use %K, %D for momentum confirmation.  
-   - **Volume**: analyse relative strength vs. average.  
+   - **Volume**: analyse relative strength vs. average. **IMPORTANT**: For volume checklist items, `value` must be a NUMERIC ratio threshold (e.g., 1.0 = at average, 1.2 = 20% above average), and `baseline` must be set to "average".  
    - **Fibonacci**: extract anchors (swing low → swing high or vice versa) and compute numeric retracement/extension levels; use these to confirm entry/TP zones.  
    - **Optional**: BB squeeze/breakouts, MACD crossovers, ATR volatility.  
 
@@ -78,7 +78,16 @@ Analyse the trader’s provided chart(s) and market data to:
 5. **Opening Signal Specification**  
    - Produce a **deterministic checklist** of measurable conditions.  
    - Include **core confirmations** first, **secondary confirmations** optional.  
-   - Include **invalidation rules** that immediately nullify the setup.  
+   - Include **invalidation rules** that immediately nullify the setup.
+   - **CRITICAL - VALID INDICATOR NAMES**: You MUST use ONLY these exact indicator names in checklists:
+     - `RSI14` - RSI 14-period (value 0-100)
+     - `STOCH14_3_3` - Stochastic %K value (for threshold checks) or use with `d_percent` for crossover
+     - `VOLUME` - Volume (use with `baseline: "average"` for ratio comparisons)
+     - `PRICE` - Current close price (for price level checks)
+     - `MACD12_26_9` - MACD line value (for threshold checks or crossovers)
+     - `BB20_2_PercentB` - Bollinger Bands %B (0-1 range, <0.2 = near lower, >0.8 = near upper)
+     - `BB20_2_Bandwidth` - Bollinger Bands bandwidth (volatility measure)
+   - **DO NOT USE** variations like PRICE_CLOSE, PRICE_HIGH, MACD_HISTOGRAM, etc. Use only the names listed above.
 
 6. **Retest Preference**  
    - Prefer entries after a measurable retest of a Fib or key level within 1–3 candles.  
@@ -129,7 +138,7 @@ Trader must provide:
     "core_checklist": [
       {"id": "rsi_recover", "indicator": "RSI14", "comparator": ">=", "value": 30.0, "observed_on_candle": 0},
       {"id": "stoch_recover", "indicator": "STOCH14_3_3", "comparator": ">=", "value": 20.0, "observed_on_candle": 0},
-      {"id": "volume_above_avg", "indicator": "VOLUME", "comparator": ">", "value": 1.0, "baseline": "average"}
+      {"id": "volume_above_avg", "indicator": "VOLUME", "comparator": ">", "value": 1.0, "baseline": "average", "_comment": "value is the RATIO threshold (1.0 = at average, 1.5 = 50% above), baseline must be 'average'"}
     ],
     "secondary_checklist": [
       {"id": "price_above_fib_0382", "indicator": "PRICE", "comparator": ">=", "value": 45600.0, "basis": "fib_0.382"}
@@ -320,7 +329,7 @@ You will receive:
 3. **Indicator Analysis**  
    - **RSI14**: Use market data value (overbought ≥ 70, oversold ≤ 30)
    - **Stochastic 14_3_3**: Use market data %K, %D for momentum confirmation
-   - **Volume**: Use market data for accurate volume analysis vs. average
+   - **Volume**: Use market data for accurate volume analysis vs. average. **IMPORTANT**: For volume checklist items, `value` must be a NUMERIC ratio threshold (e.g., 1.0 = at average, 1.2 = 20% above average), and `baseline` must be set to "average"
    - **Fibonacci**: Use extracted anchors and levels, but validate against current price action
    - **Optional**: BB squeeze/breakouts, MACD crossovers, ATR volatility from market data
 
@@ -334,6 +343,15 @@ You will receive:
    - Include **core confirmations** first, **secondary confirmations** optional.  
    - Include **invalidation rules** that immediately nullify the setup.  
    - Use real market data values for all thresholds
+   - **CRITICAL - VALID INDICATOR NAMES**: You MUST use ONLY these exact indicator names in checklists:
+     - `RSI14` - RSI 14-period (value 0-100)
+     - `STOCH14_3_3` - Stochastic %K value (for threshold checks) or use with `d_percent` for crossover
+     - `VOLUME` - Volume (use with `baseline: "average"` for ratio comparisons)
+     - `PRICE` - Current close price (for price level checks)
+     - `MACD12_26_9` - MACD line value (for threshold checks or crossovers)
+     - `BB20_2_PercentB` - Bollinger Bands %B (0-1 range, <0.2 = near lower, >0.8 = near upper)
+     - `BB20_2_Bandwidth` - Bollinger Bands bandwidth (volatility measure)
+   - **DO NOT USE** variations like PRICE_CLOSE, PRICE_HIGH, MACD_HISTOGRAM, etc. Use only the names listed above.
 
 6. **Retest Preference**  
    - Prefer entries after a measurable retest of a Fib or key level within 1–3 candles.  
@@ -381,7 +399,7 @@ You will receive:
     "core_checklist": [
       {"id": "rsi_recover", "indicator": "RSI14", "comparator": ">=", "value": 30.0, "observed_on_candle": 0},
       {"id": "stoch_recover", "indicator": "STOCH14_3_3", "comparator": ">=", "value": 20.0, "observed_on_candle": 0},
-      {"id": "volume_above_avg", "indicator": "VOLUME", "comparator": ">", "value": 1.0, "baseline": "average"}
+      {"id": "volume_above_avg", "indicator": "VOLUME", "comparator": ">", "value": 1.0, "baseline": "average", "_comment": "value is the RATIO threshold (1.0 = at average, 1.5 = 50% above), baseline must be 'average'"}
     ],
     "secondary_checklist": [
       {"id": "price_above_fib_0382", "indicator": "PRICE", "comparator": ">=", "value": 45600.0, "basis": "fib_0.382"}

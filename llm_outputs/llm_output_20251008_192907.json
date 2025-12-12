@@ -1,0 +1,167 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-08 17:28",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 123000.0,
+    "resistance": 126200.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 65.52,
+      "status": "neutral",
+      "signal": "overbought_rejection"
+    },
+    "MACD12_26_9": {
+      "macd_line": 198.8057,
+      "signal_line": 206.4276,
+      "histogram": -7.6218,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 3.39806787,
+      "average": null,
+      "ratio": null,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "rising_wedge: in_between, wedge pattern forming during a bullish rally with weakening RSI and MACD turning bearish"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_wedge_containment",
+        "type": "price_level",
+        "level": "wedge_upper_trendline",
+        "comparator": "<=",
+        "value": 123950.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_turning_down",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "bearish_volume_decline",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "previous_bull_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "breakout_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_upper_trendline",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_reenter_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "close_above_123950",
+        "type": "price_level",
+        "level": "key_intraday_resistance",
+        "comparator": ">"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 123980.0,
+      "basis": "above_wedge_high",
+      "distance_ticks": 150
+    },
+    "take_profit": [
+      {
+        "price": 123300.0,
+        "basis": "mid-channel support",
+        "rr": 1.5
+      },
+      {
+        "price": 123000.0,
+        "basis": "next support zone",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for breakout or rejection at wedge upper trendline (123950)",
+    "Enter short if price remains within wedge, MACD is bearish, and RSI confirms weakening momentum",
+    "Adjust stop above most recent high ~123980",
+    "Consider TP1 at 123300 and TP2 at 123000 depending on volume flow and bear follow through"
+  ],
+  "improvements": "Add ATR14 and stochastic for additional confluence on reversal signal; consider watching volume divergence more closely on support bounces before exit or TP shift."
+}

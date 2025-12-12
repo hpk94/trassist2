@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.87,
+  "reasons": [
+    "Checklist fully passed including key signals: RSI above 50, MACD bullish crossover, volume above average",
+    "Valid structural confluence: price near and retesting ascending channel support",
+    "No invalidation conditions triggered"
+  ],
+  "warnings": [
+    "Current price (112830.43) is slightly elevated above support entry band, reducing immediate RR slightly"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 112800.0,
+    "stop_loss": 112470.0,
+    "take_profits": [
+      {
+        "price": 112970.0,
+        "portion": 0.5
+      },
+      {
+        "price": 113250.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Use standard size for 1.5R setups due to solid checklist score and retest confirmation"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

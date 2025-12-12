@@ -1,0 +1,35 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI recovery above 40 supports momentum",
+    "Stochastic cross above 20 indicates bullish signal",
+    "Price above Fibonacci 0.236 level confirms setup",
+    "No invalidations triggered and checklist fully met"
+  ],
+  "warnings": [
+    "Current RSI is moderate, not strongly oversold; monitor for sustained momentum"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 102569.72,
+    "stop_loss": 102100.0,
+    "take_profits": [
+      {
+        "price": 103000.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital based on stop loss distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

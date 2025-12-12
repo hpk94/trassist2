@@ -1,0 +1,129 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-28 09:07",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 91169.41,
+    "resistance": 91955.35
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 68.84,
+      "status": "overbought",
+      "signal": "bearish_reversal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 89.44,
+      "d_percent": 73.65,
+      "signal": "overbought_cross"
+    },
+    "VOLUME": {
+      "current": 67240,
+      "average": 50000,
+      "ratio": 1.34,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 90424.6,
+        "to": 91914.1
+      },
+      "levels": {
+        "0.236": 90776.1,
+        "0.382": 90993.6,
+        "0.5": 91169.4,
+        "0.618": 91345.1,
+        "0.786": 91555.3,
+        "1.618": 92834.6
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "channel_breakout",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "RSI and Stoch indicate potential reversal; volume confirms breakout"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_70",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_cross",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">",
+        "value": 80.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0.618",
+        "type": "price_breach",
+        "level": 91345.1
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 91169.4,
+      "basis": "below_fib_0.5"
+    },
+    "take_profit": [
+      {
+        "price": 91955.35,
+        "basis": "resistance",
+        "rr": 1.5
+      },
+      {
+        "price": 92834.6,
+        "basis": "fib_extension_1.618",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Check for RSI to drop below 70.",
+    "Look for a Stochastic cross above 80.",
+    "Confirm volume remains above average.",
+    "Enter long if conditions align; exit if closes below 91345.1."
+  ],
+  "improvements": "Monitor for volatility as indicated by volume; consider MACD alignment for added confidence."
+}

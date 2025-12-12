@@ -1,0 +1,128 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-16 12:17",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 95447.1,
+    "resistance": 95887.9
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 65.31,
+      "status": "neutral",
+      "signal": "upward"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 70.0,
+      "d_percent": 65.0,
+      "signal": "upward"
+    },
+    "VOLUME": {
+      "current": 4.21774298,
+      "average": 3.5,
+      "ratio": 1.2,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 95447.1,
+        "to": 96961.7
+      },
+      "levels": {
+        "0.236": 95713.0,
+        "0.382": 95887.9,
+        "0.5": 96104.5,
+        "0.618": 96321.1
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "core_alignment_score": 0.85,
+    "confluence_with_pattern": false,
+    "notes": "RSI and Stochastic are both indicating upward momentum with increasing volume, holding above Fib 0.236 level."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_upward",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_upward",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 60.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 95713.0,
+        "basis": "fib_0.236"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0236",
+        "type": "price_breach",
+        "level": "fib_0.236"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 95447.1,
+      "basis": "below_swing_low"
+    },
+    "take_profit": [
+      {
+        "price": 96104.5,
+        "basis": "fib_0.5",
+        "rr": 1.2
+      },
+      {
+        "price": 96321.1,
+        "basis": "fib_0.618",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long position if current conditions persist.",
+    "Monitor for RSI reaching overbought levels for potential exit.",
+    "Adjust stop loss to minimize risk if the trend reverses."
+  ],
+  "improvements": "Look for additional confirmations with Bollinger Bands or MACD to strengthen the signal."
+}

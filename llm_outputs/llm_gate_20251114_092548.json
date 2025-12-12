@@ -1,0 +1,35 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI above 40 confirms recovery",
+    "Price above fib 0.382 level",
+    "No invalidations triggered",
+    "Checklist fully passed"
+  ],
+  "warnings": [
+    "No retest of key support level observed"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 97061.18,
+    "stop_loss": 96150.0,
+    "take_profits": [
+      {
+        "price": 98300.0,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade based on stop loss distance from entry"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

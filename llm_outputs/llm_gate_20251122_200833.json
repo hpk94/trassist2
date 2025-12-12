@@ -1,0 +1,37 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.2,
+  "reasons": [
+    "Checklist passed and no invalidations triggered"
+  ],
+  "warnings": [
+    "Current price has already surpassed the primary take profit level of 84700.0, making the original setup invalid",
+    "RSI of 69.6 is elevated and may indicate overbought conditions, conflicting with a long entry"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 84748.59,
+    "stop_loss": 84300.0,
+    "take_profits": [
+      {
+        "price": 84700.0,
+        "portion": 0.5
+      },
+      {
+        "price": 85000.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 0.0,
+    "position_size_note": "Trade not recommended due to price exceeding TP and high RSI"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

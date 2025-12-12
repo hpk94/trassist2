@@ -1,0 +1,171 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-12 09:51",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 111200.0,
+    "resistance": 111850.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 51.31,
+      "status": "neutral",
+      "signal": "consolidation"
+    },
+    "MACD12_26_9": {
+      "macd_line": 1.3538,
+      "signal_line": -5.3536,
+      "histogram": 6.7074,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 0.18925609,
+      "average": 0.1,
+      "ratio": 1.89,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "falling_channel",
+      "candle_index": 0,
+      "confidence": 0.88
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.74,
+    "notes": "falling_channel: in_between"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_neutral_zone",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "falling_channel_valid",
+        "type": "price_level",
+        "level": "channel_support",
+        "comparator": ">=",
+        "value": 111450.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "price_within_channel",
+        "type": "price_level",
+        "level": "channel_resistance",
+        "comparator": "<=",
+        "value": 111800.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_ratio_1.5plus",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">=",
+        "value": 1.5,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_channel_low",
+        "type": "price_breach",
+        "level": "channel_support",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 111430.0,
+      "basis": "below_channel_support",
+      "distance_ticks": 150
+    },
+    "take_profit": [
+      {
+        "price": 111750.0,
+        "basis": "mid-channel resistance",
+        "rr": 1.4
+      },
+      {
+        "price": 111850.0,
+        "basis": "channel breakout resistance",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor bullish MACD and RSI stabilization above 40",
+    "Confirm price remains within falling channel",
+    "Enter long if volume continues to exceed 1.5x average and MACD crosses up",
+    "Invalidate on breakdown below channel support or MACD bear cross"
+  ],
+  "improvements": "Add Fibonacci retracement anchors to gauge micro pullback levels and align entry with 0.382 or 0.5 level support; consider using Bollinger Middle as retest anchor if available"
+}

@@ -1,0 +1,177 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-14 12:29",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 115701.1,
+    "resistance": 115860.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 49.13,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "MACD12_26_9": {
+      "macd_line": 1.5948,
+      "signal_line": 0.4507,
+      "histogram": 1.1441,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": null,
+      "average": null,
+      "ratio": null,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.62,
+    "notes": "Price forming symmetrical triangle following sharp downtrend, suggesting potential bearish continuation; MACD crossover shows short-term bullishness but RSI is neutral and overall trend context favors downside."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "triangle_breakout_downside",
+        "type": "pattern_breakout",
+        "pattern": "symmetrical_triangle",
+        "direction": "down",
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_decreasing",
+        "type": "indicator_trend",
+        "indicator": "MACD12_26_9",
+        "property": "histogram",
+        "direction": "decreasing",
+        "lookback_candles": 3,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_below_fib_0_236",
+        "type": "price_level",
+        "level": "fib_0_236",
+        "comparator": "<",
+        "value": 115799.6,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_spike_breakout",
+        "type": "volume_spike",
+        "lookback_candles": 3,
+        "multiplier": 1.5,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_triangle",
+        "type": "price_breach",
+        "level": "symmetrical_triangle_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_above_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 60.0
+      },
+      {
+        "id": "macd_bullish_continuation",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "price_breaks_above_fib_0_382",
+        "type": "price_level",
+        "level": "fib_0_382",
+        "comparator": ">=",
+        "value": 115860.6
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115860.6,
+      "basis": "above_fib_0_382_and_triangle",
+      "distance_ticks": 100
+    },
+    "take_profit": [
+      {
+        "price": 115701.1,
+        "basis": "previous_swing_low/support",
+        "rr": 1.3
+      },
+      {
+        "price": 115620.0,
+        "basis": "projected move from triangle height",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for downside break of triangle pattern",
+    "Ensure RSI14 < 50 and MACD histogram decreasing",
+    "Look for volume spike confirmation on breakout",
+    "Short if breakdown confirms below 115799.6 with volume",
+    "Set stop-loss above triangle and Fib 0.382 (115860.6)",
+    "Target prior low (115701.1) and projected extension"
+  ],
+  "improvements": "Wait for confirmed breakout with increasing volume, avoid premature entries within consolidation. Add BB20_2 and Stochastic for extra confluence."
+}

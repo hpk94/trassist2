@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI below 70 indicates no overbought condition",
+    "Price is below upper channel level, supporting long setup",
+    "No invalidations triggered and checklist alignment is strong"
+  ],
+  "warnings": [
+    "Current price is near upper channel, may limit upside",
+    "RSI is moderately high, monitor for reversal"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 87351.29,
+    "stop_loss": 85950.0,
+    "take_profits": [
+      {
+        "price": 87550.0,
+        "portion": 0.5
+      },
+      {
+        "price": 88000.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.85,
+  "reasons": [
+    "RSI below overbought threshold supports long entry",
+    "Stochastic not overbought and volume trend increasing",
+    "Price above Fibonacci support level and no invalidations triggered"
+  ],
+  "warnings": [
+    "RSI is approaching overbought; monitor for potential reversal"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 104714.92,
+    "stop_loss": 103846.3,
+    "take_profits": [
+      {
+        "price": 105162.4,
+        "portion": 0.5
+      },
+      {
+        "price": 105300.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.5,
+    "position_size_note": "Risk per trade should not exceed 1% of account equity"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

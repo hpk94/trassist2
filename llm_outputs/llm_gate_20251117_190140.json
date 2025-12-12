@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI recovery above 30 confirmed",
+    "Stochastic recovery above 20 confirmed",
+    "No invalidations triggered",
+    "Checklist alignment strong"
+  ],
+  "warnings": [
+    "No explicit retest of key level observed",
+    "RSI still near oversold territory"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92739.22,
+    "stop_loss": 92000.0,
+    "take_profits": [
+      {
+        "price": 93870.5,
+        "portion": 0.5
+      },
+      {
+        "price": 94388.2,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

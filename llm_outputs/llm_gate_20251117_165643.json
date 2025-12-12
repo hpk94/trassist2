@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.9,
+  "reasons": [
+    "RSI is neutral at 43.04, supporting short bias",
+    "Price is below fib_0.382 level, aligning with setup",
+    "No invalidations triggered, checklist passed"
+  ],
+  "warnings": [
+    "Current price is near take profit level 94033.0, may limit upside"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 94025.6,
+    "stop_loss": 94550.0,
+    "take_profits": [
+      {
+        "price": 94033.0,
+        "portion": 0.5
+      },
+      {
+        "price": 93753.8,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

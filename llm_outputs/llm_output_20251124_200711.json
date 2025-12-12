@@ -1,0 +1,135 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-24 19:06",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 87865.87,
+    "resistance": 89076.4
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 70.36,
+      "status": "overbought",
+      "signal": "overbought"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 87.0,
+      "d_percent": 85.5,
+      "signal": "bearish_divergence"
+    },
+    "VOLUME": {
+      "current": 2.7195,
+      "average": 2.5,
+      "ratio": 1.09,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 85225.9,
+        "to": 88785.4
+      },
+      "levels": {
+        "0.236": 85904.6,
+        "0.382": 86323.9,
+        "0.5": 86663.6,
+        "0.618": 87002.2,
+        "0.786": 87465.8,
+        "1.618": 89876.4
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI is overbought, but volume is increasing with ascending channel structure."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0
+      ],
+      "lookback_seconds": 60
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_bearish_divergence",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": "previous_k_percent",
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_increasing",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_upper_channel",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 88800.0,
+        "basis": "channel_resistance"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_channel",
+        "type": "price_breach",
+        "level": "channel_resistance"
+      },
+      {
+        "id": "rsi_persistently_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 75.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89000.0,
+      "basis": "above_channel"
+    },
+    "take_profit": [
+      {
+        "price": 87865.87,
+        "basis": "support_retest",
+        "rr": 1.5
+      },
+      {
+        "price": 87002.2,
+        "basis": "fib_0.618",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch RSI for potential downturn",
+    "Validate if Stochastic confirms bearish divergence",
+    "Enter short if price respects channel resistance",
+    "Immediate exit if channel breaches"
+  ],
+  "improvements": "Consider overlaying Bollinger Bands for volatility context to enhance decision-making."
+}

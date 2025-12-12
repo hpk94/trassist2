@@ -94,9 +94,9 @@ class HyperliquidConfig:
     def get_slippage() -> float:
         """Get slippage tolerance for limit orders (percentage as decimal)"""
         try:
-            return float(os.getenv("HYPERLIQUID_SLIPPAGE", "0.001"))  # 0.1% default for limit
+            return float(os.getenv("HYPERLIQUID_SLIPPAGE", "0.005"))  # 0.5% default for limit
         except:
-            return 0.001
+            return 0.005
     
     @staticmethod
     def get_limit_tif() -> str:
@@ -619,12 +619,12 @@ def calculate_position_size(
     price: Optional[float] = None
 ) -> Optional[float]:
     """
-    Calculate position size based on account balance and leverage.
+    Calculate position size based on AVAILABLE margin and leverage.
     
     Args:
         coin: The coin to trade (e.g., "BTC")
         leverage: Leverage to use
-        account_fraction: Fraction of account to use (1.0 = 100%, 0.5 = 50%)
+        account_fraction: Fraction of available margin to use (1.0 = 100%, 0.5 = 50%)
         price: Current price (if None, fetches from exchange)
     
     Returns:
@@ -636,7 +636,14 @@ def calculate_position_size(
         return None
     
     account_value = account.get("account_value", 0)
-    if account_value <= 0:
+    margin_used = account.get("total_margin_used", 0)
+    
+    # Use AVAILABLE margin, not total account value
+    # Available = Total Account Value - Margin Already Used
+    available_margin = account_value - margin_used
+    
+    if available_margin <= 0:
+        print(f"⚠️ No available margin: account_value=${account_value:,.2f}, margin_used=${margin_used:,.2f}")
         return None
     
     # Get current price
@@ -645,12 +652,19 @@ def calculate_position_size(
     if not price or price <= 0:
         return None
     
+    # Apply safety buffer (90% of available to account for fees, slippage, buffer requirements)
+    MARGIN_SAFETY_BUFFER = 0.90
+    safe_available = available_margin * MARGIN_SAFETY_BUFFER
+    
     # Calculate position value with leverage
-    # Position Value = Account Value * Leverage * Account Fraction
+    # Position Value = Available Margin * Leverage * Account Fraction
     # Position Size = Position Value / Price
-    usable_balance = account_value * account_fraction
+    usable_balance = safe_available * account_fraction
     position_value = usable_balance * leverage
     position_size = position_value / price
+    
+    print(f"📊 Position calc: available=${available_margin:,.2f} (used=${margin_used:,.2f}), "
+          f"safe=${safe_available:,.2f}, leverage={leverage}x → {position_size:.6f} {coin}")
     
     # Round to appropriate precision
     position_size = round_size(position_size, coin)
@@ -690,13 +704,58 @@ def get_max_position_size(coin: str) -> Dict[str, Any]:
     }
 
 
+def get_max_notional_for_leverage(leverage: int) -> float:
+    """
+    Get the maximum notional value allowed for a given leverage on Hyperliquid.
+    
+    Hyperliquid has tiered position limits based on leverage:
+    - Leverage >= 25x: $15M max (limit orders up to 10x = $150M)
+    - Leverage 20-24x: $5M max
+    - Leverage 10-19x: $2M max
+    - Leverage < 10x: $500K max
+    
+    We use conservative limits (market order limits) for safety.
+    """
+    if leverage >= 25:
+        return 15_000_000
+    elif leverage >= 20:
+        return 5_000_000
+    elif leverage >= 10:
+        return 2_000_000
+    else:
+        return 500_000
+
+
+def cap_size_for_leverage(size: float, price: float, leverage: int, coin: str = "BTC") -> tuple[float, bool]:
+    """
+    Cap position size to stay within Hyperliquid's max notional limits.
+    
+    Returns:
+        tuple: (capped_size, was_capped)
+    """
+    notional = size * price
+    max_notional = get_max_notional_for_leverage(leverage)
+    
+    # Apply 95% safety margin to avoid edge cases
+    safe_max_notional = max_notional * 0.95
+    
+    if notional > safe_max_notional:
+        capped_size = safe_max_notional / price
+        capped_size = round_size(capped_size, coin)
+        print(f"⚠️ Position size capped: {size:.6f} → {capped_size:.6f} {coin} (max notional ${safe_max_notional:,.0f} at {leverage}x)")
+        return capped_size, True
+    
+    return size, False
+
+
 def open_position_limit(
     coin: str,
     direction: str,
     size: Optional[float] = None,
     price: Optional[float] = None,
     reduce_only: bool = False,
-    account_fraction: float = 1.0
+    account_fraction: float = 1.0,
+    max_retries: int = 3
 ) -> Dict[str, Any]:
     """
     Open a position using a LIMIT order.
@@ -708,6 +767,7 @@ def open_position_limit(
         price: Limit price. If None, calculates based on current price + slippage
         reduce_only: Whether this is a reduce-only order
         account_fraction: Fraction of account to use when calculating size (1.0 = 100%)
+        max_retries: Number of retries with reduced size if position limit error occurs
     
     Returns:
         Dict with order result
@@ -755,88 +815,190 @@ def open_position_limit(
     
     price = round_price(price, coin)
     
-    # Check and set leverage
-    leverage_result = check_and_set_leverage(coin)
-    if leverage_result.get("error"):
-        print(f"⚠️ Leverage warning: {leverage_result['error']}")
+    # Cap size based on leverage limits BEFORE placing order
+    size, was_capped = cap_size_for_leverage(size, price, leverage, coin)
     
     # Get TIF setting
     tif = HyperliquidConfig.get_limit_tif()
     
-    try:
-        print(f"📝 Placing LIMIT order: {'BUY' if is_buy else 'SELL'} {size} {coin} @ ${price:,.2f}")
-        
-        response = exchange.order(
-            name=coin,
-            is_buy=is_buy,
-            sz=size,
-            limit_px=price,
-            order_type={"limit": {"tif": tif}},
-            reduce_only=reduce_only
-        )
-        
-        result = {
-            "ok": False,  # Will set to True only if order is confirmed
-            "response": response,
-            "order_details": {
-                "coin": coin,
-                "direction": direction,
-                "size": size,
-                "limit_price": price,
-                "tif": tif,
-                "reduce_only": reduce_only
-            },
-            "leverage": leverage_result
-        }
-        
-        # Parse response for order ID and status
-        if response:
-            status = response.get("status")
-            result["order_status"] = status
-            print(f"   Response status: {status}")
+    # Set initial leverage
+    leverage_result = check_and_set_leverage(coin)
+    if leverage_result.get("error"):
+        print(f"⚠️ Leverage warning: {leverage_result['error']}")
+    
+    # Retry loop for position size and leverage errors
+    retry_count = 0
+    original_size = size
+    original_leverage = leverage
+    leverage_reductions = 0
+    max_leverage_reductions = 3  # Will try: 40x → 30x → 20x → 10x
+    
+    while retry_count <= max_retries:
+        try:
+            print(f"📝 Placing LIMIT order: {'BUY' if is_buy else 'SELL'} {size} {coin} @ ${price:,.2f} ({leverage}x)")
             
-            if status == "ok":
-                statuses = response.get("response", {}).get("data", {}).get("statuses", [])
-                print(f"   Order statuses: {statuses}")
+            response = exchange.order(
+                name=coin,
+                is_buy=is_buy,
+                sz=size,
+                limit_px=price,
+                order_type={"limit": {"tif": tif}},
+                reduce_only=reduce_only
+            )
+            
+            result = {
+                "ok": False,  # Will set to True only if order is confirmed
+                "response": response,
+                "order_details": {
+                    "coin": coin,
+                    "direction": direction,
+                    "size": size,
+                    "limit_price": price,
+                    "tif": tif,
+                    "reduce_only": reduce_only
+                },
+                "leverage": {
+                    "target_leverage": leverage,
+                    "original_leverage": original_leverage,
+                    "was_reduced": leverage < original_leverage
+                }
+            }
+            
+            # Parse response for order ID and status
+            if response:
+                status = response.get("status")
+                result["order_status"] = status
+                print(f"   Response status: {status}")
                 
-                for s in statuses:
-                    if "resting" in s:
-                        result["order_id"] = s["resting"].get("oid")
-                        result["filled"] = False
-                        result["ok"] = True  # Confirmed: order is resting
-                        print(f"   ✅ Order resting (OID: {result['order_id']})")
-                    elif "filled" in s:
-                        result["filled"] = True
-                        result["fill_info"] = s["filled"]
-                        result["ok"] = True  # Confirmed: order filled
-                        print(f"   ✅ Order filled immediately")
-                    elif "error" in s:
-                        result["error"] = s.get("error", "Unknown order error")
-                        print(f"   ❌ Order error: {result['error']}")
-                
-                # If we didn't find resting or filled status, check if there was no status at all
-                if not result.get("ok") and not result.get("error"):
-                    result["error"] = f"No order confirmation received. Statuses: {statuses}"
-                    print(f"   ❌ No order confirmation in response")
+                if status == "ok":
+                    statuses = response.get("response", {}).get("data", {}).get("statuses", [])
+                    print(f"   Order statuses: {statuses}")
+                    
+                    should_retry = False
+                    for s in statuses:
+                        if "resting" in s:
+                            result["order_id"] = s["resting"].get("oid")
+                            result["filled"] = False
+                            result["ok"] = True  # Confirmed: order is resting
+                            print(f"   ✅ Order resting (OID: {result['order_id']})")
+                        elif "filled" in s:
+                            result["filled"] = True
+                            result["fill_info"] = s["filled"]
+                            result["ok"] = True  # Confirmed: order filled
+                            print(f"   ✅ Order filled immediately")
+                        elif "error" in s:
+                            error_msg = s.get("error", "Unknown order error")
+                            result["error"] = error_msg
+                            print(f"   ❌ Order error: {error_msg}")
+                            
+                            # Check if this is a position size or margin error
+                            is_position_size_error = "exceed maximum position size" in error_msg.lower() or "maximum position" in error_msg.lower()
+                            is_margin_error = "insufficient margin" in error_msg.lower()
+                            
+                            if is_position_size_error or is_margin_error:
+                                retry_count += 1
+                                
+                                # For position size errors, try reducing leverage first (more effective)
+                                if is_position_size_error and leverage_reductions < max_leverage_reductions:
+                                    leverage_reductions += 1
+                                    leverage = max(10, original_leverage - (leverage_reductions * 10))  # 40→30→20→10
+                                    
+                                    # Set new leverage on exchange
+                                    print(f"   📉 Reducing leverage: {original_leverage}x → {leverage}x (attempt {leverage_reductions}/{max_leverage_reductions})")
+                                    set_result = set_leverage(coin, leverage)
+                                    if set_result.get("ok"):
+                                        print(f"   ✅ Leverage set to {leverage}x")
+                                    else:
+                                        print(f"   ⚠️ Failed to set leverage: {set_result.get('error')}")
+                                    
+                                    # Recalculate position size for new leverage
+                                    size = calculate_position_size(coin, leverage, account_fraction, price)
+                                    if size:
+                                        size = round_size(size, coin)
+                                        print(f"   📊 Recalculated size: {size:.6f} {coin} at {leverage}x")
+                                    else:
+                                        size = round_size(original_size * 0.5, coin)  # Fallback: halve the size
+                                    
+                                    should_retry = True
+                                    break
+                                elif retry_count <= max_retries:
+                                    # Reduce size by 20% each retry (for margin errors or after leverage reductions exhausted)
+                                    reduction_factor = 0.8 ** retry_count
+                                    size = round_size(original_size * reduction_factor, coin)
+                                    print(f"   🔄 Retrying with reduced size: {size:.6f} {coin} (attempt {retry_count}/{max_retries})")
+                                    should_retry = True
+                                    break  # Exit for loop to retry
+                    
+                    if should_retry:
+                        continue  # Retry the while loop
+                    
+                    # If we didn't find resting or filled status, check if there was no status at all
+                    if not result.get("ok") and not result.get("error"):
+                        result["error"] = f"No order confirmation received. Statuses: {statuses}"
+                        print(f"   ❌ No order confirmation in response")
+                else:
+                    result["error"] = f"API returned status: {status}"
+                    print(f"   ❌ API error status: {status}")
             else:
-                result["error"] = f"API returned status: {status}"
-                print(f"   ❌ API error status: {status}")
-        else:
-            result["error"] = "No response received from exchange"
-            print(f"   ❌ No response from exchange")
-        
-        # Send Telegram notification for limit orders (not reduce-only/close orders)
-        if not reduce_only and result.get("ok"):
-            try:
-                _send_limit_order_notification(result, leverage)
-            except Exception as notif_err:
-                print(f"⚠️ Failed to send order notification: {notif_err}")
-        
-        return result
-        
-    except Exception as e:
-        print(f"   ❌ Order exception: {e}")
-        return {"ok": False, "error": str(e)}
+                result["error"] = "No response received from exchange"
+                print(f"   ❌ No response from exchange")
+            
+            # Send Telegram notification for limit orders (not reduce-only/close orders)
+            if not reduce_only:
+                try:
+                    if result.get("ok"):
+                        _send_limit_order_notification(result, leverage)
+                    elif result.get("error"):
+                        _send_order_failed_notification(
+                            coin=coin,
+                            direction=direction,
+                            size=size,
+                            price=price,
+                            leverage=leverage,
+                            error=result.get("error", "Unknown error"),
+                            retry_count=retry_count,
+                            max_retries=max_retries
+                        )
+                except Exception as notif_err:
+                    print(f"⚠️ Failed to send order notification: {notif_err}")
+            
+            return result
+            
+        except Exception as e:
+            print(f"   ❌ Order exception: {e}")
+            if not reduce_only:
+                try:
+                    _send_order_failed_notification(
+                        coin=coin,
+                        direction=direction,
+                        size=size,
+                        price=price,
+                        leverage=leverage,
+                        error=str(e),
+                        retry_count=retry_count,
+                        max_retries=max_retries
+                    )
+                except:
+                    pass
+            return {"ok": False, "error": str(e)}
+    
+    # Max retries exceeded
+    error_msg = f"Max retries ({max_retries}) exceeded for position size limit. Final size attempted: {size}"
+    if not reduce_only:
+        try:
+            _send_order_failed_notification(
+                coin=coin,
+                direction=direction,
+                size=size,
+                price=price,
+                leverage=leverage,
+                error=error_msg,
+                retry_count=retry_count,
+                max_retries=max_retries
+            )
+        except:
+            pass
+    return {"ok": False, "error": error_msg}
 
 
 def _send_limit_order_notification(order_result: Dict[str, Any], leverage: int):
@@ -876,6 +1038,48 @@ def _send_limit_order_notification(order_result: Dict[str, Any], leverage: int):
         
     except Exception as e:
         print(f"⚠️ Notification error: {e}")
+
+
+def _send_order_failed_notification(
+    coin: str,
+    direction: str,
+    size: float,
+    price: float,
+    leverage: int,
+    error: str,
+    retry_count: int = 0,
+    max_retries: int = 0
+):
+    """Send Telegram notification when an order fails"""
+    try:
+        from telegram_bot import get_bot
+        
+        bot = get_bot()
+        if not bot.bot_token or not bot.chat_id:
+            return
+        
+        direction_emoji = "🟢" if direction.upper() == "LONG" else "🔴"
+        
+        # Calculate position value
+        position_value = size * price if size and price else 0
+        
+        msg = f"<b>❌ ORDER FAILED</b>\n\n"
+        msg += f"{direction_emoji} <b>{coin}</b> {direction.upper()}\n"
+        msg += f"━━━━━━━━━━━━━━━━━━━━\n"
+        msg += f"<b>Size:</b> {size:.6f} {coin}\n"
+        msg += f"<b>Price:</b> ${price:,.2f}\n"
+        msg += f"<b>Value:</b> ${position_value:,.2f}\n"
+        msg += f"<b>Leverage:</b> {leverage}x\n"
+        msg += f"━━━━━━━━━━━━━━━━━━━━\n"
+        msg += f"<b>Error:</b> {error}\n"
+        
+        if retry_count > 0:
+            msg += f"\n🔄 <i>Retried {retry_count}/{max_retries} times</i>"
+        
+        bot.send_message(msg)
+        
+    except Exception as e:
+        print(f"⚠️ Failed notification error: {e}")
 
 
 # ============================================================================
@@ -1245,9 +1449,7 @@ def close_position_market(coin: str) -> Dict[str, Any]:
         if not current_price:
             return {"ok": False, "error": "Could not get current price"}
         
-        slippage = 0.01  # 1% for market orders
-        
-        print(f"🚨 Emergency close {coin}: {'BUY' if is_buy else 'SELL'} {size} @ market (slippage: {slippage*100}%)")
+        slippage = 0.01  # 1% slippage for limit price
         
         # Calculate limit price with slippage (market_open doesn't support reduce_only)
         if is_buy:
@@ -1255,12 +1457,17 @@ def close_position_market(coin: str) -> Dict[str, Any]:
         else:
             limit_px = current_price * (1 - slippage)
         
+        # Round price to valid tick size (Hyperliquid requires max 5 significant figures)
+        limit_px = round_price(limit_px, coin)
+        
+        print(f"🚨 Close {coin}: {'BUY' if is_buy else 'SELL'} {size} @ limit ${limit_px:,.2f} (GTC)")
+        
         response = exchange.order(
             name=coin,
             is_buy=is_buy,
             sz=size,
             limit_px=limit_px,
-            order_type={"limit": {"tif": "Ioc"}},  # Immediate-or-cancel for market-like behavior
+            order_type={"limit": {"tif": "Gtc"}},  # Good-till-cancelled for maker fees
             reduce_only=True
         )
         
@@ -1271,8 +1478,9 @@ def close_position_market(coin: str) -> Dict[str, Any]:
                 "coin": coin,
                 "direction": "BUY" if is_buy else "SELL",
                 "size": size,
+                "limit_px": limit_px,
                 "original_position": position["direction"],
-                "method": "market"
+                "method": "limit_gtc"
             }
         }
         

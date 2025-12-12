@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI within neutral range supports short setup",
+    "Price near Fibonacci resistance level",
+    "No invalidations triggered and checklist fully passed"
+  ],
+  "warnings": [
+    "No clear retest of resistance level; entry is slightly below intended level",
+    "Monitor for any sudden bullish momentum shifts"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 95717.64,
+    "stop_loss": 95750.0,
+    "take_profits": [
+      {
+        "price": 95000.0,
+        "portion": 0.5
+      },
+      {
+        "price": 94500.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.25,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

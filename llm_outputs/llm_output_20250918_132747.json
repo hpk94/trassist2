@@ -1,0 +1,75 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-18 11:27",
+  "trend_direction": "range-bound",
+  "support_resistance": {
+    "support": 117030.0,
+    "resistance": 117330.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 53.32,
+      "status": "neutral",
+      "signal": "momentum_consolidating"
+    },
+    "MACD12_26_9": {
+      "macd_line": 22.5904,
+      "signal_line": 23.4526,
+      "histogram": -0.8622,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": 6.08662066,
+      "average": null,
+      "ratio": null,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [],
+  "validity_assessment": {
+    "alignment_score": 0.42,
+    "notes": "Price is range-bound; MACD bearish crossover and RSI flat suggest indecision; no strong bullish or bearish trigger"
+  },
+  "opening_signal": {
+    "direction": "none",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [],
+    "invalidation": [],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": null,
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Avoid entries in the middle of a tight consolidation range",
+    "Wait for breakout above 117330 or breakdown below 117030 with volume spike as confirmation",
+    "Use MACD crossover and RSI14 extreme zones for directional bias upon breakout"
+  ],
+  "improvements": "Add Bollinger Bands and Fibonacci retracement/extension from the most recent swing high/low to assess real-time volatility compression and breakout potential. Avoid trading in tight ranges where MACD is crossing over flat and RSI is mid-range. Focus on volume expansion."
+}

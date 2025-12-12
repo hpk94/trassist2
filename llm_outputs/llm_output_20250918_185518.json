@@ -1,0 +1,157 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-18 16:54",
+  "trend_direction": "sideways_consolidation",
+  "support_resistance": {
+    "support": 117200.0,
+    "resistance": 117800.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 43.33,
+      "status": "neutral",
+      "signal": "weak_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": -16.6293,
+      "signal_line": -3.9594,
+      "histogram": -12.67,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 1.84751089,
+      "average": null,
+      "ratio": null,
+      "trend": "unclear"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": -1,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "Price is consolidating inside an ascending triangle pattern, typically bullish, but technical indicators (RSI and MACD) show weak momentum and a bearish crossover. No breakout yet."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_positive",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 0.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "ascending_triangle_breakout",
+        "type": "price_breakout",
+        "level": "117800.0",
+        "comparator": ">=",
+        "value": 117800.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_spike",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.5,
+        "baseline": "recent_average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_below_uptrend_line",
+        "type": "price_breach",
+        "level": "116950.0",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_continues_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 116950.0,
+      "basis": "below_uptrend_line",
+      "distance_ticks": 60
+    },
+    "take_profit": [
+      {
+        "price": 118200.0,
+        "basis": "measured_move_target",
+        "rr": 2.2
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for clear breakout candle above 117800.0",
+    "Confirm MACD histogram flips above zero",
+    "RSI should hold above 40 for valid long",
+    "Use breakout volume confirmation to validate momentum"
+  ],
+  "improvements": "Add Bollinger Bands and MACD histogram trendline to confirm momentum; wait for volume breakout above triangle and MACD histogram flip to green."
+}

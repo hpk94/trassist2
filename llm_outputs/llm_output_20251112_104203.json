@@ -1,0 +1,143 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-09 10:41",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 104238.4,
+    "resistance": 105002.1
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 45.11,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35.2,
+      "d_percent": 28.1,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 3363040.83,
+      "average": 2500000,
+      "ratio": 1.34,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 103002.8,
+        "to": 105002.1
+      },
+      "levels": {
+        "0": 105002.1,
+        "0.236": 104530.3,
+        "0.382": 104238.4,
+        "0.5": 104002.5,
+        "0.618": 103766.5,
+        "0.786": 103430.7
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 105300.5,
+      "middle": 104500.0,
+      "lower": 103700.0,
+      "price_position": "middle"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_channel_breakout",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Volume increase with price near Fib 0.382 support, potential channel breakout"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_neutral",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 20.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_support_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 104238.4
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0382",
+        "type": "price_breach",
+        "level": "fib_0.382"
+      },
+      {
+        "id": "rsi_below_40",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 103766.5,
+      "basis": "below_fib_0618"
+    },
+    "take_profit": [
+      {
+        "price": 105002.1,
+        "basis": "recent_high",
+        "rr": 1.5
+      },
+      {
+        "price": 105300.5,
+        "basis": "BB_upper",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI14 for recovery above 40.",
+    "Ensure price holds above Fib 0.382.",
+    "Look for increasing volume to confirm breakout potential.",
+    "Invalidate entry if price closes below Fib 0.382."
+  ],
+  "improvements": "Watch for Stochastic aligning with RSI; use BB for volatility confirmation."
+}

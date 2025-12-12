@@ -1,0 +1,120 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-12 11:40",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 104522.1,
+    "resistance": 104991.4
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 47.65,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 30.0,
+      "d_percent": 40.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 1.89787367,
+      "average": 2.0,
+      "ratio": 0.95,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 102850.7,
+        "to": 104991.4
+      },
+      "levels": {
+        "0.236": 104522.1,
+        "0.382": 104231.8,
+        "0.5": 103997.1,
+        "0.618": 103762.4,
+        "0.786": 103428.4
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "Rising wedge pattern near Fib 0.236, RSI recovering from neutral."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover_under_50",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "wedge_confirmation",
+        "pattern": "rising_wedge",
+        "confidence": 0.75,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_upper"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 105300.5,
+      "basis": "above_wedge"
+    },
+    "take_profit": [
+      {
+        "price": 104231.8,
+        "basis": "fib_0.382",
+        "rr": 1.5
+      },
+      {
+        "price": 103997.1,
+        "basis": "fib_0.5",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI14 for a decline below 50.",
+    "Look for breakdown of rising wedge pattern.",
+    "Consider short entry if volume supports move.",
+    "Invalidate if price breaks above wedge."
+  ],
+  "improvements": "Watch for volume breakout confirmation; consider MACD for additional momentum context."
+}

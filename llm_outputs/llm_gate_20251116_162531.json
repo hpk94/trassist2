@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI below 55 supports bearish momentum",
+    "Price below fib_0.236 level aligns with short setup",
+    "No invalidations triggered and checklist passed"
+  ],
+  "warnings": [
+    "Volume below average may reduce momentum confirmation",
+    "1-minute timeframe increases noise risk"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 95372.05,
+    "stop_loss": 95600.0,
+    "take_profits": [
+      {
+        "price": 95000.0,
+        "portion": 0.5
+      },
+      {
+        "price": 94600.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

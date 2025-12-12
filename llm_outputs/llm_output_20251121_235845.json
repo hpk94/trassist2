@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-21 23:57",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 83734.8,
+    "resistance": 85548.9
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 41.25,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35,
+      "d_percent": 30,
+      "signal": "recovering"
+    },
+    "VOLUME": {
+      "current": 1889080.28,
+      "average": 1500000,
+      "ratio": 1.26,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 80600.0,
+        "to": 85548.9
+      },
+      "levels": {
+        "0.236": 84428.2,
+        "0.382": 83734.8,
+        "0.5": 83174.5,
+        "0.618": 82614.1,
+        "0.786": 81816.3
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 85700.0,
+      "middle": 84000.0,
+      "lower": 82300.0,
+      "price_position": "middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": -79.6387,
+      "signal_line": -81.0014,
+      "histogram": 1.3627
+    },
+    "ATR14": {
+      "value": 120.5
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Volume increasing, RSI and Stoch recovering from oversold, potential ascending triangle breakout"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_recover",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 83734.8,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_0382",
+        "type": "price_breach",
+        "level": "fib_0.382"
+      },
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 83500.0,
+      "basis": "below_fib_0382"
+    },
+    "take_profit": [
+      {
+        "price": 85000.0,
+        "basis": "recent_swing_high",
+        "rr": 1.5
+      },
+      {
+        "price": 86000.0,
+        "basis": "triangle_target",
+        "rr": 2.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for RSI14 and Stochastic to confirm recovery above threshold",
+    "Confirm volume sustains above average",
+    "Enter long if price confirms above Fib 0.382 and triangle pattern holds",
+    "Invalidate if price closes below Fib 0.382"
+  ],
+  "improvements": "Monitor potential breakout from ascending triangle; consider MACD for additional momentum confirmation"
+}

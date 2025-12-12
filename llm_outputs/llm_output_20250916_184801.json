@@ -1,0 +1,178 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-16 16:45",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115770.0,
+    "resistance": 115990.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 58.81,
+      "status": "neutral",
+      "signal": "bullish_rebound"
+    },
+    "MACD12_26_9": {
+      "macd_line": 25.9208,
+      "signal_line": 23.2641,
+      "histogram": 2.6567,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 5.65,
+      "average": 4.8,
+      "ratio": 1.18,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.81,
+    "notes": "Price consolidating in ascending triangle just above 0.5 and 0.618 Fib levels while RSI and MACD show bullish signs, supported by rising volume."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib_0_5",
+        "type": "price_level",
+        "level": "fib_0_5",
+        "comparator": ">=",
+        "value": 115770.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "ascending_triangle_breakout",
+        "type": "pattern_breakout",
+        "pattern": "ascending_triangle",
+        "confirmed_by_candle": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0_5",
+        "type": "price_breach",
+        "level": 115770.0,
+        "comparator": "<"
+      },
+      {
+        "id": "macd_turns_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_45",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 45.0
+      },
+      {
+        "id": "volume_drops_below_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average_volume"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115718.0,
+      "basis": "below_0.382_fib",
+      "distance_ticks": 128.0
+    },
+    "take_profit": [
+      {
+        "price": 115990.0,
+        "basis": "fib_1.0",
+        "rr": 1.7
+      },
+      {
+        "price": 116262.0,
+        "basis": "fib_1.618",
+        "rr": 3.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry valid above 115821.9 breakout level (0.618 Fib + triangle resistance)",
+    "Confirm MACD > signal and RSI > 50 upon breakout",
+    "Place SL below 0.382 Fib at 115718.0",
+    "Target 115990.0 (R1) and 116262.0 (R2)",
+    "Confirm price strength with volume > avg during breakout candle"
+  ],
+  "improvements": "Add Bollinger Bands or VWAP for retest validation. Consider measuring breakout candle body > 50% of triangle range for strength confirmation."
+}

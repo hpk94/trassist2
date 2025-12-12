@@ -1,0 +1,203 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-16 16:45",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115770.0,
+    "resistance": 115895.8
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 60.24,
+      "status": "neutral",
+      "signal": "bullish_momentum_building"
+    },
+    "MACD12_26_9": {
+      "macd_line": 25.2562,
+      "signal_line": 22.8289,
+      "histogram": 2.4273,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": 116050.0,
+      "middle": 115720.0,
+      "lower": 115390.0,
+      "price_position": "above_middle",
+      "bandwidth": "normal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 58.3,
+      "d_percent": 55.7,
+      "signal": "rising_momentum"
+    },
+    "VOLUME": {
+      "current": 4.88510713,
+      "average": 4.32,
+      "ratio": 1.13,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 57.5,
+      "period": 14,
+      "volatility": "low"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bullish pennant breakout",
+      "candle_index": 0,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.82,
+    "notes": "MACD crossover and RSI momentum confirm price breakout from symmetrical triangle around 0.618 Fib level"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_confirms_bullish_momentum",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 55.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_breaks_above_triangle_resistance",
+        "type": "price_level",
+        "level": "resistance_line",
+        "comparator": ">",
+        "value": 115820.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "confirmed_bullish_pattern",
+        "type": "candle_pattern",
+        "pattern": "bullish_pennant_breakout",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "price_above_fib_0618",
+        "type": "price_level",
+        "level": "fib_0618",
+        "anchors": {
+          "from": 115549.9,
+          "to": 115990.0
+        },
+        "comparator": ">=",
+        "value": 115821.9,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "bollinger_band_confirmation",
+        "type": "price_level",
+        "level": "bollinger_middle",
+        "comparator": ">",
+        "value": 115720.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_bull_flag_support",
+        "type": "price_breach",
+        "level": "fib_05",
+        "comparator": "<",
+        "value": 115770.0
+      },
+      {
+        "id": "macd_histogram_turns_negative",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 0.0
+      },
+      {
+        "id": "rsi_falls_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0
+      },
+      {
+        "id": "volume_drops_below_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<=",
+        "value": 1.0,
+        "baseline": "average_volume"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115745.0,
+      "basis": "below_symmetrical_triangle_low_support",
+      "distance_ticks": 100
+    },
+    "take_profit": [
+      {
+        "price": 115990.0,
+        "basis": "fib_1",
+        "rr": 1.5
+      },
+      {
+        "price": 116262.0,
+        "basis": "fib_1.618_extension",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Setup valid with confirmed bullish breakout and supporting momentum indicators",
+    "Price cleanly broke above triangle resistance with volume thrust",
+    "Enter above 115846.9 with stop-loss below 115745.0 (support/Fib 0.5)",
+    "Partial TP at 115990.0 (Fib 1), extended TP at 116262.0 (Fib 1.618)"
+  ],
+  "improvements": "Watch for price retest of the 0.618 Fib level or triangle breakout line to increase R/R further; add Stoch and BB upper for reversal detection post TP1"
+}

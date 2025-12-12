@@ -1,0 +1,36 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.3,
+  "reasons": [
+    "Current price above invalidation level and RSI not bearish enough"
+  ],
+  "warnings": [
+    "Price above rising wedge top invalidation level, RSI near neutral"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 90448.86,
+    "stop_loss": 90430.0,
+    "take_profits": [
+      {
+        "price": 89850.0,
+        "portion": 0.5
+      },
+      {
+        "price": 89611.6,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade limited to 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": true,
+    "checklist_score": {
+      "met": 3,
+      "total": 4
+    },
+    "context_alignment": "weak"
+  }
+}

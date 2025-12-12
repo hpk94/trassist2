@@ -1,0 +1,161 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-20 19:21",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 115640.0,
+    "resistance": 115700.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 55.32,
+      "status": "neutral",
+      "signal": "mild_bullish_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": 4.7351,
+      "signal_line": 3.0817,
+      "histogram": 1.6534,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 0.90935219,
+      "average": 0.7,
+      "ratio": 1.3,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "Triangle pattern approaching apex with mild bullish RSI and bullish MACD crossover. Volume shows slight increase at breakout attempt."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_above_50_confirming_momentum",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_1_3x_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.2,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_near_triangle_apex",
+        "type": "price_position",
+        "level": "triangle_apex_proximity",
+        "comparator": "<=",
+        "value": 5,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "price_breaks_below_triangle_support",
+        "type": "price_breach",
+        "level": "triangle_lower_trendline",
+        "comparator": "<"
+      },
+      {
+        "id": "rsi_drops_below_45",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 45.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115640.0,
+      "basis": "below_triangle_support",
+      "distance_ticks": 35
+    },
+    "take_profit": [
+      {
+        "price": 115720.0,
+        "basis": "upper_resistance_level",
+        "rr": 1.28
+      },
+      {
+        "price": 115760.0,
+        "basis": "measured_move_of_triangle",
+        "rr": 2.42
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for breakout candle beyond triangle resistance with volume > 1.2x average",
+    "Confirm MACD bullish crossover and RSI > 50 for momentum",
+    "Enter long only once candle closes above triangle with volume spike",
+    "Use stop-loss at 115640, targets at 115720 and 115760"
+  ],
+  "improvements": "Add Bollinger Bands or EMA(20) for structure confirmation and retest filtering. Wait for triangle breakout with real body close above resistance and stop placement should ideally be below most recent swing low or candle base."
+}

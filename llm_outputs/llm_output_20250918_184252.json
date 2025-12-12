@@ -1,0 +1,169 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-18 16:42",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 117400.0,
+    "resistance": 117800.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 59.17,
+      "status": "neutral",
+      "signal": "bullish_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": 4.5228,
+      "signal_line": -2.9581,
+      "histogram": 7.4809,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "n/a",
+      "bandwidth": "n/a"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "n/a"
+    },
+    "VOLUME": {
+      "current": 0.62667545,
+      "average": null,
+      "ratio": null,
+      "trend": "n/a"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "n/a"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": -1,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.81,
+    "notes": "Price is compressing inside an ascending triangle with bullish RSI and MACD signals indicating a potential breakout"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_neutral_bullish",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "ascending_triangle_test",
+        "type": "candle_pattern",
+        "pattern": "ascending_triangle",
+        "candle_index": -1,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "price_near_resistance",
+        "type": "price_level",
+        "level": "resistance",
+        "comparator": "<=",
+        "value": 117800.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "ascending_support_holds",
+        "type": "price_retest",
+        "level": "ascending_trendline",
+        "lookback_candles": 3,
+        "tolerance_ticks": 15,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_trendline",
+        "type": "price_breach",
+        "level": "ascending_trendline",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 117580.0,
+      "basis": "below ascending trendline",
+      "distance_ticks": 115
+    },
+    "take_profit": [
+      {
+        "price": 117850.0,
+        "basis": "resistance breakout projection",
+        "rr": 1.4
+      },
+      {
+        "price": 118050.0,
+        "basis": "measured move target",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor price action near triangle apex for breakout",
+    "Enter long if MACD remains bullish and price holds above trendline",
+    "Use 117580.0 as the stop-loss below triangle support",
+    "Target breakout levels at 117850 and 118050 with partial takes"
+  ],
+  "improvements": "Include Bollinger Bands or Stochastic for confluence on breakout, add volume spike confirmation at breakout"
+}

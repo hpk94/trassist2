@@ -1,0 +1,160 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-21 08:38",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115600.0,
+    "resistance": 115900.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 36.39,
+      "status": "neutral",
+      "signal": "approaching_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": 0.217,
+      "signal_line": 9.3429,
+      "histogram": -9.1259,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 0.53366542,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": "last_10_candles",
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.52,
+    "notes": "Rising wedge breakdown in progress; MACD bearish crossover and RSI nearing oversold suggest bearish momentum short-term. No additional indicator confirmation present."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "wedge_break_downside",
+        "type": "chart_pattern_breakout",
+        "pattern": "rising_wedge",
+        "direction": "down",
+        "pattern_start_index": 10,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "price_breaks_swing_low",
+        "type": "price_breach",
+        "level": 115729.33,
+        "comparator": "<=",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_wedge_top",
+        "type": "price_breach",
+        "level": 115800.0,
+        "comparator": ">="
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_55",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 55.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115800.0,
+      "basis": "above_broken_wedge_trendline",
+      "distance_ticks": 120
+    },
+    "take_profit": [
+      {
+        "price": 115600.0,
+        "basis": "structure_support",
+        "rr": 1.2
+      },
+      {
+        "price": 115500.0,
+        "basis": "measured_move_wedge",
+        "rr": 2.2
+      }
+    ]
+  },
+  "summary_actions": [
+    "Valid wedge breakdown with RSI < 40 and MACD bearish crossover",
+    "Enter short position with SL above wedge high at 115800",
+    "Early TP at structure support near 115600; secondary TP around 115500",
+    "Watch for invalidation if price closes above 115800 or MACD flips bullish"
+  ],
+  "improvements": "Include Bollinger Band and Stochastic indicators next time to cross-confirm bearish pressure. Also, ensure volume context is clear for stronger breakdown confirmation."
+}

@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-15 11:43",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 102153.8,
+    "resistance": 102850.7
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 47,
+      "status": "neutral",
+      "signal": "declining"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 40,
+      "d_percent": 35,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 4.77353586,
+      "average": 5,
+      "ratio": 0.95,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 101854.6,
+        "to": 102637.9
+      },
+      "levels": {
+        "0.236": 102453.0,
+        "0.382": 102338.7,
+        "0.5": 102246.3,
+        "0.618": 102153.8,
+        "0.786": 102022.2
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 102850.7,
+      "middle": 102246.3,
+      "lower": 101854.6,
+      "price_position": "below_middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": 15.0,
+      "signal_line": 28.0,
+      "histogram": -13.0
+    },
+    "ATR14": {
+      "value": 85.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI declining, low volume, descending triangle pattern"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_decline",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_neutral",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_below_fib_0382",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 102338.7,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_swing_high",
+        "type": "price_breach",
+        "level": "swing_high"
+      },
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102654.0,
+      "basis": "above_swing_high"
+    },
+    "take_profit": [
+      {
+        "price": 102153.8,
+        "basis": "fib_0.618",
+        "rr": 1.2
+      },
+      {
+        "price": 101854.6,
+        "basis": "fib_1.0",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm RSI14 stays below 50",
+    "Validate descending triangle pattern",
+    "Enter short if volume remains low",
+    "Invalidate if price closes above swing high"
+  ],
+  "improvements": "Use Fibonacci retracement for better entry; MACD signals confirm bearishness"
+}

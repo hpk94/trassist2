@@ -1,0 +1,139 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-17 10:30",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 95276.3,
+    "resistance": 95979.8
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 49.32,
+      "status": "neutral",
+      "signal": "sideways"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 50.0,
+      "d_percent": 45.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 1179382,
+      "average": 1000000,
+      "ratio": 1.18,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 93935.0,
+        "to": 95979.8
+      },
+      "levels": {
+        "0.236": 95276.3,
+        "0.382": 94841.1,
+        "0.5": 94489.3,
+        "0.618": 94137.5,
+        "0.786": 93636.7
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 95900.0,
+      "middle": 95000.0,
+      "lower": 94000.0,
+      "price_position": "middle"
+    },
+    "MACD12_26_9": {
+      "macd_line": -3.7712,
+      "signal_line": 6.1646,
+      "histogram": -9.9357
+    },
+    "ATR14": {
+      "value": 120.5
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Volume increasing, price in middle of RSI range, wedge pattern forming"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_above_45",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 45.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 94841.1,
+        "basis": "fib_0.382"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": 95276.3
+      },
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 95000.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 95979.8,
+        "basis": "previous_high",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for movement above 50",
+    "Confirm price holds above Fib 0.382",
+    "Enter long on volume validation",
+    "Invalidate if price closes below support level"
+  ],
+  "improvements": "Consider MACD divergence for secondary confirmation; adjust stop-loss tighter under rising wedge support"
+}

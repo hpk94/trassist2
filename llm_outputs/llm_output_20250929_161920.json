@@ -1,0 +1,189 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-29 14:18",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 113400.0,
+    "resistance": 113900.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 59.27,
+      "status": "neutral",
+      "signal": "cooldown_from_overbought"
+    },
+    "MACD12_26_9": {
+      "macd_line": 169.8696,
+      "signal_line": 188.3819,
+      "histogram": -18.5123,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 59.27,
+      "d_percent": 71.55,
+      "signal": "bearish_crossover"
+    },
+    "VOLUME": {
+      "current": 1830000,
+      "average": 1250000,
+      "ratio": 1.46,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 65.7,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_channel",
+      "candle_index": "0 to 20",
+      "confidence": 0.85
+    },
+    {
+      "pattern": "bearish_engulfing",
+      "candle_index": 0,
+      "confidence": 0.78
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.55,
+    "notes": "Bearish engulfing appears at top of rising channel with MACD and Stochastic bearish crossovers. RSI cooling down from overbought. Volume remains elevated."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1
+      ],
+      "lookback_seconds": 120
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 70,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stochastic_bearish",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent < d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "bearish_engulfing",
+        "type": "candle_pattern",
+        "pattern": "bearish_engulfing",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "channel_top_rejection",
+        "type": "price_level",
+        "level": "rising_channel_top",
+        "comparator": "<=",
+        "value": 113880.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_channel",
+        "type": "price_breach",
+        "level": "rising_channel_top",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "stochastic_bullish_cross",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent"
+      },
+      {
+        "id": "two_bull_candles_large",
+        "type": "sequence",
+        "count": 2,
+        "direction": "bullish",
+        "atr_multiple": 1.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113895.0,
+      "basis": "above rising channel resistance and engulfing high",
+      "distance_ticks": 40
+    },
+    "take_profit": [
+      {
+        "price": 113405.0,
+        "basis": "lower channel trendline",
+        "rr": 3.7
+      },
+      {
+        "price": 113200.0,
+        "basis": "previous minor swing low",
+        "rr": 5.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Entry valid for short at top of channel with bearish engulfing",
+    "MACD and Stoch both confirm bearish impulse",
+    "Volume is supporting move, suggesting strong rejection",
+    "Take trade only on confirmation with current candle close below prior support wick"
+  ],
+  "improvements": "In future setups, add Bollinger Bands or EMA20 for dynamic support/resistance confirmation. Confirm engulfing with higher time frame alignment when possible."
+}

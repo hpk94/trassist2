@@ -1,0 +1,150 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-11 21:34",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 102207.4,
+    "resistance": 103256.2
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 27.9,
+      "status": "oversold",
+      "signal": "potential_reversal"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 20.0,
+      "d_percent": 18.0,
+      "signal": "oversold_crossover"
+    },
+    "VOLUME": {
+      "current": 1028000,
+      "average": 980000,
+      "ratio": 1.05,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 104647.6,
+        "to": 102207.4
+      },
+      "levels": {
+        "0.236": 102826.4,
+        "0.382": 103522.1,
+        "0.5": 103737.0,
+        "0.618": 103951.9,
+        "0.786": 104257.9
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 105300.5,
+      "middle": 103256.2,
+      "lower": 102207.4,
+      "price_position": "below_lower"
+    },
+    "MACD12_26_9": {
+      "macd_line": -39.0,
+      "signal_line": -36.0,
+      "histogram": -3.0
+    },
+    "ATR14": {
+      "value": 150.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_wedge_breakout",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.8,
+    "confluence_with_pattern": true,
+    "notes": "RSI oversold, Stochastic crossover, volume steady, potential descending wedge breakout"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_oversold",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_crossover",
+        "indicator": "STOCH14_3_3",
+        "comparator": "xover",
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_increased",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_above_bband_lower",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 102207.4,
+        "basis": "bband_lower"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": 102207.4
+      },
+      {
+        "id": "rsi_falls_further",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 25.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102100.0,
+      "basis": "below_support"
+    },
+    "take_profit": [
+      {
+        "price": 103522.1,
+        "basis": "fib_0.382",
+        "rr": 1.5
+      },
+      {
+        "price": 103737.0,
+        "basis": "fib_0.5",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if RSI14 shows signs of reversal and Stochastic confirms crossover",
+    "Ensure volume supports directional move",
+    "Watch for price holding above the lower BB",
+    "Invalidate if close below 102207.4"
+  ],
+  "improvements": "Consider using MACD divergence for early reversal signs; adjust for ATR-based volatility."
+}

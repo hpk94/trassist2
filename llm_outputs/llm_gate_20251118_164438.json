@@ -1,0 +1,27 @@
+{
+  "should_open": false,
+  "direction": "long",
+  "confidence": 0.0,
+  "reasons": [
+    "Current price 92599.17 exceeds all take profit levels (92083.1, 92400.0), invalidating the setup's risk/reward premise."
+  ],
+  "warnings": [
+    "Trade setup is outdated; price has moved beyond planned targets, making entry irrational."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92599.17,
+    "stop_loss": 90900.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "No position recommended due to invalid context."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

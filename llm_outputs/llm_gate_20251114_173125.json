@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI above 60 and STOCH above 50 indicate bullish momentum",
+    "Price above Fibonacci 0.618 level supports long bias",
+    "Volume above average confirms interest",
+    "No invalidations triggered and checklist fully met"
+  ],
+  "warnings": [
+    "RSI near overbought threshold; monitor for potential reversal",
+    "Limited retest of support level; entry may be slightly late"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 96976.49,
+    "stop_loss": 96750.0,
+    "take_profits": [
+      {
+        "price": 97500.0,
+        "portion": 0.5
+      },
+      {
+        "price": 98000.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

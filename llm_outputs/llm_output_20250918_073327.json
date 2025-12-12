@@ -1,0 +1,189 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-18 05:32",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 117150.0,
+    "resistance": 117700.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 35.76,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -46.8531,
+      "signal_line": -42.9942,
+      "histogram": -3.8589,
+      "signal": "bearish_continuation"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "below_middle_band",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_visible"
+    },
+    "VOLUME": {
+      "current": 2.15614588,
+      "average": 2.1,
+      "ratio": 1.03,
+      "trend": "stable"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": "0-20",
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "Descending triangle pattern with bearish MACD and RSI in neutral-recovery zone. Weak bullish bounce off lower trendline, but overall bearish tone remains intact unless breakout invalidates structure."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_above_30",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_negative",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 0.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_near_triangle_support",
+        "type": "price_level",
+        "level": "triangle_base",
+        "comparator": "<=",
+        "value": 117200.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_above_baseline",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "descending_triangle_valid",
+        "type": "structure_pattern",
+        "pattern": "descending_triangle",
+        "timeframe": "1m",
+        "confirmed": true,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_upper_trendline",
+        "type": "price_breach",
+        "level": "triangle_upper",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_crossover_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 60.0
+      },
+      {
+        "id": "close_above_117500",
+        "type": "price_level",
+        "level": "117500",
+        "comparator": ">"
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 117520.0,
+      "basis": "above_triangle_upper",
+      "distance_ticks": 280
+    },
+    "take_profit": [
+      {
+        "price": 117050.0,
+        "basis": "pattern_measurement",
+        "rr": 1.5
+      },
+      {
+        "price": 116850.0,
+        "basis": "measured_move",
+        "rr": 2.7
+      }
+    ]
+  },
+  "summary_actions": [
+    "Setup: Descending triangle breakdown potential",
+    "Short entry valid if price breaks or retests triangle base (~117200) with volume",
+    "Confirm MACD histogram negative and RSI under 50",
+    "Set SL above descending trendline breakout (~117520)",
+    "Target 117050 (1.5R) and 116850 (2.7R)"
+  ],
+  "improvements": "Add BB for better band compressions; re-check Stochastic for momentum divergence; monitor for retest entry to improve RR."
+}

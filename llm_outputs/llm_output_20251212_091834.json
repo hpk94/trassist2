@@ -1,0 +1,248 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-12-12 08:16",
+  "trend_direction": "neutral",
+  "support_resistance": {},
+  "core_indicators": {
+    "RSI14": {
+      "value": 43.69,
+      "status": "neutral",
+      "signal": "no clear direction"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 0.19355701,
+      "average": null,
+      "ratio": null,
+      "trend": "unavailable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91357.5,
+        "to": null
+      },
+      "levels": {}
+    }
+  },
+  "secondary_indicators": {
+    "MACD12_26_9": {
+      "macd_line": -5.4077,
+      "signal_line": -2.5279,
+      "histogram": -2.8798
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.8
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.5,
+    "confluence_with_pattern": false,
+    "notes": "RSI is neutral with MACD showing negative momentum. High uncertainty due to absence of stochastic and volume benchmarks."
+  },
+  "opening_signal": {
+    "direction": "neutral",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_neutral",
+        "indicator": "RSI14",
+        "comparator": "between",
+        "range": [
+          30.0,
+          70.0
+        ],
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "macd_neutral",
+        "indicator": "MACD12_26_9",
+        "comparator": "below",
+        "value": 0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": null,
+      "basis": "none due to neutral setup"
+    },
+    "take_profit": []
+  },
+  "summary_actions": [
+    "Currently wait; RSI and MACD provide no clear direction.",
+    "Monitor for a breakout above/below triangle with volume increase.",
+    "Assess directional indicators once the breakout occurs."
+  ],
+  "improvements": "Verify volume metrics and assess additional Fibonacci levels upon pattern resolution. Await confirmation from stochastic and MACD reversal.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTC/USDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-12 08:16",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 48.16,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": false
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 91357.5,
+            "to": null
+          },
+          "levels": {},
+          "timeframe_hints": {
+            "yellow": null,
+            "blue": null,
+            "white": null
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.8,
+            "pattern_name": "symmetrical_triangle",
+            "pattern_direction": "neutral",
+            "pattern_type": "continuation",
+            "usual_breakout_direction": "in_direction_of_prior_trend"
+          }
+        ],
+        "support_resistance": {
+          "support": [],
+          "resistance": []
+        },
+        "visual_trend": "neutral",
+        "_pattern_info": [
+          {
+            "name": "symmetrical_triangle",
+            "direction": "neutral",
+            "type": "continuation",
+            "usual_breakout_direction": "in_direction_of_prior_trend",
+            "notes": "Can break either way; prior trend bias plus volume and momentum help gauge direction.",
+            "look": "Converging trendlines with lower highs and higher lows.",
+            "typical_context": "Consolidation after a prior trend (up or down)."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "neutral",
+        "DeepSeek": null,
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.5,
+        "DeepSeek": 0.3,
+        "Gemini": 0.65
+      },
+      "response_times": {
+        "ChatGPT5.1": 17.97275185585022,
+        "DeepSeek": 19.382113695144653,
+        "Gemini": 84.58261799812317
+      },
+      "agreement": false,
+      "consensus_direction": "neutral",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "neutral",
+        "confidence": 0.5,
+        "elapsed_time": 17.97275185585022,
+        "stop_loss": null,
+        "take_profits": [],
+        "max_rr": null
+      },
+      "DeepSeek": {
+        "direction": null,
+        "confidence": 0.3,
+        "elapsed_time": 19.382113695144653,
+        "stop_loss": 92810.0,
+        "take_profits": [
+          {
+            "price": 91100.0,
+            "rr": 1.5
+          }
+        ],
+        "max_rr": 1.5
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.65,
+        "elapsed_time": 84.58261799812317,
+        "stop_loss": 92280.0,
+        "take_profits": [
+          {
+            "price": 92550.0,
+            "rr": 1.5
+          },
+          {
+            "price": 92800.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      }
+    },
+    "errors": {}
+  }
+}

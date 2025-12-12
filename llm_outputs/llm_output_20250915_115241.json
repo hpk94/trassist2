@@ -1,0 +1,178 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-15 09:52",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 114588.0,
+    "resistance": 115093.2
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 39.45,
+      "status": "neutral",
+      "signal": "recovering_from_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": -33.0283,
+      "signal_line": -25.7513,
+      "histogram": -7.277,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 36.05,
+      "d_percent": 39.45,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 6.44865253,
+      "average": null,
+      "ratio": null,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_broadening_wedge_breakout_attempt",
+      "candle_index": 3,
+      "confidence": 0.75
+    },
+    {
+      "pattern": "potential_bear_flag",
+      "candle_index": 0,
+      "confidence": 0.65
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.62,
+    "notes": "RSI is recovering from oversold, but MACD shows a bearish crossover and volume is declining. Price rejected at 0.236 Fibonacci level, indicating weak bullish continuation momentum."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_35",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 35.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_negative_hist",
+        "type": "indicator_threshold",
+        "indicator": "MACD_histogram",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_support",
+        "type": "price_level",
+        "level": "fib_0",
+        "comparator": ">=",
+        "value": 114588.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "descending_wedge_break",
+        "type": "structure_break",
+        "level": "channel_upper_trendline",
+        "comparator": ">",
+        "value": 114950.0,
+        "observed_on_candle": 2,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "stoch_cross_up",
+        "type": "indicator_crossover",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "k_percent > d_percent",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_support",
+        "type": "price_breach",
+        "level": "fib_0",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_hist_above_zero",
+        "type": "indicator_threshold",
+        "indicator": "MACD_histogram",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 0
+      },
+      {
+        "id": "strong_volume_drop",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": "<=",
+        "value": 3.0,
+        "baseline": "average_volume"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 114570.0,
+      "basis": "below_fib_0",
+      "distance_ticks": 235
+    },
+    "take_profit": [
+      {
+        "price": 115093.2,
+        "basis": "0.236_fib",
+        "rr": 1.23
+      },
+      {
+        "price": 115405.8,
+        "basis": "0.382_fib",
+        "rr": 2.38
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for breakout of the descending wedge structure",
+    "Confirm RS14 stays > 35 and MACD histogram begins to flatten",
+    "Enter long on candle close above wedge trendline with bounce confirmation",
+    "Abort if price closes below 114588 or MACD histogram worsens"
+  ],
+  "improvements": "Add Bollinger Bands for context on volatility compression or expansion. Monitor volume spikes confirming breakout. Confirm bullish momentum with MACD line turning up or histogram improving."
+}

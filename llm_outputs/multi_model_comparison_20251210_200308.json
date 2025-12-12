@@ -1,0 +1,728 @@
+{
+  "timestamp": "2025-12-10T20:03:08.105727",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmpsn2xr2yc.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Gemini"
+  ],
+  "results": {
+    "ChatGPT5.1": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-10 19:01",
+        "trend_direction": "neutral",
+        "support_resistance": {
+          "support": null,
+          "resistance": null
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 54.31,
+            "status": "neutral",
+            "signal": "uptrend"
+          },
+          "STOCH14_3_3": null,
+          "VOLUME": {
+            "current": 39.32442034,
+            "average": null,
+            "ratio": null,
+            "trend": "not available"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 91720.6,
+              "to": 93223.0
+            },
+            "levels": {
+              "0.236": 92075.2,
+              "0.382": 92294.5,
+              "0.5": 92471.8,
+              "0.618": 92649.1,
+              "0.786": 92901.5
+            }
+          }
+        },
+        "secondary_indicators": {
+          "BB20_2": null,
+          "MACD12_26_9": {
+            "macd_line": 16.4921,
+            "signal_line": 1.9137,
+            "histogram": 14.5783
+          },
+          "ATR14": null
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 0,
+            "confidence": "inherent due to structure"
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.6,
+          "confluence_with_pattern": true,
+          "notes": "Pattern suggests a short opportunity. RSI and MACD positive but not conflicting strongly with short direction due to channel setup."
+        },
+        "opening_signal": {
+          "direction": "short",
+          "scope": {
+            "candle_indices": [
+              0,
+              1
+            ],
+            "lookback_seconds": 120
+          },
+          "core_checklist": [
+            {
+              "id": "price_near_fib_0.618",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 92649.1,
+              "basis": "fib_0.618"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "volume_unavailable_check_context",
+              "indicator": "VOLUME",
+              "comparator": "custom",
+              "value": "contextual judgement"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "price_breaks_above_channel",
+              "type": "trendline_break",
+              "level": "upper_channel_boundary"
+            },
+            {
+              "id": "rsi_supportive_of_uptrend",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 70.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 93000.0,
+            "basis": "above_recent_high"
+          },
+          "take_profit": [
+            {
+              "price": 92294.5,
+              "basis": "fib_0.382_level",
+              "rr": 1.5
+            },
+            {
+              "price": 92075.2,
+              "basis": "fib_0.236_level",
+              "rr": 2.3
+            }
+          ]
+        },
+        "summary_actions": [
+          "Watch for price action near Fib 0.618 for short entries.",
+          "Confirm breakdown from ascending channel before full entry.",
+          "Monitor RSI for conflicting long signals."
+        ],
+        "improvements": "Consider including stochastic for additional momentum confirmation when available. Use MACD direction for context, not direct signals.",
+        "_analysis_metadata": {
+          "extraction_stage": {
+            "model": "gpt-4o",
+            "extracted_data": {
+              "symbol": "BTCUSDT",
+              "timeframe": "1m",
+              "time_of_screenshot": "2025-12-10 19:01",
+              "visual_indicators": {
+                "RSI14": {
+                  "value": 48.64,
+                  "visible": true
+                },
+                "MACD12_26_9": {
+                  "macd_line": null,
+                  "signal_line": null,
+                  "histogram": null,
+                  "visible": false
+                },
+                "VOLUME": {
+                  "relative": null,
+                  "visible": false
+                }
+              },
+              "fibonacci": {
+                "anchors": {
+                  "from": 91720.6,
+                  "to": 93223.0
+                },
+                "levels": {
+                  "0.236": 92075.2,
+                  "0.382": 92294.5,
+                  "0.5": 92471.8,
+                  "0.618": 92649.1,
+                  "0.786": 92901.5,
+                  "1": 93223.0,
+                  "1.618": 94151.5
+                },
+                "timeframe_hints": {
+                  "yellow": "1m"
+                }
+              },
+              "patterns": [
+                {
+                  "pattern": "ascending_channel",
+                  "candle_index": 0,
+                  "confidence": null,
+                  "pattern_name": "ascending_channel",
+                  "pattern_direction": "short",
+                  "pattern_type": "trend_channel",
+                  "usual_breakout_direction": "often_bearish_down_through_lower_boundary"
+                }
+              ],
+              "support_resistance": {
+                "support": [],
+                "resistance": []
+              },
+              "visual_trend": "neutral",
+              "_pattern_info": [
+                {
+                  "name": "ascending_channel",
+                  "direction": "short",
+                  "type": "trend_channel",
+                  "usual_breakout_direction": "often_bearish_down_through_lower_boundary",
+                  "notes": "As long as price stays within the channel, trend is intact. A decisive break above can signal acceleration, a break below often signals trend weakening or reversal.",
+                  "look": "Price oscillates between two roughly parallel upward-sloping trendlines (higher highs and higher lows).",
+                  "typical_context": "Established uptrend with orderly pullbacks."
+                }
+              ]
+            }
+          },
+          "decision_stage": {
+            "model": "gpt-4o",
+            "had_market_data": true
+          }
+        }
+      },
+      "elapsed_time": 26.180784702301025,
+      "timestamp": "2025-12-10T20:02:08.070078"
+    },
+    "DeepSeek": {
+      "model_name": "gpt-4o",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-10 19:01",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 91357.5,
+          "resistance": 92901.5
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 54.31,
+            "status": "neutral",
+            "signal": "stable"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "not_visible"
+          },
+          "VOLUME": {
+            "current": 39.32442034,
+            "average": null,
+            "ratio": null,
+            "trend": "unavailable"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 91920.6,
+              "to": 93223.0
+            },
+            "levels": {
+              "0.236": 92075.2,
+              "0.382": 92294.5,
+              "0.5": 92471.8,
+              "0.618": 92649.1,
+              "0.786": 92901.5
+            }
+          }
+        },
+        "secondary_indicators": {
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "price_position": "not_visible"
+          },
+          "MACD12_26_9": {
+            "macd_line": 16.4921,
+            "signal_line": 1.9137,
+            "histogram": 14.5783
+          },
+          "ATR14": {
+            "value": null
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 0,
+            "confidence": null
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.5,
+          "confluence_with_pattern": true,
+          "notes": "Pattern direction is bearish, RSI neutral, MACD suggests bullish momentum."
+        },
+        "opening_signal": {
+          "direction": "short",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_stable_below_70",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 70.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "macd_histogram_positive",
+              "indicator": "MACD12_26_9",
+              "comparator": ">",
+              "value": 0.0,
+              "observed_on_candle": 0
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "close_below_fib_0618",
+              "indicator": "PRICE",
+              "comparator": "<",
+              "value": 92649.1,
+              "basis": "fib_0.618"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_above_resistance",
+              "type": "price_breach",
+              "level": 92901.5
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 92901.5,
+            "basis": "above_resistance"
+          },
+          "take_profit": [
+            {
+              "price": 92294.5,
+              "basis": "fib_0.382",
+              "rr": 2.0
+            },
+            {
+              "price": 92075.2,
+              "basis": "fib_0.236",
+              "rr": 3.0
+            }
+          ]
+        },
+        "summary_actions": [
+          "Monitor if price breaks below Fib 0.618 at 92649.1",
+          "Consider short entry if RSI remains below 70 and MACD histogram stays positive",
+          "Validate confluence with ascending channel breakout"
+        ],
+        "improvements": "Use volume trends for confirmation; validate RSI for greater directional clarity.",
+        "_analysis_metadata": {
+          "extraction_stage": {
+            "model": "gpt-4o",
+            "extracted_data": {
+              "symbol": "BTCUSDT",
+              "timeframe": "1m",
+              "time_of_screenshot": "2025-12-10 19:01",
+              "visual_indicators": {
+                "RSI14": {
+                  "value": 48.64,
+                  "visible": true
+                },
+                "STOCH14_3_3": {
+                  "k_percent": null,
+                  "d_percent": null,
+                  "visible": false
+                },
+                "MACD12_26_9": {
+                  "macd_line": null,
+                  "signal_line": null,
+                  "histogram": null,
+                  "visible": false
+                },
+                "VOLUME": {
+                  "relative": null,
+                  "visible": false
+                },
+                "BB20_2": {
+                  "upper": null,
+                  "middle": null,
+                  "lower": null,
+                  "visible": false
+                },
+                "ATR14": {
+                  "value": null,
+                  "visible": false
+                }
+              },
+              "fibonacci": {
+                "anchors": {
+                  "from": 91920.6,
+                  "to": 93223.0
+                },
+                "levels": {
+                  "0.236": 92075.2,
+                  "0.382": 92294.5,
+                  "0.5": 92471.8,
+                  "0.618": 92649.1,
+                  "0.786": 92901.5,
+                  "1": 93223.0,
+                  "1.618": 94151.5
+                },
+                "timeframe_hints": {
+                  "yellow": "1m"
+                }
+              },
+              "patterns": [
+                {
+                  "pattern": "ascending_channel",
+                  "candle_index": 0,
+                  "confidence": null,
+                  "pattern_name": "ascending_channel",
+                  "pattern_direction": "short",
+                  "pattern_type": "trend_channel",
+                  "usual_breakout_direction": "often_bearish_down_through_lower_boundary"
+                }
+              ],
+              "support_resistance": {
+                "support": [
+                  91357.5
+                ],
+                "resistance": [
+                  92901.5,
+                  94151.5
+                ]
+              },
+              "visual_trend": "bullish",
+              "_pattern_info": [
+                {
+                  "name": "ascending_channel",
+                  "direction": "short",
+                  "type": "trend_channel",
+                  "usual_breakout_direction": "often_bearish_down_through_lower_boundary",
+                  "notes": "As long as price stays within the channel, trend is intact. A decisive break above can signal acceleration, a break below often signals trend weakening or reversal.",
+                  "look": "Price oscillates between two roughly parallel upward-sloping trendlines (higher highs and higher lows).",
+                  "typical_context": "Established uptrend with orderly pullbacks."
+                }
+              ]
+            }
+          },
+          "decision_stage": {
+            "model": "gpt-4o",
+            "had_market_data": true
+          }
+        }
+      },
+      "elapsed_time": 28.229877948760986,
+      "timestamp": "2025-12-10T20:02:10.146997"
+    },
+    "Gemini": {
+      "model_name": "gemini/gemini-3-pro-preview",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-10 19:01",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 92649.1,
+          "resistance": 92947.0
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 54.31,
+            "status": "neutral",
+            "signal": "bullish_bias"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "data_unavailable"
+          },
+          "VOLUME": {
+            "current": 39.32,
+            "average": 20.0,
+            "ratio": 1.96,
+            "trend": "high_activity"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 91720.6,
+              "to": 93223.0
+            },
+            "levels": {
+              "0.236": 92075.2,
+              "0.382": 92294.5,
+              "0.5": 92471.8,
+              "0.618": 92649.1,
+              "0.786": 92901.5
+            }
+          }
+        },
+        "secondary_indicators": {
+          "MACD12_26_9": {
+            "macd_line": 16.49,
+            "signal_line": 1.91,
+            "histogram": 14.58
+          },
+          "BB20_2": {
+            "visible": false,
+            "price_position": "unknown"
+          },
+          "ATR14": {
+            "visible": false
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "ascending_channel",
+            "candle_index": 0,
+            "confidence": 0.9,
+            "direction": "short"
+          },
+          {
+            "pattern": "bull_flag_pullback",
+            "candle_index": 0,
+            "confidence": 0.85,
+            "direction": "long"
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.85,
+          "confluence_with_pattern": false,
+          "notes": "Strong conflict between pattern direction (Short) and Momentum (MACD Bullish). Price is holding perfect confluence at Fib 0.618 (92649). Prioritizing immediate trend momentum and support defense over generic channel pattern direction."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "price_above_support",
+              "indicator": "PRICE",
+              "comparator": ">=",
+              "value": 92649.0,
+              "basis": "fib_0.618_support"
+            },
+            {
+              "id": "rsi_bullish_zone",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 50.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "macd_bullish",
+              "indicator": "MACD12_26_9",
+              "comparator": ">",
+              "value": 0.0,
+              "basis": "histogram"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "volume_spike",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.2,
+              "baseline": "average"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "fib_support_loss",
+              "type": "price_close_below",
+              "level": 92640.0
+            },
+            {
+              "id": "rsi_breakdown",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 45.0
+            }
+          ],
+          "is_met": true
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 92450.0,
+            "basis": "below_fib_0.5"
+          },
+          "take_profit": [
+            {
+              "price": 92947.0,
+              "basis": "recent_high",
+              "rr": 1.5
+            },
+            {
+              "price": 93223.0,
+              "basis": "channel_top",
+              "rr": 2.8
+            }
+          ]
+        },
+        "summary_actions": [
+          "Enter Long on successful defense of 92649 (Fib 0.618)",
+          "Verify RSI remains above 50 to confirm bullish bias",
+          "Monitor volume: low volume pullback preferred, high volume bounce needed",
+          "Strict Stop Loss below 0.5 Fib level; invalidates if channel midpoint fails"
+        ],
+        "improvements": "Setup is counter to larger channel pattern hint but aligned with strong immediate momentum (MACD). Ensure tight invalidation if 0.618 breaks.",
+        "_analysis_metadata": {
+          "extraction_stage": {
+            "model": "gemini/gemini-3-pro-preview",
+            "extracted_data": {
+              "symbol": "BTCUSDT",
+              "timeframe": "1m",
+              "time_of_screenshot": "2025-12-10 19:01",
+              "visual_indicators": {
+                "RSI14": {
+                  "value": 55.43,
+                  "ma_value": 48.64,
+                  "visible": true
+                },
+                "STOCH14_3_3": {
+                  "visible": false
+                },
+                "MACD12_26_9": {
+                  "visible": false
+                },
+                "VOLUME": {
+                  "visible": false
+                },
+                "BB20_2": {
+                  "visible": false
+                },
+                "ATR14": {
+                  "visible": false
+                }
+              },
+              "fibonacci": {
+                "anchors": {
+                  "from": 91720.6,
+                  "to": 93223.0
+                },
+                "levels": {
+                  "0": 91720.6,
+                  "0.236": 92075.2,
+                  "0.382": 92294.5,
+                  "0.5": 92471.8,
+                  "0.618": 92649.1,
+                  "0.786": 92901.5,
+                  "1": 93223.0,
+                  "1.618": 94151.5
+                },
+                "timeframe_hints": {
+                  "yellow": "visible",
+                  "blue": "visible"
+                }
+              },
+              "patterns": [
+                {
+                  "pattern": "ascending_channel",
+                  "candle_index": 0,
+                  "confidence": 0.9,
+                  "pattern_name": "ascending_channel",
+                  "pattern_direction": "short",
+                  "pattern_type": "trend_channel",
+                  "usual_breakout_direction": "often_bearish_down_through_lower_boundary"
+                }
+              ],
+              "support_resistance": {
+                "support": [
+                  92649.1,
+                  92471.8,
+                  92294.5,
+                  91720.6
+                ],
+                "resistance": [
+                  92901.5,
+                  93223.0,
+                  94151.5
+                ]
+              },
+              "visual_trend": "bullish",
+              "_pattern_info": [
+                {
+                  "name": "ascending_channel",
+                  "direction": "short",
+                  "type": "trend_channel",
+                  "usual_breakout_direction": "often_bearish_down_through_lower_boundary",
+                  "notes": "As long as price stays within the channel, trend is intact. A decisive break above can signal acceleration, a break below often signals trend weakening or reversal.",
+                  "look": "Price oscillates between two roughly parallel upward-sloping trendlines (higher highs and higher lows).",
+                  "typical_context": "Established uptrend with orderly pullbacks."
+                }
+              ]
+            }
+          },
+          "decision_stage": {
+            "model": "gemini/gemini-3-pro-preview",
+            "had_market_data": true
+          }
+        }
+      },
+      "elapsed_time": 85.76449298858643,
+      "timestamp": "2025-12-10T20:03:07.756828"
+    }
+  },
+  "errors": {},
+  "summary": {
+    "directions": {
+      "ChatGPT5.1": "short",
+      "DeepSeek": "short",
+      "Gemini": "long"
+    },
+    "confidences": {
+      "ChatGPT5.1": 0.6,
+      "DeepSeek": 0.5,
+      "Gemini": 0.85
+    },
+    "response_times": {
+      "ChatGPT5.1": 26.180784702301025,
+      "DeepSeek": 28.229877948760986,
+      "Gemini": 85.76449298858643
+    },
+    "agreement": false,
+    "consensus_direction": "short",
+    "fastest_model": "ChatGPT5.1",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

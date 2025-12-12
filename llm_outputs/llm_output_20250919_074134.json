@@ -1,0 +1,173 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-19 07:40",
+  "trend_direction": "sideways",
+  "support_resistance": {
+    "support": 116600.0,
+    "resistance": 117000.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 54.43,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -13.595,
+      "signal_line": -24.057,
+      "histogram": 10.462,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "n/a"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 43.5,
+      "d_percent": 39.2,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 0.06732959,
+      "average": 0.052,
+      "ratio": 1.3,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "moderate"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.74,
+    "notes": "Symmetrical triangle forming. RSI and stochastic recovering from oversold zone, MACD shows bullish crossover. Volume increasing slightly \u2014 potential breakout brewing."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_k_above_40",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 40.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "breakout_triangle_upper",
+        "type": "price_level",
+        "level": "pattern_resistance",
+        "comparator": ">",
+        "value": 116960.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_triangle_support",
+        "type": "price_breach",
+        "level": "pattern_support",
+        "comparator": "<",
+        "value": 116600.0
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_under_40",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 116580.0,
+      "basis": "below_triangle_support",
+      "distance_ticks": 26
+    },
+    "take_profit": [
+      {
+        "price": 117200.0,
+        "basis": "measured_move_triangle",
+        "rr": 2.27
+      },
+      {
+        "price": 117400.0,
+        "basis": "round_number_resistance",
+        "rr": 3.46
+      }
+    ]
+  },
+  "summary_actions": [
+    "Wait for clear breakout above 116960 resistance level with increased volume",
+    "Ensure RSI stays above 50 and MACD remains in bullish crossover",
+    "Trigger entry only on confirmed breakout from triangle pattern",
+    "Set stop-loss under 116600 triangle support zone"
+  ],
+  "improvements": "Add Bollinger Bands to assess volatility squeeze breakout potential, wait for candle close above triangle to confirm breakout, tighten stop-loss if volatility decreases"
+}

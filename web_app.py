@@ -38,7 +38,10 @@ from telegram_bot import (
     set_analysis_info,
     send_telegram_status,
     send_trade_with_buttons,
-    start_bot
+    start_bot,
+    update_condition_status,
+    update_polling_cycle,
+    clear_condition_status
 )
 
 # Import Hyperliquid trading service
@@ -49,7 +52,8 @@ from services.hyperliquid_service import (
     check_and_set_leverage,
     status as hyperliquid_status,
     HyperliquidConfig,
-    convert_symbol_to_hyperliquid
+    convert_symbol_to_hyperliquid,
+    round_price as hl_round_price
 )
 
 # Load environment variables
@@ -1502,27 +1506,78 @@ def llm_trade_gate_decision(
     checklist_passed: bool,
     invalidation_triggered: bool,
     triggered_conditions: list,
-    recent_candles: list = None
+    recent_candles: list = None,
+    df: pd.DataFrame = None
 ) -> Dict[str, Any]:
-    """Make trade gate decision using LLM"""
+    """Make trade gate decision using LLM
+    
+    Enhanced with additional context based on backtest analysis (Dec 2024):
+    - Recent candle data for momentum assessment
+    - Volatility metrics (ATR, BB bandwidth)
+    - Price change momentum
+    """
     emit_progress("Gate: Initializing LLM trade gate decision...")
     
     # Prepare concise context for the gate
     emit_progress("Gate: Preparing context for gate decision...")
+    
+    # Enhanced: Normalize direction before sending to gate
+    raw_direction = base_llm_output.get("opening_signal", {}).get("direction")
+    normalized_direction = normalize_direction(raw_direction)
+    
+    # Enhanced: Get volatility and momentum data
+    volatility_data = {}
+    momentum_data = {}
+    enhanced_candles = recent_candles or []
+    
+    if df is not None and not df.empty:
+        # Volatility metrics
+        if 'ATR14' in df.columns:
+            volatility_data['atr14'] = float(df['ATR14'].iloc[-1])
+        if 'BB_Bandwidth' in df.columns:
+            volatility_data['bb_bandwidth'] = float(df['BB_Bandwidth'].iloc[-1])
+        
+        # Momentum metrics
+        if len(df) >= 6:
+            price_change_5 = (df['Close'].iloc[-1] - df['Close'].iloc[-6]) / df['Close'].iloc[-6]
+            momentum_data['price_change_5m_pct'] = round(price_change_5 * 100, 3)
+        
+        if len(df) >= 20:
+            vol_ratio = df['Volume'].iloc[-1] / df['Volume'].iloc[-20:].mean()
+            momentum_data['volume_ratio_20'] = round(vol_ratio, 2)
+        
+        # Enhanced: Build recent candles if not provided
+        if not enhanced_candles and len(df) >= 5:
+            for i in range(-5, 0):
+                candle = df.iloc[i]
+                enhanced_candles.append({
+                    'o': round(float(candle['Open']), 2),
+                    'h': round(float(candle['High']), 2),
+                    'l': round(float(candle['Low']), 2),
+                    'c': round(float(candle['Close']), 2),
+                    'v': round(float(candle['Volume']), 4),
+                    'rsi': round(float(candle['RSI14']), 1) if 'RSI14' in df.columns else None,
+                })
+    
     gate_context = {
         "llm_snapshot": {
             "symbol": base_llm_output.get("symbol"),
             "timeframe": base_llm_output.get("timeframe"),
             "leverage": int(os.getenv("MEXC_LEVERAGE", "30")),
             "opening_signal": base_llm_output.get("opening_signal"),
+            "normalized_direction": normalized_direction,  # Added
             "risk_management": base_llm_output.get("risk_management"),
+            "validity_score": base_llm_output.get("validity_assessment", {}).get("core_alignment_score"),  # Added
         },
         "market_values": {
             "current_price": float(market_values.get("current_price", 0) or 0),
             "current_rsi": float(market_values.get("current_rsi", 0) or 0),
             "current_time": str(market_values.get("current_time")),
+            "current_macd_histogram": float(market_values.get("current_macd_histogram", 0) or 0),  # Added
         },
-        "recent_price_action": recent_candles or [],
+        "volatility": volatility_data,  # Added
+        "momentum": momentum_data,  # Added
+        "recent_candles": enhanced_candles,  # Enhanced
         "program_checks": {
             "checklist_passed": bool(checklist_passed),
             "invalidation_triggered": bool(invalidation_triggered),
@@ -1705,12 +1760,26 @@ def check_indicator_threshold(df, condition):
         # Handle special cases for indicators that use different column names
         if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
             current_value = df['MACD_Line'].iloc[-1]
+        elif indicator_name == 'MACD_HISTOGRAM' and 'MACD_Histogram' in df.columns:
+            current_value = df['MACD_Histogram'].iloc[-1]
+        elif indicator_name == 'MACD_LINE' and 'MACD_Line' in df.columns:
+            current_value = df['MACD_Line'].iloc[-1]
+        elif indicator_name == 'MACD_SIGNAL' and 'MACD_Signal' in df.columns:
+            current_value = df['MACD_Signal'].iloc[-1]
         elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
             current_value = df['STOCH_K'].iloc[-1]
         elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
             current_value = df['BB_PercentB'].iloc[-1]
         elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
             current_value = df['BB_Bandwidth'].iloc[-1]
+        elif indicator_name == 'PRICE_CLOSE' and 'Close' in df.columns:
+            current_value = df['Close'].iloc[-1]
+        elif indicator_name == 'PRICE_HIGH' and 'High' in df.columns:
+            current_value = df['High'].iloc[-1]
+        elif indicator_name == 'PRICE_LOW' and 'Low' in df.columns:
+            current_value = df['Low'].iloc[-1]
+        elif indicator_name == 'PRICE_OPEN' and 'Open' in df.columns:
+            current_value = df['Open'].iloc[-1]
         else:
             return False
     else:
@@ -1986,19 +2055,109 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
                 current_value = target_value  # Show as matched
             else:
                 condition_met = check_indicator_threshold(df, i)
-                if indicator_name in df.columns:
+                if indicator_name == 'VOLUME' and df is not None and not df.empty and 'Volume' in df.columns:
+                    # Special handling for VOLUME: show ratio vs average
+                    lookback = i.get('lookback_candles', 20)
+                    baseline = (i.get('baseline') or '').lower()
+                    raw_value = i.get('value')
+                    current_vol = df['Volume'].iloc[-1]
+                    
+                    # Check if this is a ratio-based comparison (proper format)
+                    if baseline in ('average', 'average_volume', 'avg') or raw_value == 'average' or (isinstance(raw_value, str) and 'average' in raw_value.lower()):
+                        window = df['Volume'].iloc[-lookback:] if lookback and lookback > 0 else df['Volume']
+                        avg_vol = window.mean()
+                        if avg_vol and not pd.isna(avg_vol) and avg_vol > 0:
+                            ratio = float(current_vol) / float(avg_vol)
+                            current_value = ratio
+                            # If value is "average" string (malformed), treat as ratio > 1.0
+                            if raw_value == 'average' or (isinstance(raw_value, str) and 'average' in raw_value.lower()):
+                                target_value = 1.0  # Default: above average means ratio > 1.0
+                                comparator = i.get('comparator', '>')
+                                condition_met = evaluate_comparison(ratio, comparator, 1.0)
+                                condition_description = f"VOLUME ratio {comparator} 1.0 (avg)"
+                            else:
+                                target_value = raw_value
+                                comparator = i.get('comparator', '>')
+                                condition_description = f"VOLUME ratio {comparator} {target_value}"
+                        else:
+                            current_value = None
+                            target_value = raw_value
+                            comparator = i.get('comparator', '>')
+                            condition_description = f"VOLUME {comparator} {target_value} (no avg data)"
+                    else:
+                        current_value = current_vol
+                        target_value = raw_value
+                        comparator = i.get('comparator', '>')
+                        condition_description = f"VOLUME {comparator} {target_value}"
+                elif indicator_name == 'PRICE' and df is not None and not df.empty and 'Close' in df.columns:
+                    current_value = df['Close'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '>=')
+                    condition_description = f"PRICE {comparator} {target_value}"
+                elif indicator_name in df.columns:
                     current_value = df[indicator_name].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
                 elif indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
                     current_value = df['MACD_Line'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
                 elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
                     current_value = df['STOCH_K'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
                 elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
                     current_value = df['BB_PercentB'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
                 elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
                     current_value = df['BB_Bandwidth'].iloc[-1]
-                target_value = i.get('value')
-                comparator = i.get('comparator', '==')
-                condition_description = f"{indicator_name} {comparator} {target_value}"
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'MACD_HISTOGRAM' and 'MACD_Histogram' in df.columns:
+                    current_value = df['MACD_Histogram'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'MACD_LINE' and 'MACD_Line' in df.columns:
+                    current_value = df['MACD_Line'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'MACD_SIGNAL' and 'MACD_Signal' in df.columns:
+                    current_value = df['MACD_Signal'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'PRICE_CLOSE' and df is not None and not df.empty and 'Close' in df.columns:
+                    current_value = df['Close'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '>=')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'PRICE_HIGH' and df is not None and not df.empty and 'High' in df.columns:
+                    current_value = df['High'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '>=')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'PRICE_LOW' and df is not None and not df.empty and 'Low' in df.columns:
+                    current_value = df['Low'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '<=')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'PRICE_OPEN' and df is not None and not df.empty and 'Open' in df.columns:
+                    current_value = df['Open'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '>=')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                else:
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '==')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
         elif indicator_type == 'indicator_crossover':
             condition_met = check_indicator_crossover(df, i)
             if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns and 'MACD_Signal' in df.columns:
@@ -2079,6 +2238,191 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
 
     return all_core_met, num_core_met, total_core, any_secondary_met, indicator_details
 
+
+# ============================================================================
+# PRE-VALIDATION FUNCTIONS (Added based on backtest analysis)
+# ============================================================================
+
+def normalize_direction(direction):
+    """Normalize direction to 'long', 'short', or 'neutral'.
+    
+    Based on backtest analysis: DeepSeek sometimes outputs invalid directions
+    like 'NONE' or 'bullish' causing -86% losses on those trades.
+    """
+    if direction is None:
+        return None
+    
+    direction_lower = str(direction).lower().strip()
+    
+    LONG_VARIANTS = {'long', 'bullish', 'buy', 'up'}
+    SHORT_VARIANTS = {'short', 'bearish', 'sell', 'down'}
+    NEUTRAL_VARIANTS = {'neutral', 'none', 'hold', 'wait', ''}
+    
+    if direction_lower in LONG_VARIANTS:
+        return 'long'
+    elif direction_lower in SHORT_VARIANTS:
+        return 'short'
+    elif direction_lower in NEUTRAL_VARIANTS:
+        return 'neutral'
+    else:
+        return None  # Invalid - will reject trade
+
+
+def pre_validate_signal(df, llm_output, emit_progress_fn=None):
+    """Pre-validation checks before full signal validation.
+    
+    Based on backtest analysis:
+    - Invalid directions caused significant losses
+    - Low confidence signals underperformed
+    - RSI extreme entries (long when >75, short when <25) failed often
+    - Missing SL caused uncontrolled losses
+    
+    Returns: (is_valid, issues_list)
+    """
+    issues = []
+    
+    # 1. Check direction is valid
+    raw_direction = llm_output.get('opening_signal', {}).get('direction')
+    direction = normalize_direction(raw_direction)
+    
+    if direction is None:
+        return False, [f"Invalid direction: '{raw_direction}'"]
+    
+    if direction == 'neutral':
+        return False, ["Direction is neutral - no trade signal"]
+    
+    # 2. Check minimum confidence (configurable)
+    min_confidence = float(os.getenv('MIN_SIGNAL_CONFIDENCE', '0.4'))
+    confidence = llm_output.get('validity_assessment', {}).get('core_alignment_score', 0)
+    
+    # Handle string confidence values
+    try:
+        confidence = float(confidence) if confidence is not None else 0
+    except (ValueError, TypeError):
+        confidence = 0
+    
+    if confidence < min_confidence:
+        issues.append(f"Low confidence: {confidence:.2f} (min: {min_confidence})")
+    
+    # 3. Check RSI extremes (don't long overbought, don't short oversold)
+    if df is not None and not df.empty and 'RSI14' in df.columns:
+        rsi = df['RSI14'].iloc[-1]
+        if rsi is not None:
+            if direction == 'long' and rsi > 75:
+                issues.append(f"RSI overbought ({rsi:.1f}) for long entry")
+            if direction == 'short' and rsi < 25:
+                issues.append(f"RSI oversold ({rsi:.1f}) for short entry")
+    
+    # 4. Check SL exists and is reasonable
+    sl_data = llm_output.get('risk_management', {}).get('stop_loss', {})
+    sl_price = sl_data.get('price') if isinstance(sl_data, dict) else None
+    
+    if sl_price is None or (isinstance(sl_price, (int, float)) and sl_price <= 0):
+        issues.append("No valid stop loss defined")
+    else:
+        # Validate SL direction makes sense
+        if df is not None and not df.empty:
+            current_price = df['Close'].iloc[-1]
+            try:
+                sl_price = float(sl_price)
+                if direction == 'long' and sl_price >= current_price:
+                    issues.append(f"SL ({sl_price:.1f}) above entry ({current_price:.1f}) for long")
+                if direction == 'short' and sl_price <= current_price:
+                    issues.append(f"SL ({sl_price:.1f}) below entry ({current_price:.1f}) for short")
+            except (ValueError, TypeError):
+                pass
+    
+    # 5. Check TP exists
+    tp_data = llm_output.get('risk_management', {}).get('take_profit', [])
+    if not tp_data or len(tp_data) == 0:
+        issues.append("No take profit levels defined")
+    
+    # Log pre-validation results
+    if emit_progress_fn:
+        if issues:
+            emit_progress_fn(f"⚠️ Pre-validation issues: {', '.join(issues)}")
+        else:
+            emit_progress_fn(f"✅ Pre-validation passed (direction={direction}, confidence={confidence:.2f})")
+    
+    # Allow proceeding with warnings, but block on critical issues
+    critical_issues = [i for i in issues if 'Invalid direction' in i or 'neutral' in i]
+    if critical_issues:
+        return False, critical_issues
+    
+    return True, issues
+
+
+def validate_atr_risk_levels(df, llm_output, emit_progress_fn=None):
+    """Validate and optionally adjust SL/TP based on ATR volatility.
+    
+    Based on backtest: Many SLs were too tight (hit easily) or too wide (excessive DD).
+    Ideal SL range: 0.5x to 2.5x ATR from entry.
+    """
+    if df is None or df.empty:
+        return llm_output
+    
+    if 'ATR14' not in df.columns:
+        # Calculate ATR if not present
+        df = calculate_atr14(df)
+    
+    atr = df['ATR14'].iloc[-1] if 'ATR14' in df.columns else None
+    if atr is None or atr <= 0:
+        return llm_output
+    
+    current_price = df['Close'].iloc[-1]
+    direction = normalize_direction(llm_output.get('opening_signal', {}).get('direction'))
+    
+    if direction not in ['long', 'short']:
+        return llm_output
+    
+    risk_mgmt = llm_output.get('risk_management', {})
+    sl_data = risk_mgmt.get('stop_loss', {})
+    sl_price = sl_data.get('price') if isinstance(sl_data, dict) else None
+    
+    if sl_price is None:
+        return llm_output
+    
+    try:
+        sl_price = float(sl_price)
+    except (ValueError, TypeError):
+        return llm_output
+    
+    sl_distance = abs(current_price - sl_price)
+    min_sl_distance = 0.5 * atr
+    max_sl_distance = 2.5 * atr
+    
+    adjusted = False
+    adjustment_reason = None
+    
+    if sl_distance < min_sl_distance:
+        # SL too tight - will get stopped out easily
+        if direction == 'long':
+            sl_price = current_price - min_sl_distance
+        else:
+            sl_price = current_price + min_sl_distance
+        adjusted = True
+        adjustment_reason = f"SL too tight ({sl_distance:.1f} < 0.5×ATR={min_sl_distance:.1f})"
+    
+    elif sl_distance > max_sl_distance:
+        # SL too wide - excessive risk
+        if direction == 'long':
+            sl_price = current_price - max_sl_distance
+        else:
+            sl_price = current_price + max_sl_distance
+        adjusted = True
+        adjustment_reason = f"SL too wide ({sl_distance:.1f} > 2.5×ATR={max_sl_distance:.1f})"
+    
+    if adjusted:
+        llm_output['risk_management']['stop_loss']['price'] = sl_price
+        llm_output['risk_management']['stop_loss']['atr_adjusted'] = True
+        llm_output['risk_management']['stop_loss']['adjustment_reason'] = adjustment_reason
+        
+        if emit_progress_fn:
+            emit_progress_fn(f"⚠️ SL adjusted: {adjustment_reason} → new SL: {sl_price:.1f}")
+    
+    return llm_output
+
+
 def invalidation_checker(df, llm_output):
     """Check invalidation conditions from the LLM output"""
     opening = llm_output.get('opening_signal', {}) or {}
@@ -2153,7 +2497,30 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
 
     New pass rule: valid if all core met OR (>=2 core met AND strong pattern).
     Strong pattern: any pattern with confidence >= 0.75.
+    
+    Enhanced with pre-validation based on backtest analysis (Dec 2024):
+    - Direction normalization (handles NONE, bullish, etc.)
+    - Confidence threshold check
+    - RSI extreme filter
+    - ATR-based SL/TP validation
     """
+    # PRE-VALIDATION: Quick checks before full validation
+    pre_valid, pre_issues = pre_validate_signal(df, llm_output, emit_progress_fn)
+    if not pre_valid:
+        # Get market values for return
+        market_values = {}
+        if df is not None and not df.empty:
+            market_values = {
+                'current_price': df['Close'].iloc[-1] if 'Close' in df.columns else None,
+                'current_time': df['Open_time'].iloc[-1] if 'Open_time' in df.columns else None,
+                'current_rsi': df['RSI14'].iloc[-1] if 'RSI14' in df.columns else None,
+            }
+        return False, "pre_validation_failed", pre_issues, market_values
+    
+    # ATR-based SL/TP validation (adjusts if needed)
+    llm_output = validate_atr_risk_levels(df, llm_output, emit_progress_fn)
+    
+    # Original validation continues...
     all_core_met, num_core_met, total_core, _, _ = indicator_checker(df, llm_output, emit_progress_fn)
 
     # Check if any invalidation conditions are triggered
@@ -2233,7 +2600,18 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
     else:
         # Pattern strength check
         patterns = llm_output.get('pattern_analysis', []) or []
-        strong_pattern = any((p.get('confidence') or 0) >= 0.75 for p in patterns)
+        
+        def _safe_confidence(p):
+            """Safely get confidence as float, handling string values like 'unknown'"""
+            conf = p.get('confidence')
+            if conf is None:
+                return 0
+            try:
+                return float(conf)
+            except (ValueError, TypeError):
+                return 0
+        
+        strong_pattern = any(_safe_confidence(p) >= 0.75 for p in patterns)
         if all_core_met or (num_core_met >= 2 and strong_pattern):
             return True, "valid", [], market_values
         return False, "pending", [], market_values
@@ -2264,6 +2642,7 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
             if emit_progress_fn:
                 emit_progress_fn("⏹️ Polling stopped by user request")
             set_analysis_running(False)
+            clear_condition_status()
             send_telegram_status("⏹️ <b>Analysis Stopped</b>\n\nPolling was cancelled by user.")
             return False, "stopped", [], {}
         
@@ -2279,6 +2658,33 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
         if emit_progress_fn:
             emit_progress_fn(f"Polling cycle {cycles + 1}: validating trading signal...")
         
+        # Get indicator details for condition status
+        all_core_met, num_core_met, total_core, any_secondary_met, indicator_details = indicator_checker(current_df, llm_output)
+        
+        # Check invalidation conditions
+        invalidation_triggered, inv_triggered_conditions = invalidation_checker(current_df, llm_output)
+        
+        # Get current market values
+        current_market_values = {}
+        if current_df is not None and not current_df.empty:
+            current_market_values = {
+                'current_price': float(current_df['Close'].iloc[-1]) if 'Close' in current_df.columns else None,
+                'current_rsi': float(current_df['RSI14'].iloc[-1]) if 'RSI14' in current_df.columns else None,
+            }
+        
+        # Update condition status for /status command
+        update_polling_cycle(cycles + 1)
+        update_condition_status({
+            'core_met': num_core_met,
+            'core_total': total_core,
+            'all_core_met': all_core_met,
+            'any_secondary_met': any_secondary_met,
+            'indicators': indicator_details,
+            'invalidation_triggered': invalidation_triggered,
+            'triggered_conditions': inv_triggered_conditions,
+            'market_values': current_market_values
+        })
+        
         signal_valid, signal_status, triggered_conditions, market_values = validate_trading_signal(current_df, llm_output, emit_progress_fn)
 
         if emit_progress_fn:
@@ -2287,6 +2693,7 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
         if signal_status != "pending":
             if emit_progress_fn:
                 emit_progress_fn(f"Polling complete: final status = {signal_status}")
+            clear_condition_status()
             return signal_valid, signal_status, triggered_conditions, market_values
         
         cycles += 1
@@ -2294,6 +2701,7 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
         if max_cycles is not None and cycles >= max_cycles:
             if emit_progress_fn:
                 emit_progress_fn(f"Polling complete: max cycles ({max_cycles}) reached")
+            clear_condition_status()
             return signal_valid, signal_status, triggered_conditions, market_values
 
         # Periodic status updates removed - use /status command to check polling state
@@ -2663,13 +3071,25 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
             emit_progress(f"Step 12: Gate input - Checklist passed: {checklist_passed}, Invalidation triggered: {invalidation_triggered_recent}")
             emit_progress(f"Step 12: Market values - Price: ${market_values.get('current_price', 0):.2f}, RSI: {market_values.get('current_rsi', 0):.2f}")
             
+            # Pass recent_df for enhanced gate context (volatility, momentum)
+            # Note: recent_df is defined in the try block above, check if it exists
+            gate_df = None
+            try:
+                if recent_df is not None and not recent_df.empty:
+                    # Add indicators for gate context
+                    gate_df = calculate_rsi14(recent_df)
+                    gate_df = calculate_atr14(gate_df)
+            except NameError:
+                pass  # recent_df not defined
+            
             gate_result = llm_trade_gate_decision(
                 base_llm_output=llm_output,
                 market_values=market_values,
                 checklist_passed=checklist_passed,
                 invalidation_triggered=invalidation_triggered_recent,
                 triggered_conditions=triggered_conditions,
-                recent_candles=recent_candles
+                recent_candles=recent_candles,
+                df=gate_df  # Enhanced: pass DataFrame for volatility/momentum context
             )
             emit_progress("Step 12 Complete: LLM trade gate decision finished", 12, 14)
             
@@ -2850,10 +3270,23 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                 except Exception as e:
                     emit_progress(f"⚠️ Rejection notification failed: {str(e)}", 14, 14)
         else:
-            emit_progress(f"Step 11 Complete: Signal not valid (status: {signal_status}), skipping trade gate", 11, 14)
+            # Show why the signal failed
+            reasons_list = triggered_conditions if triggered_conditions else ["Unknown reason"]
+            reasons = f" - Reasons: {', '.join(reasons_list)}"
+            emit_progress(f"Step 11 Complete: Signal not valid (status: {signal_status}){reasons}, skipping trade gate", 11, 14)
+            
+            # Send Telegram notification for pre-validation failure
+            reason_bullets = "\n".join([f"• {r}" for r in reasons_list])
+            send_telegram_status(
+                f"⚠️ <b>Pre-Validation Failed</b>\n\n"
+                f"<b>Status:</b> {signal_status}\n\n"
+                f"<b>Reasons:</b>\n{reason_bullets}\n\n"
+                f"No trade will be executed."
+            )
 
         # Mark analysis as complete
         set_analysis_running(False)
+        clear_condition_status()
         send_telegram_status("✅ <b>Analysis Complete</b>\n\nThe analysis has finished.")
 
         return {
@@ -2876,6 +3309,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
         emit_progress(f"ERROR: Analysis failed with {type(e).__name__}: {str(e)}")
         # Mark analysis as stopped on error
         set_analysis_running(False)
+        clear_condition_status()
         send_telegram_status(f"❌ <b>Analysis Failed</b>\n\nError: {str(e)}")
         return {
             "success": False,

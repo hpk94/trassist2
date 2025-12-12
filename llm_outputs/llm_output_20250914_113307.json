@@ -1,0 +1,185 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-14 11:30",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 115879.7,
+    "resistance": 115995.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 70.97,
+      "status": "overbought",
+      "signal": "exit_or_reversal_warning"
+    },
+    "MACD12_26_9": {
+      "macd_line": 27.7678,
+      "signal_line": 25.2196,
+      "histogram": 2.5483,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_visible"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 69.1,
+      "d_percent": 63.4,
+      "signal": "overbought_risk"
+    },
+    "VOLUME": {
+      "current": 0.28434652,
+      "average": 0.195,
+      "ratio": 1.46,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 0,
+      "confidence": 0.85
+    },
+    {
+      "pattern": "rejection_candle_at_resistance",
+      "candle_index": 0,
+      "confidence": 0.78
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "Bullish momentum is present but RSI is overbought and price is near wedge top and Fibonacci 0 level with visible rejection. Potential reversal setup emerging if volume spikes on breakdown."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_overbought",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_but_flat",
+        "type": "indicator_divergence",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "histogram decreasing while RSI rising",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_rejecting_resistance",
+        "type": "price_level",
+        "level": "resistance",
+        "comparator": "<=",
+        "value": 115995.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "rising_wedge",
+        "type": "candle_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "high_volume_rejection",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.3,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "stoch_in_overbought",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 68.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_above_116000",
+        "type": "price_breach",
+        "level": 116000.0,
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_cools_below_65",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 65.0
+      },
+      {
+        "id": "bullish_engulfing_near_top",
+        "type": "candle_pattern",
+        "pattern": "bullish_engulfing",
+        "candle_index": 0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 116010.0,
+      "basis": "above wedge & recent high",
+      "distance_ticks": 28
+    },
+    "take_profit": [
+      {
+        "price": 115879.7,
+        "basis": "0.382 fib",
+        "rr": 3.7
+      },
+      {
+        "price": 115844.1,
+        "basis": "0.5 fib",
+        "rr": 5.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Short entry set up confirmed near wedge resistance and fib 0 level (115995)",
+    "RSI overbought and wedge presents break risk",
+    "High probability reversal if volume sustains on breakdown",
+    "Target 0.382 and 0.5 fib levels for take-profit",
+    "Invalidate if price breaks and closes above 116000 with bullish engulfing"
+  ],
+  "improvements": "Add Bollinger Band confirmation if available. Wait for momentum breakdown like lower low candle inside wedge before aggressive short. Consider retest of 115980 after initial impulse drop for safer entry."
+}

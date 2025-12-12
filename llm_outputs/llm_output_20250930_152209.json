@@ -1,0 +1,151 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-30 08:03",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 113500.0,
+    "resistance": 113850.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 43.63,
+      "status": "neutral",
+      "signal": "mild_bearish_rejection"
+    },
+    "MACD12_26_9": {
+      "macd_line": null,
+      "signal_line": null,
+      "histogram": null,
+      "signal": "not_available"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_visible",
+      "bandwidth": "not_available"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": 40580,
+      "average": 38000,
+      "ratio": 1.07,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "not_available"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "bearish_penant",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.68,
+    "notes": "Bearish pennant forming after a sharp drop, with descending resistance and flat to rising support level. RSI has rejected from mid-level and volume is drying up. Bearish continuation risk present, but confirmation from breakdown is needed."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "bearish_pennant",
+        "type": "chart_pattern",
+        "pattern": "bearish_pennant",
+        "technical_indicator": false,
+        "category": "candle_pattern",
+        "candle_index": 0
+      },
+      {
+        "id": "volume_decreasing",
+        "type": "volume_trend",
+        "lookback_candles": 5,
+        "trend": "decreasing",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "price_rejection_resistance",
+        "type": "price_level",
+        "level": "local_dynamic_resistance",
+        "comparator": "<=",
+        "value": 113750.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_breaks_above_resistance",
+        "type": "price_breach",
+        "level": "113850.0",
+        "comparator": ">"
+      },
+      {
+        "id": "rsi_cross_above_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 50.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113850.0,
+      "basis": "above_resistance",
+      "distance_ticks": 226
+    },
+    "take_profit": [
+      {
+        "price": 113400.0,
+        "basis": "measured_move_down",
+        "rr": 1.3
+      },
+      {
+        "price": 113250.0,
+        "basis": "channel_support_target",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for a confirmed breakdown from the pennant's rising support",
+    "Enter short on bearish candle close below rising support trendline",
+    "Ensure RSI remains under 50 to maintain bearish momentum",
+    "Set stop loss above pennant resistance structure (~113850)",
+    "Target near-term support or channel boundary for TP"
+  ],
+  "improvements": "Add MACD or Bollinger Bands to confirm momentum or volatility compression. Wait for either a breakdown candle with volume spike or RSI dropping below 40 for earlier confirmation. Confirm with 15s-30s chart if scalping micro breakdowns."
+}

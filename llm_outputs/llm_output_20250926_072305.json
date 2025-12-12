@@ -1,0 +1,172 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-26 05:20",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 108800.0,
+    "resistance": 109600.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 71.4,
+      "status": "overbought",
+      "signal": "potential_reversal"
+    },
+    "MACD12_26_9": {
+      "macd_line": 51.3704,
+      "signal_line": 38.714,
+      "histogram": 12.6564,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unknown"
+    },
+    "VOLUME": {
+      "current": 1.92416353,
+      "average": null,
+      "ratio": null,
+      "trend": "unknown"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": -1,
+      "confidence": 0.87
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "MACD bullish momentum and triangle consolidation suggesting breakout setup; however, RSI is entering overbought zone, reducing long entry edge."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "macd_line_gt_signal",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_histogram_positive",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "rsi_lt_75",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 75.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_breaking_triangle_upper",
+        "type": "price_level",
+        "level": "triangle_upper_boundary",
+        "comparator": ">=",
+        "value": 109520.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "volume_spike_detected",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.5,
+        "baseline": "avg_volume_last_20",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "price_rejects_triangle_upper",
+        "type": "price_breach",
+        "level": "triangle_upper_boundary",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bear_cross",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_dumps_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 50.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 109180.0,
+      "basis": "below_triangle_lower_boundary",
+      "distance_ticks": 316.0
+    },
+    "take_profit": [
+      {
+        "price": 109850.0,
+        "basis": "measured_move_target",
+        "rr": 1.1
+      },
+      {
+        "price": 110200.0,
+        "basis": "extension_leg",
+        "rr": 2.2
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for breakout above triangle resistance ~109520 with closing confirmation",
+    "MACD is bullish\u2014momentum is aligned on lower timeframe",
+    "Avoid entries if RSI pushes above 75 or price reverts inside triangle",
+    "Place tight stop below triangle trendline or recent swing low to control risk"
+  ],
+  "improvements": "Add bollinger bands or VWAP to strengthen confluence; wait for volume spike above average to validate breakout power"
+}

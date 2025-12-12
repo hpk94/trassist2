@@ -1,0 +1,120 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-11-15 07:20",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 95636.51,
+    "resistance": 96964.56
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 46.68,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 47.5,
+      "d_percent": 46.8,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 19864.0,
+      "average": null,
+      "ratio": null,
+      "trend": "steady"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 95025.77,
+        "to": 96479.56
+      },
+      "levels": {
+        "0.236": 96120.14,
+        "0.382": 95792.27,
+        "0.5": 95636.51,
+        "0.618": 95480.75
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI recovery, descending triangle, near Fib 0.236 resistance"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover_to_neutral",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_below_fib_0236",
+        "indicator": "PRICE",
+        "comparator": "<",
+        "value": 96120.14,
+        "basis": "fib_0.236"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_above_triangle_resistance",
+        "type": "price_breach",
+        "level": "triangle_resistance"
+      },
+      {
+        "id": "rsi_overbought",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 96120.14,
+      "basis": "above_fib_0.236"
+    },
+    "take_profit": [
+      {
+        "price": 95792.27,
+        "basis": "fib_0.382",
+        "rr": 2.0
+      },
+      {
+        "price": 95636.51,
+        "basis": "fib_0.5",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor the RSI for further recovery below 50",
+    "Confirm price rejection at Fib 0.236",
+    "Enter short if volume supports descending triangle breakdown",
+    "Invalidate on close above triangle resistance"
+  ],
+  "improvements": "Consider adding MACD for additional trend confirmation"
+}

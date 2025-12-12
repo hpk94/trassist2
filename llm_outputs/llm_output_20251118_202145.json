@@ -1,0 +1,123 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-18 19:20",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 92706.9,
+    "resistance": 93786.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 52.65,
+      "status": "neutral",
+      "signal": "recovering"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 57.48,
+      "d_percent": 52.65,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 129650,
+      "average": null,
+      "ratio": null,
+      "trend": "steady"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 91565.6,
+        "to": 93786.0
+      },
+      "levels": {
+        "0.236": 93119.3,
+        "0.382": 92706.9,
+        "0.5": 92373.5,
+        "0.618": 92040.2,
+        "0.786": 91565.6
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.7,
+    "confluence_with_pattern": true,
+    "notes": "Triangle pattern with RSI recovering, awaiting volume spike for confirmation"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_recover",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_recover",
+        "indicator": "STOCH14_3_3",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_above_fib_0382",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 92706.9,
+        "basis": "fib_0.382"
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_below_fib_0618",
+        "type": "price_breach",
+        "level": 92040.2
+      },
+      {
+        "id": "rsi_falling_below_50",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 92040.2,
+      "basis": "below_fib_0.618"
+    },
+    "take_profit": [
+      {
+        "price": 93786.0,
+        "basis": "triangle_target",
+        "rr": 1.5
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for RSI14 >= 50 for recovery confirmation",
+    "Enter long if price sustains above Fib 0.382",
+    "Look for a volume increase to confirm the breakout",
+    "Invalidate trade if price closes below Fib 0.618"
+  ],
+  "improvements": "Monitor volume spikes closely to confirm triangle breakout"
+}

@@ -1,0 +1,40 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.87,
+  "reasons": [
+    "Descending triangle pattern confirmed with price breaching support zone",
+    "RSI at 34.47 signaling bearish momentum but not oversold",
+    "MACD histogram remains negative confirming momentum alignment",
+    "Volume above baseline during breakdown adds credibility to move",
+    "No invalidation conditions triggered"
+  ],
+  "warnings": [
+    "Minor bounce possible near 117200 support retest \u2013 caution if slippage occurs near entry"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 117255.43,
+    "stop_loss": 117520.0,
+    "take_profits": [
+      {
+        "price": 117050.0,
+        "portion": 0.5
+      },
+      {
+        "price": 116850.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.7,
+    "position_size_note": "Size position based on 270\u2013400 tick range to target, SL 265. Use 0.5-1% account risk."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 6,
+      "total": 6
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "Checklist fully met with no invalidations triggered.",
+    "Current RSI indicates neutral to slightly bullish momentum.",
+    "MACD histogram is positive, supporting long entry."
+  ],
+  "warnings": [
+    "Price is close to resistance level, may face short-term retracement."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 89688.65,
+    "stop_loss": 89250.0,
+    "take_profits": [
+      {
+        "price": 89800.0,
+        "portion": 0.5
+      },
+      {
+        "price": 90000.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.5,
+    "position_size_note": "Leverage set at 30x isolated."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 4,
+      "total": 4
+    },
+    "context_alignment": "strong"
+  }
+}

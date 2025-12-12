@@ -1,0 +1,556 @@
+{
+  "timestamp": "2025-12-12T09:37:03.927427",
+  "image_path": "/var/folders/8g/kmpdgr8x5tl8pq4vxqsxdd140000gn/T/tmp2zms6acv.png",
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "models_tested": [
+    "ChatGPT5.1",
+    "DeepSeek",
+    "Gemini"
+  ],
+  "results": {
+    "ChatGPT5.1": {
+      "model_name": "gpt-5.2-2025-12-11",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-12 08:36",
+        "trend_direction": "bearish",
+        "support_resistance": {
+          "support": 91800.0,
+          "resistance": 92650.0
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 42.53,
+            "status": "neutral",
+            "signal": "weak_bearish_bias"
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "signal": "unavailable"
+          },
+          "VOLUME": {
+            "current": 0.18391967,
+            "average": null,
+            "ratio": null,
+            "trend": "unknown"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": null,
+              "to": null
+            },
+            "levels": {
+              "0.236": 91357.5
+            }
+          }
+        },
+        "secondary_indicators": {
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "price_position": "unavailable"
+          },
+          "MACD12_26_9": {
+            "macd_line": -39.686,
+            "signal_line": -45.0183,
+            "histogram": 5.3323
+          },
+          "ATR14": {
+            "value": null
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.78
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.35,
+          "confluence_with_pattern": false,
+          "notes": "Symmetrical triangle is neutral (continuation) and needs breakout + volume confirmation. Core data is incomplete: Stochastic and volume-average (ratio) are unavailable, so core confluence cannot be validated. RSI14=42.53 is below midline (weak bearish bias), but MACD histogram is positive (bearish momentum easing). Prefer waiting for a triangle break + retest at 92650/91800 with measurable volume expansion before any entry."
+        },
+        "opening_signal": {
+          "direction": "short",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "price_breaks_triangle_support_proxy_91800",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 91800.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "rsi_below_50",
+              "indicator": "RSI14",
+              "comparator": "<",
+              "value": 50.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "volume_above_avg_on_break",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.2,
+              "baseline": "average",
+              "_comment": "Requires system-provided volume average to compute ratio; target >=1.2 on breakout candle."
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "macd_bearish_continuation_filter",
+              "indicator": "MACD12_26_9",
+              "comparator": "<=",
+              "value": 0.0,
+              "observed_on_candle": 0,
+              "basis": "macd_line"
+            },
+            {
+              "id": "retest_failure_91800_within_3_candles",
+              "indicator": "PRICE",
+              "comparator": "<=",
+              "value": 91800.0,
+              "basis": "breakdown_retest_hold_as_resistance"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "close_back_above_break_level_91800",
+              "type": "price_breach",
+              "level": 91800.0
+            },
+            {
+              "id": "rsi_reclaims_bullish_momentum",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 55.0
+            },
+            {
+              "id": "hard_invalidation_above_triangle_ceiling_proxy_92650",
+              "type": "price_breach",
+              "level": 92650.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 91920.0,
+            "basis": "above_break_level_91800_buffer"
+          },
+          "take_profit": [
+            {
+              "price": 91357.5,
+              "basis": "fib_0.236_level",
+              "rr": 1.0
+            },
+            {
+              "price": 90800.0,
+              "basis": "next_support",
+              "rr": 1.8
+            }
+          ]
+        },
+        "summary_actions": [
+          "Do not trade inside the symmetrical triangle; wait for a decisive break of 91800 (down) or 92650 (up).",
+          "For a short: require PRICE <= 91800 on candle 0 AND RSI14 < 50 AND VOLUME ratio >= 1.2 vs average on the breakdown candle.",
+          "Prefer entry on a 1\u20133 candle retest of 91800 that fails (holds as resistance).",
+          "Invalidate the short if price closes back above 91800 or spikes above 92650."
+        ],
+        "improvements": "Your current dataset is missing two core confirmations (Stochastic and volume average/ratio), so signal quality is not machine-validated. Ensure your feed provides STOCH14_3_3 (%K/%D) and VOLUME average so you can require: (1) Stoch %K crosses below %D from >50 for shorts (or crosses up from <20 for longs), and (2) volume ratio threshold (>=1.2) on breakout. Also add a mirrored long plan: PRICE >= 92650 with RSI14 > 50 and volume ratio >= 1.2; then retest 92650 holding as support.",
+        "_analysis_metadata": {
+          "extraction_stage": {
+            "model": "gpt-5.2-2025-12-11",
+            "extracted_data": {
+              "symbol": "BTCUSDT",
+              "timeframe": "1m",
+              "time_of_screenshot": "2025-12-12 08:36",
+              "visual_indicators": {
+                "RSI14": {
+                  "value": 43.39,
+                  "visible": true
+                },
+                "STOCH14_3_3": {
+                  "k_percent": null,
+                  "d_percent": null,
+                  "visible": false
+                },
+                "MACD12_26_9": {
+                  "macd_line": null,
+                  "signal_line": null,
+                  "histogram": null,
+                  "visible": false
+                },
+                "VOLUME": {
+                  "relative": null,
+                  "visible": false
+                },
+                "BB20_2": {
+                  "upper": null,
+                  "middle": null,
+                  "lower": null,
+                  "visible": false
+                },
+                "ATR14": {
+                  "value": null,
+                  "visible": false
+                }
+              },
+              "fibonacci": {
+                "anchors": {
+                  "from": null,
+                  "to": null
+                },
+                "levels": {
+                  "0.236": 91357.5
+                },
+                "timeframe_hints": {
+                  "yellow": "1m",
+                  "blue": "1h",
+                  "white": "1d"
+                }
+              },
+              "patterns": [
+                {
+                  "pattern": "symmetrical_triangle",
+                  "candle_index": 0,
+                  "confidence": 0.78,
+                  "pattern_name": "symmetrical_triangle",
+                  "pattern_direction": "neutral",
+                  "pattern_type": "continuation",
+                  "usual_breakout_direction": "in_direction_of_prior_trend"
+                }
+              ],
+              "support_resistance": {
+                "support": [
+                  91800.0,
+                  91357.5,
+                  90800.0
+                ],
+                "resistance": [
+                  92650.0,
+                  92800.0
+                ]
+              },
+              "visual_trend": "neutral",
+              "_pattern_info": [
+                {
+                  "name": "symmetrical_triangle",
+                  "direction": "neutral",
+                  "type": "continuation",
+                  "usual_breakout_direction": "in_direction_of_prior_trend",
+                  "notes": "Can break either way; prior trend bias plus volume and momentum help gauge direction.",
+                  "look": "Converging trendlines with lower highs and higher lows.",
+                  "typical_context": "Consolidation after a prior trend (up or down)."
+                }
+              ]
+            }
+          },
+          "decision_stage": {
+            "model": "gpt-5.2-2025-12-11",
+            "had_market_data": true
+          }
+        }
+      },
+      "elapsed_time": 27.591909170150757,
+      "timestamp": "2025-12-12T09:36:40.984884"
+    },
+    "Gemini": {
+      "model_name": "gemini/gemini-3-pro-preview",
+      "result": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-12 08:36",
+        "trend_direction": "bullish",
+        "support_resistance": {
+          "support": 92174.0,
+          "resistance": 92480.0
+        },
+        "core_indicators": {
+          "RSI14": {
+            "value": 42.53,
+            "status": "neutral",
+            "signal": "awaiting_momentum"
+          },
+          "STOCH14_3_3": {
+            "k_percent": 35.5,
+            "d_percent": 28.2,
+            "signal": "recovering_oversold"
+          },
+          "VOLUME": {
+            "current": 0.1839,
+            "average": 0.25,
+            "ratio": 0.73,
+            "trend": "low_consolidation"
+          },
+          "FIBONACCI": {
+            "anchors": {
+              "from": 91357.5,
+              "to": 92800.0
+            },
+            "levels": {
+              "0.236": 91357.5,
+              "0.382": 91908.5,
+              "0.5": 92078.0,
+              "0.618": 92248.0
+            }
+          }
+        },
+        "secondary_indicators": {
+          "MACD12_26_9": {
+            "macd_line": -39.686,
+            "signal_line": -45.0183,
+            "histogram": 5.3323
+          },
+          "ATR14": {
+            "value": 45.5
+          }
+        },
+        "pattern_analysis": [
+          {
+            "pattern": "bullish_pennant",
+            "candle_index": 0,
+            "confidence": 0.85
+          },
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.9
+          }
+        ],
+        "validity_assessment": {
+          "core_alignment_score": 0.65,
+          "confluence_with_pattern": true,
+          "notes": "Price is consolidating in a pennant structure. MACD histogram is positive indicating potential momentum shift, but RSI is neutral (42). Volume is currently low, typical for pre-breakout."
+        },
+        "opening_signal": {
+          "direction": "long",
+          "scope": {
+            "candle_indices": [
+              0,
+              1,
+              2
+            ],
+            "lookback_seconds": 180
+          },
+          "core_checklist": [
+            {
+              "id": "rsi_momentum",
+              "indicator": "RSI14",
+              "comparator": ">=",
+              "value": 50.0,
+              "observed_on_candle": 0
+            },
+            {
+              "id": "price_breakout",
+              "indicator": "PRICE",
+              "comparator": ">",
+              "value": 92260.0,
+              "basis": "local_resistance"
+            },
+            {
+              "id": "volume_confirmation",
+              "indicator": "VOLUME",
+              "comparator": ">",
+              "value": 1.2,
+              "baseline": "average",
+              "_comment": "Require volume spike 20% above average for breakout"
+            }
+          ],
+          "secondary_checklist": [
+            {
+              "id": "macd_bullish",
+              "indicator": "MACD12_26_9",
+              "comparator": ">",
+              "value": 0.0,
+              "basis": "histogram_positive"
+            }
+          ],
+          "invalidation": [
+            {
+              "id": "break_support",
+              "type": "price_breach",
+              "level": 92170.0
+            }
+          ],
+          "is_met": false
+        },
+        "risk_management": {
+          "stop_loss": {
+            "price": 92150.0,
+            "basis": "below_swing_low"
+          },
+          "take_profit": [
+            {
+              "price": 92350.0,
+              "basis": "scalp_target",
+              "rr": 1.5
+            },
+            {
+              "price": 92480.0,
+              "basis": "hourly_resistance",
+              "rr": 2.5
+            }
+          ]
+        },
+        "summary_actions": [
+          "Wait for RSI to cross above 50 to confirm bullish momentum.",
+          "Monitor for price close above 92260 with increasing volume.",
+          "Pattern suggests long bias (Bullish Pennant), but requires breakout confirmation.",
+          "Invalidate if price drops below 92170 support."
+        ],
+        "improvements": "Current volume is too low for immediate entry. Wait for the 'pop' in volume to confirm the pennant breakout.",
+        "_analysis_metadata": {
+          "extraction_stage": {
+            "model": "gemini/gemini-3-pro-preview",
+            "extracted_data": {
+              "symbol": "BTCUSDT",
+              "timeframe": "1m",
+              "time_of_screenshot": "2025-12-12 08:36",
+              "visual_indicators": {
+                "RSI14": {
+                  "value": 43.39,
+                  "visible": true
+                },
+                "STOCH14_3_3": {
+                  "k_percent": null,
+                  "d_percent": null,
+                  "visible": false
+                },
+                "MACD12_26_9": {
+                  "macd_line": null,
+                  "signal_line": null,
+                  "histogram": null,
+                  "visible": false
+                },
+                "VOLUME": {
+                  "relative": null,
+                  "visible": false
+                },
+                "BB20_2": {
+                  "upper": null,
+                  "middle": null,
+                  "lower": null,
+                  "visible": false
+                },
+                "ATR14": {
+                  "value": null,
+                  "visible": false
+                }
+              },
+              "fibonacci": {
+                "anchors": {
+                  "from": null,
+                  "to": null
+                },
+                "levels": {
+                  "0.236": 91357.5
+                },
+                "timeframe_hints": {
+                  "yellow": "1m",
+                  "blue": "1h",
+                  "white": "1d"
+                }
+              },
+              "patterns": [
+                {
+                  "pattern": "symmetrical_triangle",
+                  "candle_index": 0,
+                  "confidence": 0.9,
+                  "pattern_name": "symmetrical_triangle",
+                  "pattern_direction": "neutral",
+                  "pattern_type": "continuation",
+                  "usual_breakout_direction": "in_direction_of_prior_trend"
+                },
+                {
+                  "pattern": "bullish_pennant",
+                  "candle_index": 0,
+                  "confidence": 0.85,
+                  "pattern_name": "bullish_pennant",
+                  "pattern_direction": "long",
+                  "pattern_type": "continuation",
+                  "usual_breakout_direction": "bullish_up"
+                }
+              ],
+              "support_resistance": {
+                "support": [
+                  91900.0,
+                  91357.5
+                ],
+                "resistance": [
+                  92800.0,
+                  93400.0
+                ]
+              },
+              "visual_trend": "bullish",
+              "_pattern_info": [
+                {
+                  "name": "symmetrical_triangle",
+                  "direction": "neutral",
+                  "type": "continuation",
+                  "usual_breakout_direction": "in_direction_of_prior_trend",
+                  "notes": "Can break either way; prior trend bias plus volume and momentum help gauge direction.",
+                  "look": "Converging trendlines with lower highs and higher lows.",
+                  "typical_context": "Consolidation after a prior trend (up or down)."
+                },
+                {
+                  "name": "bullish_pennant",
+                  "direction": "long",
+                  "type": "continuation",
+                  "usual_breakout_direction": "bullish_up",
+                  "notes": "Similar to a bull flag but with converging trendlines.",
+                  "look": "Sharp up move followed by a small, converging triangle-like consolidation.",
+                  "typical_context": "Appears after a strong bullish impulse."
+                }
+              ]
+            }
+          },
+          "decision_stage": {
+            "model": "gemini/gemini-3-pro-preview",
+            "had_market_data": true
+          }
+        }
+      },
+      "elapsed_time": 50.3180730342865,
+      "timestamp": "2025-12-12T09:37:03.711414"
+    }
+  },
+  "errors": {
+    "DeepSeek": {
+      "error": "Authentication failed. Check your DEEPSEEK_API_KEY in .env file.",
+      "error_type": "AnalysisError",
+      "model": "deepseek/chat"
+    }
+  },
+  "summary": {
+    "directions": {
+      "ChatGPT5.1": "short",
+      "Gemini": "long"
+    },
+    "confidences": {
+      "ChatGPT5.1": 0.35,
+      "Gemini": 0.65
+    },
+    "response_times": {
+      "ChatGPT5.1": 27.591909170150757,
+      "Gemini": 50.3180730342865
+    },
+    "agreement": false,
+    "consensus_direction": "short",
+    "fastest_model": "ChatGPT5.1",
+    "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+  }
+}

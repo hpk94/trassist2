@@ -1,0 +1,167 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-30 08:03",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 113500.0,
+    "resistance": 113850.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 43.4,
+      "status": "neutral",
+      "signal": "bearish_divergence_potential"
+    },
+    "MACD12_26_9": {
+      "macd_line": -23.1101,
+      "signal_line": -23.6642,
+      "histogram": 0.5541,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "middle",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 43.63,
+      "d_percent": 47.14,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 4.1408543,
+      "average": 6.5,
+      "ratio": 0.64,
+      "trend": "decreasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": 1,
+      "confidence": 0.84
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.62,
+    "notes": "Rising wedge in a downtrend suggests potential continuation. Volume is decreasing, confirming potential breakdown setup. RSI is in neutral with slight bearish divergence risk."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rising_wedge_pattern",
+        "type": "candle_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": 1,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "rsi_below_50",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 50.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_but_weak",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": -25.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_decreasing",
+        "type": "volume_trend",
+        "lookback_candles": 5,
+        "trend": "decreasing",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "lower_highs",
+        "type": "price_action_structure",
+        "structure": "lower_highs_rising_wedge",
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_above_rising_wedge",
+        "type": "price_breach",
+        "level": "wedge_upper",
+        "comparator": ">="
+      },
+      {
+        "id": "macd_strong_cross_upwards",
+        "type": "indicator_threshold",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 0
+      },
+      {
+        "id": "rsi_above_55",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 55.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 113740.0,
+      "basis": "above_wedge_resistance",
+      "distance_ticks": 120
+    },
+    "take_profit": [
+      {
+        "price": 113500.0,
+        "basis": "recent_support",
+        "rr": 1.1
+      },
+      {
+        "price": 113350.0,
+        "basis": "wedge_measured_move",
+        "rr": 2.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Setup indicates potential short opportunity within a rising wedge against a higher timeframe downtrend.",
+    "Wait for breakdown from wedge structure confirmed by candle close below wedge support.",
+    "Stop loss above wedge resistance ~113740",
+    "Primary TP near recent support around 113500, extended target 113350 on momentum"
+  ],
+  "improvements": "Add confirmation with BB20 Bands for expansion or middle band retest on breakdown; verify ATR14 for precise SL sizing; monitor RSI for hidden bearish divergences below 50"
+}

@@ -1,0 +1,169 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-15 09:16",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 114588.0,
+    "resistance": 115093.2
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 39.02,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": -75.2158,
+      "signal_line": -95.5141,
+      "histogram": 20.2983,
+      "signal": "bullish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 39.88,
+      "d_percent": 38.35,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 1.51728659,
+      "average": null,
+      "ratio": null,
+      "trend": "neutral"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "morning_star_variant",
+      "candle_index": 2,
+      "confidence": 0.76
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.72,
+    "notes": "Formation near Fib 0 level indicates potential local bottom. RSI and MACD support bounce attempt. Requires confirmation above 0.236 or upper trendline breakout."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_above_30",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "stoch_k_above_d",
+        "type": "indicator_cross",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "condition": "%K > %D",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_above_fib0",
+        "type": "price_level",
+        "level": "fib_0",
+        "comparator": ">=",
+        "value": 114588.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "morning_star_pattern",
+        "type": "candle_pattern",
+        "pattern": "morning_star_variant",
+        "candle_index": 2,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_fib0",
+        "type": "price_breach",
+        "level": 114588.0,
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_drops_below_30",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 30.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 114560.0,
+      "basis": "below swing low near Fib 0",
+      "distance_ticks": 195
+    },
+    "take_profit": [
+      {
+        "price": 115093.0,
+        "basis": "Fib 0.236",
+        "rr": 1.75
+      },
+      {
+        "price": 115405.8,
+        "basis": "Fib 0.382",
+        "rr": 4.33
+      }
+    ]
+  },
+  "summary_actions": [
+    "Enter long if RSI >= 30 and MACD bullish crossover confirmed",
+    "Ensure morning star pattern is not invalidated by close below 114588",
+    "Target Fib 0.236 and 0.382 as take profit levels",
+    "Exit if close drops below swing low or RSI drops below 30"
+  ],
+  "improvements": "Add confirmation with break and retest of the falling channel resistance or Fib 0.236. Consider using volume-weighted confirmation or VWAP bounce to filter false breakouts."
+}

@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "Checklist fully passed with no invalidations triggered",
+    "Current price above fib_0.236 level supports long bias",
+    "RSI near neutral allows for entry without overbought risk"
+  ],
+  "warnings": [
+    "No explicit retest of fib_0.236 level observed; entry relies on initial breakout"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 103079.92,
+    "stop_loss": 102672.4,
+    "take_profits": [
+      {
+        "price": 103886.4,
+        "portion": 1.0
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Risk per trade should not exceed 1% of account equity"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 2,
+      "total": 2
+    },
+    "context_alignment": "strong"
+  }
+}

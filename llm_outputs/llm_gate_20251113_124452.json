@@ -1,0 +1,27 @@
+{
+  "should_open": false,
+  "direction": "neutral",
+  "confidence": 0.0,
+  "reasons": [
+    "Opening signal direction is neutral, indicating no clear trade setup"
+  ],
+  "warnings": [
+    "No actionable long or short signal provided for execution"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 0.0,
+    "stop_loss": 0.0,
+    "take_profits": [],
+    "risk_reward": 0.0,
+    "position_size_note": "No position to size"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 0,
+      "total": 0
+    },
+    "context_alignment": "weak"
+  }
+}

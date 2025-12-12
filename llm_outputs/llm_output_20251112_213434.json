@@ -1,0 +1,120 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-12 20:33",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 101171.6,
+    "resistance": 101922.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 65.68,
+      "status": "neutral",
+      "signal": "decreasing"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "unavailable"
+    },
+    "VOLUME": {
+      "current": 1160000,
+      "average": 1160000,
+      "ratio": 1.0,
+      "trend": "stable"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 100708.0,
+        "to": 102672.4
+      },
+      "levels": {
+        "0.236": 101171.6,
+        "0.382": 101458.4,
+        "0.5": 101690.2,
+        "0.618": 101922.0,
+        "0.786": 102252.0
+      }
+    }
+  },
+  "secondary_indicators": {},
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_wedge",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI slightly below overbought, ascending wedge pattern nearing resistance"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_overbought",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 70.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_rejection_resistance",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 101922.0
+      }
+    ],
+    "secondary_checklist": [],
+    "invalidation": [
+      {
+        "id": "close_above_ascending_wedge",
+        "type": "pattern_breach",
+        "level": "wedge_top"
+      },
+      {
+        "id": "rsi_above_70",
+        "indicator": "RSI14",
+        "comparator": ">",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 102000.0,
+      "basis": "above_wedge_top"
+    },
+    "take_profit": [
+      {
+        "price": 101500.0,
+        "basis": "fib_0.382_level",
+        "rr": 2.0
+      },
+      {
+        "price": 101300.0,
+        "basis": "recent_swing_low",
+        "rr": 3.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI for overbought conditions",
+    "Watch for price rejection at Fib 0.618 resistance",
+    "Enter short if price and RSI confirm setup",
+    "Invalidate if wedge is broken above"
+  ],
+  "improvements": "Consider using Bollinger Bands for further volatility analysis"
+}

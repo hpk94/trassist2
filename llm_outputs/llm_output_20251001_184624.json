@@ -1,0 +1,178 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-10-01 16:45",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 117500.0,
+    "resistance": 118300.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 55.58,
+      "status": "neutral",
+      "signal": "oversold_recovery"
+    },
+    "MACD12_26_9": {
+      "macd_line": 52.3326,
+      "signal_line": 62.2098,
+      "histogram": -9.8772,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": 118200.0,
+      "middle": 117500.0,
+      "lower": 116800.0,
+      "price_position": "upper",
+      "bandwidth": "moderate"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 35.2,
+      "d_percent": 28.1,
+      "signal": "oversold_recovery"
+    },
+    "VOLUME": {
+      "current": 0.53414693,
+      "average": 0.42,
+      "ratio": 1.27,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 58.2,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": -1,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.65,
+    "notes": "rising_wedge: in_between"
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 60.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_near_upper_wedge",
+        "type": "price_level",
+        "level": "wedge_upper_trendline",
+        "comparator": "<=",
+        "value": 118000.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "rising_wedge_in_between",
+        "type": "price_level",
+        "level": "contained_within_wedge",
+        "comparator": "==",
+        "value": 1,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "break_above_wedge",
+        "type": "price_breach",
+        "level": "wedge_upper_trendline",
+        "comparator": ">"
+      },
+      {
+        "id": "macd_bullish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">=",
+        "value": 70.0
+      },
+      {
+        "id": "price_closes_above_118250",
+        "type": "price_breach",
+        "level": 118250.0,
+        "comparator": ">="
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 118260.0,
+      "basis": "above_wedge_resistance",
+      "distance_ticks": 35
+    },
+    "take_profit": [
+      {
+        "price": 117700.0,
+        "basis": "mid_wedge_support",
+        "rr": 1.5
+      },
+      {
+        "price": 117500.0,
+        "basis": "full_wedge_support",
+        "rr": 2.3
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor for rejection at wedge resistance (~118000)",
+    "Wait for MACD bearish crossover to deepen",
+    "Validate that price remains within wedge",
+    "Enter short if all checklist conditions met",
+    "Invalidate if price breaks wedge to upside or RSI exceeds 70"
+  ],
+  "improvements": "Improve confluence by waiting for bearish engulfing or shooting star near wedge top, and confirm with negative divergence between RSI and price"
+}

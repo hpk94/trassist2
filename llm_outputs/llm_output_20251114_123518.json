@@ -1,0 +1,153 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-07 12:34",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 95860.0,
+    "resistance": 96795.8
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 36.53,
+      "status": "neutral",
+      "signal": "bearish"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 20.0,
+      "d_percent": 25.0,
+      "signal": "oversold"
+    },
+    "VOLUME": {
+      "current": 24.58,
+      "average": 25.0,
+      "ratio": 0.98,
+      "trend": "decreasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 95860.0,
+        "to": 99925.4
+      },
+      "levels": {
+        "0": 95860.0,
+        "0.236": 96795.8,
+        "0.382": 97374.8,
+        "0.5": 97842.7,
+        "0.618": 98310.6,
+        "0.786": 98976.8,
+        "1": 99925.4
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 97000.0,
+      "middle": 96500.0,
+      "lower": 96000.0,
+      "price_position": "below"
+    },
+    "MACD12_26_9": {
+      "macd_line": -114.02,
+      "signal_line": -94.48,
+      "histogram": -19.54
+    },
+    "ATR14": {
+      "value": 100.0
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_triangle",
+      "candle_index": 0,
+      "confidence": 0.9
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.75,
+    "confluence_with_pattern": true,
+    "notes": "Triangle breakdown, RSI neutral, oversold Stochastic, in line with bearish trend."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_below_50",
+        "indicator": "RSI14",
+        "comparator": "<",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "stoch_oversold",
+        "indicator": "STOCH14_3_3",
+        "comparator": "<=",
+        "value": 20.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "price_below_fib_0236",
+        "indicator": "PRICE",
+        "comparator": "<=",
+        "value": 96795.8,
+        "basis": "fib_0.236"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "volume_below_avg",
+        "indicator": "VOLUME",
+        "comparator": "<=",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_triangle_top",
+        "type": "price_breach",
+        "level": "triangle_top"
+      },
+      {
+        "id": "rsi_above_70",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 70.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 96900.0,
+      "basis": "above_triangle"
+    },
+    "take_profit": [
+      {
+        "price": 96000.0,
+        "basis": "support_level",
+        "rr": 1.5
+      },
+      {
+        "price": 95860.0,
+        "basis": "fib_0_level",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Confirm breakdown below Fibonacci 0.236 level",
+    "Monitor RSI and Stochastic for oversold levels",
+    "Enter short if price remains below triangle support",
+    "Invalidate if price closes above the triangle top"
+  ],
+  "improvements": "Use MACD for potential momentum confirmation; consider ATR for volatility context."
+}

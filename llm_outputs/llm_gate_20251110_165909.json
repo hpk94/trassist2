@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI below 50 and STOCH below 30 confirm bearish momentum",
+    "Price below Fib 0.382 level supports short bias",
+    "No invalidations triggered and checklist fully passed"
+  ],
+  "warnings": [
+    "Volume below average may indicate weak participation",
+    "Ensure stop loss is set to manage risk above Fib 0.618"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 105004.68,
+    "stop_loss": 105773.7,
+    "take_profits": [
+      {
+        "price": 104649.9,
+        "portion": 0.5
+      },
+      {
+        "price": 103800.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.6,
+    "position_size_note": "Risk per trade should not exceed 1% of capital"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

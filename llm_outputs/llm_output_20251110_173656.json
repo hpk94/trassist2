@@ -1,0 +1,136 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-11-10 17:35",
+  "trend_direction": "bullish",
+  "support_resistance": {
+    "support": 105079.0,
+    "resistance": 105468.3
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 55.0,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 60.0,
+      "d_percent": 58.0,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 920000,
+      "average": 800000,
+      "ratio": 1.15,
+      "trend": "increasing"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 104649.9,
+        "to": 106468.3
+      },
+      "levels": {
+        "0.236": 105079.0,
+        "0.382": 105334.5,
+        "0.5": 105559.1,
+        "0.618": 105773.7,
+        "0.786": 106079.2
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": 106000.0,
+      "middle": 105500.0,
+      "lower": 105000.0,
+      "price_position": "middle"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "ascending_triangle",
+      "candle_index": 0,
+      "confidence": 0.75
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.75,
+    "confluence_with_pattern": true,
+    "notes": "Triangle pattern at Fib 0.236, volume increasing"
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "rsi_above_50",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "volume_above_avg",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average"
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "price_on_fib_0236",
+        "indicator": "PRICE",
+        "comparator": ">=",
+        "value": 105079.0,
+        "basis": "fib_0.236"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_0236",
+        "type": "price_breach",
+        "level": "fib_0.236"
+      },
+      {
+        "id": "rsi_below_40",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 40.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 104800.0,
+      "basis": "below_fib_0236"
+    },
+    "take_profit": [
+      {
+        "price": 105559.1,
+        "basis": "fib_0.5",
+        "rr": 1.5
+      },
+      {
+        "price": 105773.7,
+        "basis": "fib_0.618",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor RSI and volume for a breakout confirmation",
+    "Ensure price maintains above Fib 0.236",
+    "Consider entering long if core conditions are met",
+    "Invalidate setup if price closes below Fib 0.236"
+  ],
+  "improvements": "Consider additional confirmation from Stochastic momentum"
+}

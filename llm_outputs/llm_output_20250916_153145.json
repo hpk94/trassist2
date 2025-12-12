@@ -1,0 +1,175 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-16 13:30",
+  "trend_direction": "neutral",
+  "support_resistance": {
+    "support": 115245.8,
+    "resistance": 115552.6
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 56.09,
+      "status": "neutral",
+      "signal": "moderate_bullish_momentum"
+    },
+    "MACD12_26_9": {
+      "macd_line": 9.3978,
+      "signal_line": 17.2545,
+      "histogram": -7.8567,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 56.09,
+      "d_percent": 56.62,
+      "signal": "neutral"
+    },
+    "VOLUME": {
+      "current": 939.8,
+      "average": 800.0,
+      "ratio": 1.17,
+      "trend": "increasing"
+    },
+    "ATR14": {
+      "value": 82.3,
+      "period": 14,
+      "volatility": "medium"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "rising_wedge",
+      "candle_index": "spanning candles from 12:00 to 13:30",
+      "confidence": 0.78
+    },
+    {
+      "pattern": "rejection_wick",
+      "candle_index": 0,
+      "confidence": 0.66
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.56,
+    "notes": "Rising wedge pattern near 0.786 Fib resistance indicates potential bearish reversal. MACD bearish crossover does not support continuation long. Volume on thrust is higher but RSI is neutral."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_below_60",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 60.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "macd_bearish",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line",
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_avg",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "rising_wedge",
+        "type": "chart_pattern",
+        "pattern": "rising_wedge",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      },
+      {
+        "id": "price_reject_fib_0_786",
+        "type": "price_level",
+        "level": "fib_0_786",
+        "comparator": "<=",
+        "value": 115466.7,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "price_level"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_above_fib_1",
+        "type": "price_breach",
+        "level": "fib_1",
+        "comparator": ">=",
+        "value": 115552.6
+      },
+      {
+        "id": "macd_bullish_crossover",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line > signal_line"
+      },
+      {
+        "id": "rsi_above_70",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": ">",
+        "value": 70.0
+      }
+    ],
+    "is_met": true
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115553.0,
+      "basis": "above_fib_1_and_structural_rejection",
+      "distance_ticks": 100
+    },
+    "take_profit": [
+      {
+        "price": 115351.0,
+        "basis": "0.5_fib",
+        "rr": 1.2
+      },
+      {
+        "price": 115245.8,
+        "basis": "0.236_fib + rising wedge support",
+        "rr": 2.1
+      }
+    ]
+  },
+  "summary_actions": [
+    "Short triggered from rejection at 0.786 Fib and wedge top",
+    "Volume rising while MACD crosses bearishly",
+    "Target first TP at 0.5 Fib, secure partials",
+    "Invalidation on MACD bullish flip or break above Fib 1"
+  ],
+  "improvements": "Include BB20_2 for volatility expansion and band squeeze continuation breakout detection. Add Stoch cross check for momentum filter. Use session VWAP confluence."
+}

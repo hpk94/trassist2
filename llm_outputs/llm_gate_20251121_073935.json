@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI recovery above 30 supports long setup",
+    "Stochastic oversold condition met on previous candle",
+    "Price above Fibonacci 0.382 level",
+    "No invalidations triggered and checklist alignment is strong"
+  ],
+  "warnings": [
+    "Current RSI is near oversold threshold; monitor for further recovery"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 85562.91,
+    "stop_loss": 85400.0,
+    "take_profits": [
+      {
+        "price": 86000.0,
+        "portion": 0.5
+      },
+      {
+        "price": 86400.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.75,
+    "position_size_note": "Risk per trade should not exceed 1% of account equity"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "should_open": true,
+  "direction": "long",
+  "confidence": 0.8,
+  "reasons": [
+    "RSI and Stochastics show recovery above oversold levels",
+    "Price is above defined support level without invalidation",
+    "Checklist fully passed with no triggered invalidations"
+  ],
+  "warnings": [
+    "No recent retest of support level observed",
+    "Market momentum is moderate; ensure quick invalidation if conditions worsen"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 101581.8,
+    "stop_loss": 101350.0,
+    "take_profits": [
+      {
+        "price": 101703.1,
+        "portion": 0.5
+      },
+      {
+        "price": 101881.5,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.0,
+    "position_size_note": "Risk per trade should not exceed 1% of capital, adjust size based on stop distance"
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-09-21 09:15",
+  "trend_direction": "sideways_with_bearish_bias",
+  "support_resistance": {
+    "support": 115500.0,
+    "resistance": 115850.0
+  },
+  "technical_indicators": {
+    "RSI14": {
+      "value": 15.87,
+      "status": "oversold",
+      "signal": "extremely_oversold"
+    },
+    "MACD12_26_9": {
+      "macd_line": -5.8328,
+      "signal_line": 1.1636,
+      "histogram": -6.9964,
+      "signal": "bearish_crossover"
+    },
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "unknown",
+      "bandwidth": "unknown"
+    },
+    "STOCH14_3_3": {
+      "k_percent": 26.11,
+      "d_percent": 50.7,
+      "signal": "bearish_cross_below_mid"
+    },
+    "VOLUME": {
+      "current": 2.00486948,
+      "average": 1.5,
+      "ratio": 1.34,
+      "trend": "slightly_increasing"
+    },
+    "ATR14": {
+      "value": null,
+      "period": 14,
+      "volatility": "unknown"
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "channel_up",
+      "candle_index": -1,
+      "confidence": 0.87
+    },
+    {
+      "pattern": "doji_near_support",
+      "candle_index": 0,
+      "confidence": 0.6
+    }
+  ],
+  "validity_assessment": {
+    "alignment_score": 0.48,
+    "notes": "While RSI is oversold at support and there is a potential lower-channel bounce, MACD and stochastic indicate bearish continuation. Volume is not showing strong reversal yet."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "checklist": [
+      {
+        "id": "rsi_extremely_oversold",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 20.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "price_at_channel_support",
+        "type": "price_level",
+        "level": "trendline_support",
+        "comparator": "==",
+        "value": 115524.0,
+        "observed_on_candle": 0,
+        "technical_indicator": false,
+        "category": "structure"
+      },
+      {
+        "id": "stochastic_near_oversold",
+        "type": "indicator_threshold",
+        "indicator": "STOCH14_3_3",
+        "timeframe": "1m",
+        "comparator": "<=",
+        "value": 30.0,
+        "observed_on_candle": 0,
+        "technical_indicator": true,
+        "category": "technical_indicator"
+      },
+      {
+        "id": "volume_above_average",
+        "type": "volume_threshold",
+        "lookback_candles": 3,
+        "comparator": ">",
+        "value": 1.0,
+        "baseline": "average_volume",
+        "technical_indicator": false,
+        "category": "volume_analysis"
+      },
+      {
+        "id": "doji_confirmation",
+        "type": "candle_pattern",
+        "pattern": "doji",
+        "candle_index": 0,
+        "technical_indicator": false,
+        "category": "candle_pattern"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_trendline",
+        "type": "price_breach",
+        "level": "trendline_support",
+        "comparator": "<"
+      },
+      {
+        "id": "macd_bearish_crossover_confirms",
+        "type": "indicator_crossover",
+        "indicator": "MACD12_26_9",
+        "timeframe": "1m",
+        "condition": "macd_line < signal_line"
+      },
+      {
+        "id": "rsi_fails_to_recover",
+        "type": "indicator_threshold",
+        "indicator": "RSI14",
+        "timeframe": "1m",
+        "comparator": "<",
+        "value": 25.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 115485.0,
+      "basis": "below_channel_support",
+      "distance_ticks": 40
+    },
+    "take_profit": [
+      {
+        "price": 115670.0,
+        "basis": "recent_mid-range",
+        "rr": 1.6
+      },
+      {
+        "price": 115780.0,
+        "basis": "channel_top_resistance",
+        "rr": 3.2
+      }
+    ]
+  },
+  "summary_actions": [
+    "Watch for confirmation bounce candle at lower trendline support",
+    "Enter long if RSI and stochastic start to curl up with volume pickup",
+    "Wait for MACD histogram to flatten or improve before entering aggressively",
+    "Set stop-loss slightly below the trendline support (~115485)"
+  ],
+  "improvements": "Add MACD histogram deceleration as a confirmation filter, wait for candle close above the short-term EMA or VWAP for stronger entry."
+}

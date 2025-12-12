@@ -1,0 +1,308 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2025-12-12 08:20",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": 92000.0,
+    "resistance": 92800.0
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 35.4,
+      "status": "bearish",
+      "signal": "weak_momentum_near_oversold"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_available"
+    },
+    "VOLUME": {
+      "current": 3.47826826,
+      "average": null,
+      "ratio": null,
+      "trend": "not_available"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": null,
+        "to": null
+      },
+      "levels": {
+        "0.236": 91357.5
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_available"
+    },
+    "MACD12_26_9": {
+      "macd_line": -13.1243,
+      "signal_line": -5.9954,
+      "histogram": -7.1288
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "symmetrical_triangle",
+      "candle_index": 0,
+      "confidence": 0.74
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.35,
+    "confluence_with_pattern": false,
+    "notes": "Symmetrical triangle is neutral (continuation), so direction must come from momentum/levels. Current 1m momentum is bearish: RSI14=35.40 and MACD histogram=-7.1288 with MACD line below signal. However, Stochastic and volume-vs-average are unavailable, and Fib anchors are missing, so core confirmations are incomplete. Treat as 'wait for breakout + retest' rather than immediate entry."
+  },
+  "opening_signal": {
+    "direction": "short",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "triangle_breakdown_confirm",
+        "indicator": "PRICE_CLOSE",
+        "comparator": "<",
+        "value": 92328.54,
+        "observed_on_candle": 0,
+        "_comment": "Use breakdown proxy: close below the 08:20 candle low (requires next closed candle to confirm)."
+      },
+      {
+        "id": "rsi_bearish",
+        "indicator": "RSI14",
+        "comparator": "<=",
+        "value": 40.0,
+        "observed_on_candle": 0
+      },
+      {
+        "id": "macd_bearish_momentum",
+        "indicator": "MACD_HISTOGRAM",
+        "comparator": "<",
+        "value": 0.0,
+        "observed_on_candle": 0
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "retest_break_level_within_3_candles",
+        "indicator": "PRICE_HIGH",
+        "comparator": ">=",
+        "value": 92328.54,
+        "basis": "breakdown_level_retest",
+        "observed_on_candle": 0,
+        "_comment": "After breakdown, allow 1\u20133 candle retest where high tags the breakdown level and then price rejects (next close back below)."
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_back_above_92389_14",
+        "type": "price_breach",
+        "level": 92389.14,
+        "_comment": "If a 1m candle closes above the recent local high close (08:17 close), breakdown thesis weakens."
+      },
+      {
+        "id": "rsi_reversal_strength",
+        "indicator": "RSI14",
+        "comparator": ">=",
+        "value": 50.0
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 92389.14,
+      "basis": "above_recent_local_high_close"
+    },
+    "take_profit": [
+      {
+        "price": 92000.0,
+        "basis": "support_level",
+        "rr": null
+      },
+      {
+        "price": 91357.5,
+        "basis": "fib_0.236_visual_support",
+        "rr": null
+      }
+    ]
+  },
+  "summary_actions": [
+    "Do not market-enter inside the triangle; require a 1m close below 92328.54 to confirm breakdown.",
+    "Keep RSI14 <= 40 and MACD histogram < 0 as momentum filters; invalidate if RSI14 >= 50.",
+    "Prefer entry on a 1\u20133 candle retest of 92328.54 that rejects (subsequent close back below).",
+    "Use SL above 92389.14; scale TP at 92000 then 91357.5."
+  ],
+  "improvements": "Request/compute Stochastic(14,3,3) and volume average to meet core-confirmation rules (volume ratio > 1.2 on breakout is ideal). Add proper Fib anchors (swing high/low of the triangle range) so entries can use retests of 0.382/0.5/0.618 rather than a single 0.236 level. Also correct leverage context: trader states 30x isolated, but incoming data shows 500x\u2014align risk sizing to 30x assumptions.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-5.2-2025-12-11",
+      "extracted_data": {
+        "symbol": "BTCUSDT",
+        "timeframe": "1m",
+        "time_of_screenshot": "2025-12-12 08:20",
+        "visual_indicators": {
+          "RSI14": {
+            "value": 39.09,
+            "visible": true
+          },
+          "STOCH14_3_3": {
+            "k_percent": null,
+            "d_percent": null,
+            "visible": false
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": null,
+            "visible": false
+          },
+          "BB20_2": {
+            "upper": null,
+            "middle": null,
+            "lower": null,
+            "visible": false
+          },
+          "ATR14": {
+            "value": null,
+            "visible": false
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": null,
+            "to": null
+          },
+          "levels": {
+            "0.236": 91357.5
+          },
+          "timeframe_hints": {
+            "yellow": "1m",
+            "blue": "1h",
+            "white": "1d"
+          }
+        },
+        "patterns": [
+          {
+            "pattern": "symmetrical_triangle",
+            "candle_index": 0,
+            "confidence": 0.74,
+            "pattern_name": "symmetrical_triangle",
+            "pattern_direction": "neutral",
+            "pattern_type": "continuation",
+            "usual_breakout_direction": "in_direction_of_prior_trend"
+          }
+        ],
+        "support_resistance": {
+          "support": [
+            91357.5,
+            92000.0
+          ],
+          "resistance": [
+            92800.0
+          ]
+        },
+        "visual_trend": "neutral",
+        "_pattern_info": [
+          {
+            "name": "symmetrical_triangle",
+            "direction": "neutral",
+            "type": "continuation",
+            "usual_breakout_direction": "in_direction_of_prior_trend",
+            "notes": "Can break either way; prior trend bias plus volume and momentum help gauge direction.",
+            "look": "Converging trendlines with lower highs and higher lows.",
+            "typical_context": "Consolidation after a prior trend (up or down)."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-5.2-2025-12-11",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "first successful model (models disagree - manual review recommended)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "short",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.35,
+        "Gemini": 0.65
+      },
+      "response_times": {
+        "ChatGPT5.1": 33.20870804786682,
+        "Gemini": 66.65542101860046
+      },
+      "agreement": false,
+      "consensus_direction": "short",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "short",
+        "confidence": 0.35,
+        "elapsed_time": 33.20870804786682,
+        "stop_loss": 92389.14,
+        "take_profits": [
+          {
+            "price": 92000.0,
+            "rr": null
+          },
+          {
+            "price": 91357.5,
+            "rr": null
+          }
+        ],
+        "max_rr": null
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.65,
+        "elapsed_time": 66.65542101860046,
+        "stop_loss": 92250.0,
+        "take_profits": [
+          {
+            "price": 92450.0,
+            "rr": 1.5
+          },
+          {
+            "price": 92750.0,
+            "rr": 3.0
+          }
+        ],
+        "max_rr": 3.0
+      }
+    },
+    "errors": {
+      "DeepSeek": {
+        "error": "Authentication failed. Check your DEEPSEEK_API_KEY in .env file.",
+        "error_type": "AnalysisError",
+        "model": "deepseek/chat"
+      }
+    }
+  }
+}

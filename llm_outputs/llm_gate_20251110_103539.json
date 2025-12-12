@@ -1,0 +1,36 @@
+{
+  "should_open": false,
+  "direction": "short",
+  "confidence": 0.0,
+  "reasons": [
+    "RSI14 is 76.89, exceeding the invalidation threshold of 75.0"
+  ],
+  "warnings": [
+    "High RSI indicates extreme overbought condition, conflicting with short setup"
+  ],
+  "execution": {
+    "entry_type": "limit",
+    "entry_price": 106509.52,
+    "stop_loss": 106560.0,
+    "take_profits": [
+      {
+        "price": 106062.2,
+        "portion": 0.5
+      },
+      {
+        "price": 105944.7,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.5,
+    "position_size_note": "Not applicable due to rejection"
+  },
+  "checks": {
+    "invalidation_triggered": true,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "weak"
+  }
+}

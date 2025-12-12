@@ -1,0 +1,34 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.8,
+  "reasons": [
+    "MACD is below the signal line.",
+    "Price is below the Fibonacci mid-level, indicating potential for further downside.",
+    "Volume is below average, reducing the likelihood of immediate upward pressure against the position."
+  ],
+  "warnings": [
+    "Market conditions could shift quickly due to low volume."
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 92462.4,
+    "stop_loss": 92742.89,
+    "take_profits": [
+      {
+        "price": 92075.2,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 1.2,
+    "position_size_note": "Leverage is 30x which requires prudent risk management despite favorable setup."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 3,
+      "total": 3
+    },
+    "context_alignment": "strong"
+  }
+}

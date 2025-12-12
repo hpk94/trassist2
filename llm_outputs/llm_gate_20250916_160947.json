@@ -1,0 +1,41 @@
+{
+  "should_open": true,
+  "direction": "short",
+  "confidence": 0.88,
+  "reasons": [
+    "MACD bearish crossover confirmed on the 1m timeframe",
+    "RSI at 41 indicates room for downside without oversold risk",
+    "Price rejected near the 0.786 Fibonacci level within an ascending channel",
+    "Volume is above average, confirming sell interest",
+    "No invalidations triggered; context remains aligned with short setup"
+  ],
+  "warnings": [
+    "Short-term noise risk due to 1m timeframe",
+    "No hard retest; setup relies on fresh rejection"
+  ],
+  "execution": {
+    "entry_type": "market",
+    "entry_price": 115018.19,
+    "stop_loss": 115563.0,
+    "take_profits": [
+      {
+        "price": 115398.0,
+        "portion": 0.5
+      },
+      {
+        "price": 115246.0,
+        "portion": 0.5
+      }
+    ],
+    "risk_reward": 2.1,
+    "position_size_note": "Risk tightly managed with short stop; adjust size to max 1% account loss."
+  },
+  "checks": {
+    "invalidation_triggered": false,
+    "checklist_score": {
+      "met": 5,
+      "total": 5
+    },
+    "context_alignment": "strong"
+  }
+}

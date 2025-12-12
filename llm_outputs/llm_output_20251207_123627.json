@@ -1,0 +1,281 @@
+{
+  "symbol": "BTCUSDT",
+  "timeframe": "1m",
+  "time_of_screenshot": "2023-10-04 12:34",
+  "trend_direction": "bearish",
+  "support_resistance": {
+    "support": [],
+    "resistance": []
+  },
+  "core_indicators": {
+    "RSI14": {
+      "value": 53.65,
+      "status": "neutral",
+      "signal": "neutral"
+    },
+    "STOCH14_3_3": {
+      "k_percent": null,
+      "d_percent": null,
+      "signal": "not_provided"
+    },
+    "VOLUME": {
+      "current": 0.99257531,
+      "average": "unknown",
+      "ratio": "unknown",
+      "trend": "unknown"
+    },
+    "FIBONACCI": {
+      "anchors": {
+        "from": 89013.5,
+        "to": 89750.6
+      },
+      "levels": {
+        "0.236": 89187.5,
+        "0.382": 89295.1,
+        "0.5": 89382.1,
+        "0.618": 89469.0,
+        "0.786": 89592.9
+      }
+    }
+  },
+  "secondary_indicators": {
+    "BB20_2": {
+      "upper": null,
+      "middle": null,
+      "lower": null,
+      "price_position": "not_provided"
+    },
+    "MACD12_26_9": {
+      "macd_line": -2.1737,
+      "signal_line": -5.6424,
+      "histogram": 3.4688
+    },
+    "ATR14": {
+      "value": null
+    }
+  },
+  "pattern_analysis": [
+    {
+      "pattern": "descending_channel",
+      "candle_index": 0,
+      "confidence": 0.85
+    }
+  ],
+  "validity_assessment": {
+    "core_alignment_score": 0.6,
+    "confluence_with_pattern": true,
+    "notes": "RSI neutral, pattern suggests a long possibility. Volume is not clearly trending."
+  },
+  "opening_signal": {
+    "direction": "long",
+    "scope": {
+      "candle_indices": [
+        0,
+        1,
+        2
+      ],
+      "lookback_seconds": 180
+    },
+    "core_checklist": [
+      {
+        "id": "pattern_breakout",
+        "pattern": "descending_channel",
+        "comparator": "breakout",
+        "expected_direction": "up",
+        "confidence": 0.85
+      }
+    ],
+    "secondary_checklist": [
+      {
+        "id": "volume_confirmation",
+        "indicator": "VOLUME",
+        "comparator": ">",
+        "value": "average"
+      }
+    ],
+    "invalidation": [
+      {
+        "id": "close_below_channel",
+        "type": "price_breach",
+        "level": "lower_channel_boundary"
+      }
+    ],
+    "is_met": false
+  },
+  "risk_management": {
+    "stop_loss": {
+      "price": 89013.0,
+      "basis": "below_previous_channel_support"
+    },
+    "take_profit": [
+      {
+        "price": 89469.0,
+        "basis": "fib_0.618",
+        "rr": 1.5
+      },
+      {
+        "price": 89592.9,
+        "basis": "fib_0.786",
+        "rr": 2.0
+      }
+    ]
+  },
+  "summary_actions": [
+    "Monitor breakout above the upper boundary of the descending channel.",
+    "Confirm volume increase above average before entering a long position.",
+    "Set stop-loss slightly below the lower boundary of the channel.",
+    "Take profit at Fib levels 0.618 and 0.786 if price breaks out upwards."
+  ],
+  "improvements": "Improve volume data accuracy; consider adding clear volume thresholds for better entry confirmation.",
+  "_analysis_metadata": {
+    "extraction_stage": {
+      "model": "gpt-4o",
+      "extracted_data": {
+        "symbol": "BTCUSD",
+        "timeframe": "1m",
+        "time_of_screenshot": "2023-10-04 12:34",
+        "visual_indicators": {
+          "RSI14": {
+            "value": null,
+            "visible": true
+          },
+          "MACD12_26_9": {
+            "macd_line": null,
+            "signal_line": null,
+            "histogram": null,
+            "visible": false
+          },
+          "VOLUME": {
+            "relative": "average",
+            "visible": true
+          }
+        },
+        "fibonacci": {
+          "anchors": {
+            "from": 89013.5,
+            "to": 89750.6
+          },
+          "levels": {
+            "0.236": 89187.5,
+            "0.382": 89295.1,
+            "0.5": 89382.1,
+            "0.618": 89469.0,
+            "0.786": 89592.9
+          },
+          "timeframe_hints": {}
+        },
+        "patterns": [
+          {
+            "pattern": "descending_channel",
+            "candle_index": 0,
+            "confidence": 0.85,
+            "pattern_name": "descending_channel",
+            "pattern_direction": "long",
+            "pattern_type": "trend_channel",
+            "usual_breakout_direction": "often_bullish_up_through_upper_boundary"
+          }
+        ],
+        "support_resistance": {
+          "support": [],
+          "resistance": []
+        },
+        "visual_trend": "bearish",
+        "_pattern_info": [
+          {
+            "name": "descending_channel",
+            "direction": "long",
+            "type": "trend_channel",
+            "usual_breakout_direction": "often_bullish_up_through_upper_boundary",
+            "notes": "Staying within the channel confirms the downtrend. A strong breakout above the upper boundary can signal a trend reversal or major short-covering rally.",
+            "look": "Price oscillates between two roughly parallel downward-sloping trendlines (lower highs and lower lows).",
+            "typical_context": "Established downtrend with orderly bounces."
+          }
+        ]
+      }
+    },
+    "decision_stage": {
+      "model": "gpt-4o",
+      "had_market_data": true
+    }
+  },
+  "_multi_model_comparison": {
+    "selected_model": "ChatGPT5.1",
+    "selection_reason": "consensus (all models agree on long)",
+    "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
+    "comparison_summary": {
+      "directions": {
+        "ChatGPT5.1": "long",
+        "DeepSeek": "long",
+        "Gemini": "long"
+      },
+      "confidences": {
+        "ChatGPT5.1": 0.6,
+        "DeepSeek": 0.6,
+        "Gemini": 0.85
+      },
+      "response_times": {
+        "ChatGPT5.1": 14.071586847305298,
+        "DeepSeek": 15.675110816955566,
+        "Gemini": 106.12032723426819
+      },
+      "agreement": true,
+      "consensus_direction": "long",
+      "fastest_model": "ChatGPT5.1",
+      "note": "Confidence scores are shown for reference only. No automatic selection based on confidence."
+    },
+    "all_results": {
+      "ChatGPT5.1": {
+        "direction": "long",
+        "confidence": 0.6,
+        "elapsed_time": 14.071586847305298,
+        "stop_loss": 89013.0,
+        "take_profits": [
+          {
+            "price": 89469.0,
+            "rr": 1.5
+          },
+          {
+            "price": 89592.9,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "DeepSeek": {
+        "direction": "long",
+        "confidence": 0.6,
+        "elapsed_time": 15.675110816955566,
+        "stop_loss": 88990.0,
+        "take_profits": [
+          {
+            "price": 89750.0,
+            "rr": 1.5
+          },
+          {
+            "price": 89850.0,
+            "rr": 2.0
+          }
+        ],
+        "max_rr": 2.0
+      },
+      "Gemini": {
+        "direction": "long",
+        "confidence": 0.85,
+        "elapsed_time": 106.12032723426819,
+        "stop_loss": 89170.0,
+        "take_profits": [
+          {
+            "price": 89382.0,
+            "rr": 1.6
+          },
+          {
+            "price": 89469.0,
+            "rr": 2.3
+          }
+        ],
+        "max_rr": 2.3
+      }
+    },
+    "errors": {}
+  }
+}
