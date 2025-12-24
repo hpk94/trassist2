@@ -1733,10 +1733,18 @@ def check_indicator_threshold(df, condition):
         return evaluate_comparison(k_val, comparator, compare_val)
 
     # Special-case derived indicators not stored as columns
-    if indicator_name == 'PRICE':
+    if indicator_name in ('PRICE', 'PRICE_CLOSE'):
+        # Treat PRICE_CLOSE as an alias of the current close price
         if df is None or df.empty or 'Close' not in df.columns:
             return False
         current_value = df['Close'].iloc[-1]
+        return evaluate_comparison(current_value, comparator, threshold_value)
+
+    if indicator_name == 'PRICE_LOW':
+        # Use the current candle's low price
+        if df is None or df.empty or 'Low' not in df.columns:
+            return False
+        current_value = df['Low'].iloc[-1]
         return evaluate_comparison(current_value, comparator, threshold_value)
 
     if indicator_name == 'VOLUME':
@@ -1760,26 +1768,12 @@ def check_indicator_threshold(df, condition):
         # Handle special cases for indicators that use different column names
         if indicator_name == 'MACD12_26_9' and 'MACD_Line' in df.columns:
             current_value = df['MACD_Line'].iloc[-1]
-        elif indicator_name == 'MACD_HISTOGRAM' and 'MACD_Histogram' in df.columns:
-            current_value = df['MACD_Histogram'].iloc[-1]
-        elif indicator_name == 'MACD_LINE' and 'MACD_Line' in df.columns:
-            current_value = df['MACD_Line'].iloc[-1]
-        elif indicator_name == 'MACD_SIGNAL' and 'MACD_Signal' in df.columns:
-            current_value = df['MACD_Signal'].iloc[-1]
         elif indicator_name == 'STOCH14_3_3' and 'STOCH_K' in df.columns:
             current_value = df['STOCH_K'].iloc[-1]
         elif indicator_name == 'BB20_2_PercentB' and 'BB_PercentB' in df.columns:
             current_value = df['BB_PercentB'].iloc[-1]
         elif indicator_name == 'BB20_2_Bandwidth' and 'BB_Bandwidth' in df.columns:
             current_value = df['BB_Bandwidth'].iloc[-1]
-        elif indicator_name == 'PRICE_CLOSE' and 'Close' in df.columns:
-            current_value = df['Close'].iloc[-1]
-        elif indicator_name == 'PRICE_HIGH' and 'High' in df.columns:
-            current_value = df['High'].iloc[-1]
-        elif indicator_name == 'PRICE_LOW' and 'Low' in df.columns:
-            current_value = df['Low'].iloc[-1]
-        elif indicator_name == 'PRICE_OPEN' and 'Open' in df.columns:
-            current_value = df['Open'].iloc[-1]
         else:
             return False
     else:
@@ -2089,11 +2083,19 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
                         target_value = raw_value
                         comparator = i.get('comparator', '>')
                         condition_description = f"VOLUME {comparator} {target_value}"
-                elif indicator_name == 'PRICE' and df is not None and not df.empty and 'Close' in df.columns:
+                elif indicator_name in ('PRICE', 'PRICE_CLOSE') and df is not None and not df.empty and 'Close' in df.columns:
+                    # Map PRICE and PRICE_CLOSE to the current close price
                     current_value = df['Close'].iloc[-1]
                     target_value = i.get('value')
                     comparator = i.get('comparator', '>=')
-                    condition_description = f"PRICE {comparator} {target_value}"
+                    # Preserve the original indicator name in the description
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                elif indicator_name == 'PRICE_LOW' and df is not None and not df.empty and 'Low' in df.columns:
+                    # Map PRICE_LOW to the current low price
+                    current_value = df['Low'].iloc[-1]
+                    target_value = i.get('value')
+                    comparator = i.get('comparator', '<=')
+                    condition_description = f"{indicator_name} {comparator} {target_value}"
                 elif indicator_name in df.columns:
                     current_value = df[indicator_name].iloc[-1]
                     target_value = i.get('value')
@@ -2119,41 +2121,16 @@ def indicator_checker(df, llm_output, emit_progress_fn=None):
                     target_value = i.get('value')
                     comparator = i.get('comparator', '==')
                     condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'MACD_HISTOGRAM' and 'MACD_Histogram' in df.columns:
-                    current_value = df['MACD_Histogram'].iloc[-1]
-                    target_value = i.get('value')
+                elif indicator_name == 'PATTERN_DIRECTION':
+                    # Pattern direction comes from the opening signal direction (e.g., 'long' or 'short')
+                    current_value = (opening.get('direction') or "").lower()
+                    target_value = (i.get('value') or "").lower()
                     comparator = i.get('comparator', '==')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'MACD_LINE' and 'MACD_Line' in df.columns:
-                    current_value = df['MACD_Line'].iloc[-1]
-                    target_value = i.get('value')
-                    comparator = i.get('comparator', '==')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'MACD_SIGNAL' and 'MACD_Signal' in df.columns:
-                    current_value = df['MACD_Signal'].iloc[-1]
-                    target_value = i.get('value')
-                    comparator = i.get('comparator', '==')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'PRICE_CLOSE' and df is not None and not df.empty and 'Close' in df.columns:
-                    current_value = df['Close'].iloc[-1]
-                    target_value = i.get('value')
-                    comparator = i.get('comparator', '>=')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'PRICE_HIGH' and df is not None and not df.empty and 'High' in df.columns:
-                    current_value = df['High'].iloc[-1]
-                    target_value = i.get('value')
-                    comparator = i.get('comparator', '>=')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'PRICE_LOW' and df is not None and not df.empty and 'Low' in df.columns:
-                    current_value = df['Low'].iloc[-1]
-                    target_value = i.get('value')
-                    comparator = i.get('comparator', '<=')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
-                elif indicator_name == 'PRICE_OPEN' and df is not None and not df.empty and 'Open' in df.columns:
-                    current_value = df['Open'].iloc[-1]
-                    target_value = i.get('value')
-                    comparator = i.get('comparator', '>=')
-                    condition_description = f"{indicator_name} {comparator} {target_value}"
+                    condition_description = f"{indicator_name} {comparator} {i.get('value')}"
+                    if comparator == '==':
+                        condition_met = current_value == target_value
+                    elif comparator == '!=':
+                        condition_met = current_value != target_value
                 else:
                     target_value = i.get('value')
                     comparator = i.get('comparator', '==')
@@ -3176,13 +3153,16 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
                             trade_id = str(uuid.uuid4())[:8]
                             
                             # Prepare trade data for Telegram buttons
+                            # Include fill/order info so the bot can show correct state
                             trade_notification_data = {
                                 "symbol": symbol,
                                 "coin": hl_outcome.get("coin", coin),
                                 "direction": direction.upper(),
                                 "entry_price": hl_outcome.get("order_details", {}).get("limit_price", entry_price),
                                 "size": hl_outcome.get("order_details", {}).get("size", 0),
-                                "leverage": hl_outcome.get("leverage", {}).get("target_leverage", 1)
+                                "leverage": hl_outcome.get("leverage", {}).get("target_leverage", 1),
+                                "filled": hl_outcome.get("filled", False),
+                                "order_id": hl_outcome.get("order_id"),
                             }
                             
                             # Send Telegram notification with trade management buttons
