@@ -81,7 +81,9 @@ LITELLM_TEXT_MODEL = os.getenv("LITELLM_TEXT_MODEL", LITELLM_REASONING_MODEL)
 # These models are used ONLY for multi-model comparison/testing
 # They run in parallel to compare performance - separate from main pipeline
 # NOTE: All models used here MUST support vision/image analysis for chart processing
-MULTI_MODEL_CHATGPT = os.getenv("MULTI_MODEL_CHATGPT", "gpt-5.1-2025-11-13")  # ChatGPT 5.1 (supports vision)
+MULTI_MODEL_CHATGPT = os.getenv("MULTI_MODEL_CHATGPT", "gpt-4o")  # ChatGPT 5.1 (supports vision)
+MULTI_MODEL_CHATGPT52 = os.getenv("MULTI_MODEL_CHATGPT52", "gpt-4o")  # ChatGPT 5.2 (supports vision)
+MULTI_MODEL_CHATGPT_MINI = os.getenv("MULTI_MODEL_CHATGPT_MINI", "gpt-5-mini-2025-08-07")  # ChatGPT 5 Mini (supports vision)
 MULTI_MODEL_DEEPSEEK = os.getenv("MULTI_MODEL_DEEPSEEK", "deepseek/deepseek-reason")  # DeepSeek Reason (for reasoning comparison)
 MULTI_MODEL_GEMINI = os.getenv("MULTI_MODEL_GEMINI", "gemini/gemini-1.5-pro")  # Google Gemini (supports vision)
 
@@ -1101,11 +1103,13 @@ def analyze_trading_chart_multi_model(image_path: str, symbol: str = None, timef
     # Note: df can be a DataFrame or a dict with 'minute', 'hourly', 'daily' keys
     """Analyze trading chart using multiple models in parallel and compare results"""
     emit_progress("🔬 Starting multi-model analysis...")
-    emit_progress(f"   Testing models: {MULTI_MODEL_CHATGPT}, {MULTI_MODEL_DEEPSEEK}, {MULTI_MODEL_GEMINI}")
+    emit_progress(f"   Testing models: {MULTI_MODEL_CHATGPT}, {MULTI_MODEL_CHATGPT52}, {MULTI_MODEL_CHATGPT_MINI}, {MULTI_MODEL_DEEPSEEK}, {MULTI_MODEL_GEMINI}")
     
     # Define models to test
     models_to_test = {
         "ChatGPT5.1": MULTI_MODEL_CHATGPT,
+        "ChatGPT5.2": MULTI_MODEL_CHATGPT52,
+        "ChatGPT5Mini": MULTI_MODEL_CHATGPT_MINI,
         "DeepSeek": MULTI_MODEL_DEEPSEEK,
         "Gemini": MULTI_MODEL_GEMINI
     }
@@ -1158,7 +1162,15 @@ def analyze_trading_chart_multi_model(image_path: str, symbol: str = None, timef
                     error_msg = result.get('error', 'Unknown error')
                     # Provide more helpful error messages
                     if "provider not provided" in error_msg.lower() or "not provi" in error_msg.lower():
-                        error_msg = f"API key missing. Check your .env file for the required API key for {model_name}."
+                        # Determine which API key based on model name
+                        if "gpt" in model_name.lower() or "openai" in model_name.lower():
+                            error_msg = f"API key missing. Add OPENAI_API_KEY to your .env file for {model_name}."
+                        elif "deepseek" in model_name.lower():
+                            error_msg = f"API key missing. Add DEEPSEEK_API_KEY to your .env file for {model_name}."
+                        elif "gemini" in model_name.lower():
+                            error_msg = f"API key missing. Add GEMINI_API_KEY to your .env file for {model_name}."
+                        else:
+                            error_msg = f"API key missing. Check your .env file for the required API key for {model_name}."
                     elif "deepseek" in error_msg.lower() or "authentication" in error_msg.lower() or "api key" in error_msg.lower():
                         error_msg = f"Authentication failed. Check your DEEPSEEK_API_KEY in .env file."
                     
@@ -1184,7 +1196,9 @@ def analyze_trading_chart_multi_model(image_path: str, symbol: str = None, timef
             
             # Provide more helpful error messages based on exception type
             if "BadRequestError" in error_type or "provider not provided" in error_str.lower():
-                if "deepseek" in model_name.lower():
+                if "gpt" in model_name.lower() or "openai" in model_name.lower():
+                    error_msg = f"OpenAI API key missing. Add OPENAI_API_KEY to your .env file for {model_name}."
+                elif "deepseek" in model_name.lower():
                     error_msg = f"DeepSeek API key missing. Add DEEPSEEK_API_KEY to your .env file."
                 elif "gemini" in model_name.lower():
                     error_msg = f"Gemini API key missing. Add GEMINI_API_KEY to your .env file."
@@ -2843,6 +2857,7 @@ def run_trading_analysis(image_path: str, symbol: Optional[str] = None, timefram
             "note": "Model selected for pipeline execution only - not based on confidence. Review all results to determine best model.",
             "comparison_summary": multi_model_comparison.get("summary", {}),
             "all_results": {k: {
+                "model_name": v.get("model_name", k),  # Include actual model name (e.g., "gpt-5.2-2025-12-11")
                 "direction": v["result"].get("opening_signal", {}).get("direction"), 
                 "confidence": v["result"].get("validity_assessment", {}).get("core_alignment_score", 0),
                 "elapsed_time": v["elapsed_time"],

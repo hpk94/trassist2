@@ -113,16 +113,18 @@ class NotificationService:
                 
                 if all_results:
                     message_lines.append("All Models Results:")
-                    for model_name, model_data in all_results.items():
+                    for model_display_name, model_data in all_results.items():
+                        # Use actual model name if available, otherwise fall back to display name
+                        actual_model_name = model_data.get("model_name", model_display_name)
                         model_direction = model_data.get("direction", "unknown").upper()
                         model_confidence = model_data.get("confidence", 0)
                         model_time = model_data.get("elapsed_time", 0)
                         model_stop_loss = model_data.get("stop_loss")
                         model_take_profits = model_data.get("take_profits", [])
                         direction_emoji = "🟢" if model_direction == "LONG" else "🔴" if model_direction == "SHORT" else "⚪"
-                        selected_marker = " ⭐" if model_name == selected_model else ""
+                        selected_marker = " ⭐" if model_display_name == selected_model else ""
                         
-                        message_lines.append(f"  • {direction_emoji} {model_name}{selected_marker}")
+                        message_lines.append(f"  • {direction_emoji} {actual_model_name}{selected_marker}")
                         message_lines.append(f"    └ Direction: {model_direction}, Confidence: {model_confidence:.0%}, Time: {model_time:.1f}s")
                         
                         # Add stop loss if available
@@ -417,15 +419,17 @@ class NotificationService:
 <b>All Models Results:</b>
 <i>Review all results to determine which model performs best</i>
 """
-                for model_name, model_data in all_results.items():
-                    model_name_esc = html.escape(str(model_name))
+                for model_display_name, model_data in all_results.items():
+                    # Use actual model name if available, otherwise fall back to display name
+                    actual_model_name = model_data.get("model_name", model_display_name)
+                    model_name_esc = html.escape(str(actual_model_name))
                     model_direction = html.escape(str(model_data.get("direction", "unknown")).upper())
                     model_confidence = model_data.get("confidence", 0)
                     model_time = model_data.get("elapsed_time", 0)
                     model_stop_loss = model_data.get("stop_loss")
                     model_take_profits = model_data.get("take_profits", [])
                     direction_emoji = "🟢" if model_direction == "LONG" else "🔴" if model_direction == "SHORT" else "⚪"
-                    selected_marker = " ⭐" if model_name == multi_model_info.get("selected_model") else ""
+                    selected_marker = " ⭐" if model_display_name == multi_model_info.get("selected_model") else ""
                     
                     # Safe formatting for confidence and time
                     conf_str = f"{model_confidence:.0%}" if isinstance(model_confidence, (int, float)) else "N/A"
