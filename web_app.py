@@ -1318,7 +1318,12 @@ def invalidation_checker(df, llm_output):
         elif condition_type == 'pattern_breach':
             # Use shared pattern breach function
             condition_met = check_pattern_breach(df, condition, llm_output)
-        
+
+        elif condition_type == 'signal_expired':
+            # Time-based expiry is enforced by poll_until_decision via
+            # opening_signal.expiry.max_candles, so per-tick check is a no-op here.
+            condition_met = False
+
         else:
             print(f"Unknown invalidation condition type: {condition_type}")
             condition_met = False
@@ -1331,10 +1336,10 @@ def invalidation_checker(df, llm_output):
     return invalidation_triggered, triggered_conditions
 
 def validate_trading_signal(df, llm_output, emit_progress_fn=None):
-    """Comprehensive trading signal validation combining checklist and invalidation checks
+    """Comprehensive trading signal validation combining checklist and invalidation checks.
 
-    New pass rule: valid if all core met OR (>=2 core met AND strong pattern).
-    Strong pattern: any pattern with confidence >= 0.75.
+    Pass rule (strict): valid only if ALL core conditions are met. Patterns are bonus
+    confluence and never substitute for a missing core confirmation.
     """
     all_core_met, num_core_met, total_core, _, _ = indicator_checker(df, llm_output, emit_progress_fn)
 
@@ -1413,10 +1418,7 @@ def validate_trading_signal(df, llm_output, emit_progress_fn=None):
         
         return False, "invalidated", triggered_conditions, market_values
     else:
-        # Pattern strength check
-        patterns = llm_output.get('pattern_analysis', []) or []
-        strong_pattern = any((p.get('confidence') or 0) >= 0.75 for p in patterns)
-        if all_core_met or (num_core_met >= 2 and strong_pattern):
+        if all_core_met:
             return True, "valid", [], market_values
         return False, "pending", [], market_values
 
@@ -1436,10 +1438,24 @@ def _timeframe_seconds(interval):
     return mapping.get(interval, 60)
 
 def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_progress_fn=None):
-    """Poll market data until trading decision is made"""
+    """Poll market data until a trading decision is made.
+
+    If the upstream signal includes `opening_signal.expiry.max_candles`, that value
+    is used as the polling cap when the caller did not pass `max_cycles` explicitly.
+    Reaching the cap returns status="expired".
+    """
     cycles = 0
     wait_seconds = _timeframe_seconds(timeframe)
-    
+
+    if max_cycles is None:
+        try:
+            expiry = (llm_output.get('opening_signal', {}) or {}).get('expiry', {}) or {}
+            mc = expiry.get('max_candles')
+            if isinstance(mc, int) and mc > 0:
+                max_cycles = mc
+        except Exception:
+            pass
+
     while True:
         # Check if stop was requested
         if should_stop_analysis():
@@ -1475,8 +1491,8 @@ def poll_until_decision(symbol, timeframe, llm_output, max_cycles=None, emit_pro
 
         if max_cycles is not None and cycles >= max_cycles:
             if emit_progress_fn:
-                emit_progress_fn(f"Polling complete: max cycles ({max_cycles}) reached")
-            return signal_valid, signal_status, triggered_conditions, market_values
+                emit_progress_fn(f"Polling complete: signal expired after {max_cycles} cycle(s)")
+            return False, "expired", ["signal_expired"], market_values
 
         # Send periodic status updates
         if cycles % 5 == 0:  # Every 5 cycles
